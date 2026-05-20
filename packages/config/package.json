@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./tsconfig": "./tsconfig.base.json"
+    "./tsconfig": "./tsconfig.base.json",
+    "./load-env": "./load-env.mjs"
+  },
+  "dependencies": {
+    "dotenv": "latest"
   }
 }
