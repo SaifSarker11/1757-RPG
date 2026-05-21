@@ -60,11 +60,41 @@ const io = new Server(app.server, {
   },
 });
 
+interface ChatMessage {
+  id: string;
+  username: string;
+  text: string;
+  timestamp: string;
+}
+
+const chatHistory: ChatMessage[] = [];
+const MAX_HISTORY = 100;
+
 io.on("connection", (socket: Socket) => {
   app.log.info(`Socket connected: ${socket.id}`);
 
-  socket.on("chat:message", (data: { roomId: string }) => {
-    io.to(data.roomId).emit("chat:message", data);
+  // Send current chat history to the newly connected user
+  socket.emit("chat:history", chatHistory);
+
+  // Listen for new messages and broadcast them
+  socket.on("chat:send-message", (data: { username: string; text: string }) => {
+    if (!data || typeof data.text !== "string" || !data.username) {
+      return;
+    }
+
+    const message: ChatMessage = {
+      id: Math.random().toString(36).substring(2, 11),
+      username: data.username,
+      text: data.text,
+      timestamp: new Date().toISOString(),
+    };
+
+    chatHistory.push(message);
+    if (chatHistory.length > MAX_HISTORY) {
+      chatHistory.shift();
+    }
+
+    io.emit("chat:message", message);
   });
 
   socket.on("disconnect", () => {
