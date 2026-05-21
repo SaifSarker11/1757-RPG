@@ -15,11 +15,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@repo/auth": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/config": "workspace:*",
+    "better-auth": "latest",
     "fastify": "latest",
     "@fastify/cors": "latest",
     "@fastify/helmet": "latest",
-    "socket.io": "latest",
-    "dotenv": "latest"
+    "socket.io": "latest"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

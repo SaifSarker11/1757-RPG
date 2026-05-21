@@ -2,6 +2,7 @@
   "name": "SPL@",
   "private": true,
   "scripts": {
+    "dev:kill": "node scripts/kill-dev-ports.mjs",
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
