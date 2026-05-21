@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+// @ts-expect-error - Next.js does not export type definitions for @next/env under bundler resolution
 import { loadEnvConfig } from "@next/env";
 import type { NextConfig } from "next";
 
