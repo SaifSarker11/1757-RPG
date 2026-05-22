@@ -1,11 +1,126 @@
 version: "3.9"
+
 services:
+  # ============================================================================
+  # BACKEND INFRASTRUCTURE (Always Active)
+  # ============================================================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: spl-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-spl_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   redis:
     image: redis:7-alpine
+    container_name: spl-redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile.dev
+    container_name: spl-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-spl_dev}
+      DIRECT_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-spl_dev}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-dev-secret-change-in-production}
+      BETTER_AUTH_URL: http://localhost:3001
+      WEB_URL: ${WEB_URL:-http://localhost:3000}
+      ADMIN_URL: ${ADMIN_URL:-http://localhost:3002}
+      API_URL: http://localhost:3001
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ============================================================================
+  # OPTIONAL FRONTEND SERVICES (Commented by default)
+  # Uncomment to run inside Docker. Otherwise, run on host with `pnpm dev`
+  # ============================================================================
+
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/web/Dockerfile.dev
+  #   container_name: spl-web
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   environment:
+  #     NODE_ENV: development
+  #     NEXT_PUBLIC_API_URL: http://localhost:3001
+  #     NEXT_PUBLIC_WS_URL: ws://localhost:3001
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - app-network
+  #   stdin_open: true
+  #   tty: true
+
+  # mobile:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/mobile/Dockerfile.dev
+  #   container_name: spl-mobile
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   environment:
+  #     NODE_ENV: development
+  #     REACT_NATIVE_PACKAGER_HOSTNAME: ${HOST_IP:-127.0.0.1}
+  #     EXPO_PUBLIC_API_URL: http://${HOST_IP:-127.0.0.1}:3001
+  #   ports:
+  #     - "8081:8081"
+  #     - "19000:19000"
+  #     - "19001:19001"
+  #   networks:
+  #     - app-network
+  #   stdin_open: true
+  #   tty: true
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
+  postgres_data:
   redis_data:
