@@ -4,6 +4,8 @@ import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import { Server, Socket } from "socket.io";
 import { registerAuthRoutes } from "./auth-routes";
+import { registerRoomRoutes } from "./routes/room";
+import { registerRoomHandlers } from "./socket/roomHandler";
 
 const app = Fastify({ logger: true });
 
@@ -49,16 +51,21 @@ await app.register(helmet, {
 
 await registerAuthRoutes(app);
 
-app.get("/health", async () => {
-  return { status: "ok", timestamp: new Date().toISOString() };
-});
-
 const io = new Server(app.server, {
   cors: {
     origin: allowedOrigins,
     credentials: true,
   },
 });
+
+registerRoomHandlers(io);
+registerRoomRoutes(app);
+
+app.get("/health", async () => {
+  return { status: "ok", timestamp: new Date().toISOString() };
+});
+
+// ... rest of the socket handlers follow
 
 interface ChatMessage {
   id: string;

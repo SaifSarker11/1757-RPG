@@ -19,4 +19,50 @@ export type SocketEvents = {
   "game:leave": { roomId: string; userId: string };
   "game:action": { roomId: string; action: string; payload: unknown };
   "chat:message": { roomId: string; userId: string; message: string };
+  "room:join": { roomId: string; userId: string; socketId?: string };
+  "room:leave": { roomId: string };
+  "round:propose-team": { roomId: string; playerIds: string[] };
+  "round:vote-team": { roundId: string; playerId: string; vote: "approve" | "reject" };
+  "round:vote-mission": { roundId: string; playerId: string; vote: "green" | "red" };
+};
+
+// Room-related types
+export type Room = {
+  id: string;
+  code: string;
+  hostId: string;
+  status: "WAITING" | "IN_PROGRESS" | "GREEN_WIN" | "RED_WIN" | "JAGAT_SETH_WIN";
+  currentRound: number;
+  greenWins: number;
+  redWins: number;
+  roundRejections: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RoomPlayer = {
+  id: string;
+  roomId: string;
+  userId: string;
+  socketId?: string;
+  role?: string;
+  team?: "GREEN" | "RED" | "GOLD";
+  isSelector: boolean;
+  isLockedByJeanLaw: boolean;
+  hasUsedDeBussyLock: boolean;
+};
+
+export type RoundRecord = {
+  id: string;
+  roomId: string;
+  roundNumber: number;
+  phase: "DISCUSSION" | "TEAM_PROPOSAL" | "TEAM_APPROVAL" | "MISSION_VOTE" | "TRANSITION";
+  selectorId?: string;
+  proposedTeam: string[];
+  teamVotes?: Record<string, string>;
+  missionVotes?: Record<string, string>;
+  greenVoteCount: number;
+  redVoteCount: number;
+  winner?: "GREEN" | "RED" | "GOLD" | null;
+  rejectionCount: number;
 }; 
