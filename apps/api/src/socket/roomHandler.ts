@@ -1,4 +1,4 @@
-import { Server, Socket } from "socket.io";
+﻿import { Server, Socket } from "socket.io";
 import { db, PlayerTeam, RoomStatus } from "@repo/db";
 
 const ROUND_TEAM_SIZES: Record<number, number> = {
@@ -63,6 +63,8 @@ export function registerRoomHandlers(io: Server): void {
 
       if (!round) return;
 
+      if (round.phase !== "TEAM_APPROVAL") return;
+
       const currentVotes = (round.teamVotes as Record<string, string>) || {};
       currentVotes[playerId] = vote;
 
@@ -71,8 +73,11 @@ export function registerRoomHandlers(io: Server): void {
       const totalPlayers = await db.roomPlayer.count({ where: { roomId: round.roomId } });
 
       const isApproved = approves > totalPlayers / 2;
+      const rejects = totalVotes - approves;
+      const majority = Math.floor(totalPlayers / 2) + 1;
+      const earlyDecide = approves >= majority || rejects >= majority;
 
-      if (isApproved || totalVotes >= totalPlayers - 1) {
+      if (earlyDecide || totalVotes >= totalPlayers) {
         const phase = isApproved ? "MISSION_VOTE" : "DISCUSSION";
         
         const updatedRound = await db.roundRecord.update({
@@ -104,7 +109,7 @@ export function registerRoomHandlers(io: Server): void {
       const redVotes = Object.values(currentVotes).filter((v: string) => v === "red").length;
 
       // Check if all proposed team members have voted
-      const proposedTeam = round.proposedTeam;
+      const proposedTeam = Array.isArray(round.proposedTeam) ? round.proposedTeam : JSON.parse(round.proposedTeam as string);
       const votesReceived = Object.keys(currentVotes).filter((pId: string) => proposedTeam.includes(pId)).length;
 
       if (votesReceived >= proposedTeam.length) {
@@ -172,3 +177,5 @@ export function registerRoomHandlers(io: Server): void {
     });
   });
 }
+
+

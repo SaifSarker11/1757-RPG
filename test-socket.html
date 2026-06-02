@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h2>Socket.IO Test - Round Flow</h2>
+  <div id="log"></div>
+  <script>
+    const log = document.getElementById('log');
+    function logMsg(msg) {
+      const p = document.createElement('p');
+      p.textContent = msg;
+      log.appendChild(p);
+      console.log(msg);
+    }
+
+    const socket = io("http://localhost:3001", {
+      withCredentials: true,
+      transports: ["websocket"]
+    });
+
+    socket.on("connect", () => {
+      logMsg("✅ Connected: " + socket.id);
+      // Join the room so we receive broadcasts
+      socket.emit("room:join", {
+        roomId: "cmpvdh94w000084iulwgs6g7f",
+        userId: "2CQwtvvf38vPiLju9tpVAJIgrQV48voA"
+      });
+    });
+
+    socket.on("round:team-proposed", data => {
+      logMsg("📝 Team proposed: " + JSON.stringify(data));
+    });
+
+    socket.on("round:team-vote-complete", data => {
+      logMsg("🗳️ Team vote complete: " + JSON.stringify(data));
+    });
+
+    socket.on("round:mission-vote-complete", data => {
+      logMsg("🎯 Mission vote complete: " + JSON.stringify(data));
+    });
+
+    socket.on("error", err => {
+      logMsg("💥 Socket error: " + JSON.stringify(err));
+    });
+
+    socket.on("disconnect", (reason) => {
+      logMsg("⚠️ Disconnected: " + reason);
+    });
+  </script>
+</body>
+</html>

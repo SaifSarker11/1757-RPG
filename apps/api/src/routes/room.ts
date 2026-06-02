@@ -23,7 +23,23 @@ async function generateUniqueRoomCode(): Promise<string> {
   return code;
 }
 
+function generateId(): string {
+  return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export async function registerRoomRoutes(app: FastifyInstance) {
+  if (process.env.NODE_ENV !== "production") {
+    app.post("/dev/create-user", async (request, reply) => {
+      const { name } = request.body as { name?: string };
+      const id = generateId();
+      const email = `${id}@test.local`;
+      const user = await db.user.create({
+        data: { id, name: name || "Test User", email },
+      });
+      return reply.send({ data: { userId: user.id, token: id }, success: true });
+    });
+  }
+
   app.post("/room", async (request, reply) => {
     const body = request.body as { userId?: string; userName?: string };
     const userId = body.userId;
@@ -44,8 +60,7 @@ export async function registerRoomRoutes(app: FastifyInstance) {
         hostId: userId,
         players: {
           create: {
-            userId,
-            socketId: "",
+            userId: userId,
           },
         },
       },
@@ -89,7 +104,6 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       data: {
         roomId,
         userId,
-        socketId: "",
       },
     });
 
@@ -137,7 +151,6 @@ export async function registerRoomRoutes(app: FastifyInstance) {
         });
       }
 
-      // Select random first selector
       const randomIndex = Math.floor(Math.random() * room.players.length);
       const selectorId = room.players[randomIndex].id;
       await tx.roomPlayer.update({
