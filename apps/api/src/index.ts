@@ -4,7 +4,7 @@ import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import { Server, Socket } from "socket.io";
 import { registerAuthRoutes } from "./auth-routes";
-import { registerRoomRoutes } from "./routes/room";
+import { registerRoomRoutes } from "./routes/rooms.js";
 import { registerRoomHandlers } from "./socket/roomHandler";
 
 const app = Fastify({ logger: true });

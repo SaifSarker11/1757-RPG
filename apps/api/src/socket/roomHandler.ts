@@ -15,21 +15,27 @@ export function registerRoomHandlers(io: Server): void {
   io.on("connection", (socket: Socket) => {
     const socketRooms = new Set<string>();
 
-    socket.on("room:join", ({ roomId, userId, socketId }: { roomId: string; userId: string; socketId?: string }) => {
+    socket.on("room:join", ({ roomId, userId }: { roomId: string; userId: string; socketId?: string }) => {
+      if (!roomId || typeof roomId !== "string" || !userId || typeof userId !== "string") {
+        socket.emit("room:error", { message: "roomId and userId required" });
+        return;
+      }
+
       socket.join(roomId);
       socketRooms.add(roomId);
 
-      if (socketId) {
-        db.roomPlayer.updateMany({
-          where: { roomId, userId },
-          data: { socketId },
-        }).catch(console.error);
-      }
+      io.to(roomId).emit("game:join", { roomId, userId });
     });
 
-    socket.on("room:leave", ({ roomId }: { roomId: string }) => {
+    socket.on("room:leave", ({ roomId, userId }: { roomId: string; userId: string }) => {
+      if (!roomId || typeof roomId !== "string" || !userId || typeof userId !== "string") {
+        return;
+      }
+
       socket.leave(roomId);
       socketRooms.delete(roomId);
+
+      io.to(roomId).emit("game:leave", { roomId, userId });
     });
 
     socket.on("round:propose-team", async ({ roomId, playerIds }: { roomId: string; playerIds: string[] }) => {

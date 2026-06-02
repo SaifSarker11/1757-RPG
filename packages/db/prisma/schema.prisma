@@ -111,6 +111,7 @@ model Room {
   hostId      String
   host        User         @relation(fields: [hostId], references: [id])
   status      RoomStatus   @default(WAITING)
+  maxPlayers  Int          @default(15)
   currentRound Int         @default(1)
   greenWins   Int          @default(0)
   redWins     Int          @default(0)

@@ -41,6 +41,18 @@
       logMsg("🎯 Mission vote complete: " + JSON.stringify(data));
     });
 
+    socket.on("game:join", data => {
+      logMsg("👤 Game join: " + JSON.stringify(data));
+    });
+
+    socket.on("game:leave", data => {
+      logMsg("👋 Game leave: " + JSON.stringify(data));
+    });
+
+    socket.on("room:error", data => {
+      logMsg("❌ Room error: " + JSON.stringify(data));
+    });
+
     socket.on("error", err => {
       logMsg("💥 Socket error: " + JSON.stringify(err));
     });

@@ -65,4 +65,45 @@ export type RoundRecord = {
   redVoteCount: number;
   winner?: "GREEN" | "RED" | "GOLD" | null;
   rejectionCount: number;
-}; 
+};
+
+// Room status type
+export type RoomStatus = "WAITING" | "IN_PROGRESS" | "FINISHED";
+
+// IRoom interface
+export interface IRoom {
+  id: string;
+  hostUserId: string;
+  status: RoomStatus;
+  maxPlayers: number;
+  currentRound: number;
+  greenWins: number;
+  redWins: number;
+  players: IRoomPlayer[];
+}
+
+// IRoomPlayer interface
+export interface IRoomPlayer {
+  userId: string;
+  roomId: string;
+  role: string | null;
+  team: string | null;
+}
+
+// RoomCreatePayload interface
+export interface RoomCreatePayload {
+  hostUserId: string;
+  maxPlayers: number;
+}
+
+// RoomJoinPayload interface
+export interface RoomJoinPayload {
+  roomId: string;
+  userId: string;
+}
+
+// RoomLeavePayload interface
+export interface RoomLeavePayload {
+  roomId: string;
+  userId: string;
+} 
