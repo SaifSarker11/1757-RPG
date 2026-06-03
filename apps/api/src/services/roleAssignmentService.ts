@@ -20,7 +20,7 @@ const ROLE_BALANCE: Record<number, { green: number; red: number; hasJagatSeth: b
 
 const GREEN_ROLES: PlayerRole[] = [
   PlayerRole.NAWAB_SIRAJ,
-  PlayerRole.LUTFUNNES,
+  PlayerRole.LUTFUNNESA,
   PlayerRole.SAINT_FRASY,
   PlayerRole.DE_BUSSY,
   PlayerRole.MOHON_LAL,

@@ -1,5 +1,11 @@
 ﻿import { Server, Socket } from "socket.io";
 import { db, PlayerTeam, RoomStatus } from "@repo/db";
+import redis from "../lib/redis";
+
+async function hasActiveRedisGame(roomId: string): Promise<boolean> {
+  const exists = await redis.exists(`game:${roomId}:state`);
+  return exists === 1;
+}
 
 const ROUND_TEAM_SIZES: Record<number, number> = {
   1: 2,
@@ -39,6 +45,11 @@ export function registerRoomHandlers(io: Server): void {
     });
 
     socket.on("round:propose-team", async ({ roomId, playerIds }: { roomId: string; playerIds: string[] }) => {
+      const hasRedisGame = await hasActiveRedisGame(roomId);
+      if (hasRedisGame) {
+        return;
+      }
+
       const room = await db.room.findUnique({
         where: { id: roomId },
         include: { rounds: { orderBy: { roundNumber: "desc" }, take: 1 } },
@@ -56,7 +67,7 @@ export function registerRoomHandlers(io: Server): void {
 
       await db.roundRecord.update({
         where: { id: round.id },
-        data: { proposedTeam: playerIds, phase: "TEAM_APPROVAL" },
+        data: { selectedTeam: playerIds, phase: "TEAM_APPROVAL" },
       });
 
       io.to(roomId).emit("round:team-proposed", { playerIds, roundId: round.id });
@@ -68,6 +79,8 @@ export function registerRoomHandlers(io: Server): void {
       });
 
       if (!round) return;
+      const hasRedisGame = await hasActiveRedisGame(round.roomId);
+      if (hasRedisGame) return;
 
       if (round.phase !== "TEAM_APPROVAL") return;
 
@@ -107,6 +120,8 @@ export function registerRoomHandlers(io: Server): void {
       });
 
       if (!round) return;
+      const hasRedisGame = await hasActiveRedisGame(round.roomId);
+      if (hasRedisGame) return;
 
       const currentVotes = (round.missionVotes as Record<string, string>) || {};
       currentVotes[playerId] = vote;
@@ -115,17 +130,17 @@ export function registerRoomHandlers(io: Server): void {
       const redVotes = Object.values(currentVotes).filter((v: string) => v === "red").length;
 
       // Check if all proposed team members have voted
-      const proposedTeam = Array.isArray(round.proposedTeam) ? round.proposedTeam : JSON.parse(round.proposedTeam as string);
-      const votesReceived = Object.keys(currentVotes).filter((pId: string) => proposedTeam.includes(pId)).length;
+      const selectedTeam = Array.isArray(round.selectedTeam) ? round.selectedTeam : JSON.parse(round.selectedTeam as string);
+      const votesReceived = Object.keys(currentVotes).filter((pId: string) => selectedTeam.includes(pId)).length;
 
-      if (votesReceived >= proposedTeam.length) {
+      if (votesReceived >= selectedTeam.length) {
         let winner: PlayerTeam | null = null;
         const roundNum = round.roundNumber;
 
         if (roundNum === 4) {
           // Special Round 4 rule: Red needs at least 2 Red team members on team AND they vote red
           const teamMembers = await db.roomPlayer.findMany({
-            where: { id: { in: proposedTeam } },
+            where: { id: { in: selectedTeam } },
           });
           const redTeamOnMission = teamMembers.filter((m: { team: PlayerTeam | null }) => m.team === PlayerTeam.RED).length;
           
@@ -141,7 +156,7 @@ export function registerRoomHandlers(io: Server): void {
         await db.$transaction(async (tx) => {
           await tx.roundRecord.update({
             where: { id: roundId },
-            data: { missionVotes: currentVotes, winner, greenVoteCount: greenVotes, redVoteCount: redVotes, phase: "TRANSITION" },
+            data: { missionVotes: currentVotes, winner, greenVotes, redVotes, phase: "TRANSITION" },
           });
 
           if (winner === PlayerTeam.GREEN) {
@@ -163,7 +178,7 @@ export function registerRoomHandlers(io: Server): void {
           if (updatedRoom && (updatedRoom.greenWins >= 3 || updatedRoom.redWins >= 3)) {
             await tx.room.update({
               where: { id: round.roomId },
-              data: { status: winner === PlayerTeam.GREEN ? RoomStatus.GREEN_WIN : RoomStatus.RED_WIN },
+              data: { status: RoomStatus.FINISHED },
             });
           }
         });

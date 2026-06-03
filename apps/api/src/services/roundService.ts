@@ -61,9 +61,9 @@ export async function calculateRoundWinner(
   const redVotes = Object.values(votes).filter((v: string) => v === "red").length;
 
   if (round.roundNumber === 4) {
-    const proposedTeam = round.proposedTeam;
+    const selectedTeam = round.selectedTeam;
     const teamMembers = await db.roomPlayer.findMany({
-      where: { id: { in: proposedTeam } },
+      where: { id: { in: selectedTeam } },
     });
     const redTeamOnMission = teamMembers.filter((m: { team: PlayerTeam | null }) => m.team === PlayerTeam.RED).length;
     

@@ -132,7 +132,7 @@ export function getTeamForRole(role: RoleName): TeamName {
   const greenRoles: RoleName[] = [
     "mir_madan",
     "nawab_siraj",
-    "lutfunnesa",
+  "lutfunnesa",
     "saint_frasy",
     "de_bussy",
     "mohon_lal",

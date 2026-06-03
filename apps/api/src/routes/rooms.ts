@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { randomBytes } from "crypto";
 import { db, RoomStatus } from "@repo/db";
-import { assignRoles } from "../services/roleAssignmentService";
+import { assignRoles } from "../services/roleAssignmentService.js";
 
 function generateRoomCode(): string {
   const bytes = randomBytes(4);
@@ -87,20 +87,20 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     });
   }
 
-  app.post("/rooms", async (request, reply): Promise<CreateRoomResponse> => {
+  app.post("/rooms", async (request, reply) => {
     const body = request.body as CreateRoomBody;
 
     if (!body.hostUserId || typeof body.hostUserId !== "string") {
-      return reply.status(400).send({ error: "hostUserId required", success: false } as any);
+      return reply.status(400).send({ error: "hostUserId required", success: false });
     }
 
-    if (typeof body.maxPlayers !== "number" || body.maxPlayers < 6 || body.maxPlayers > 15) {
-      return reply.status(400).send({ error: "maxPlayers must be between 6 and 15", success: false } as any);
+    if (!Number.isInteger(body.maxPlayers) || body.maxPlayers < 6 || body.maxPlayers > 15) {
+      return reply.status(400).send({ error: "maxPlayers must be an integer between 6 and 15", success: false });
     }
 
     const user = await db.user.findUnique({ where: { id: body.hostUserId } });
     if (!user) {
-      return reply.status(400).send({ error: "User not found", success: false } as any);
+      return reply.status(400).send({ error: "User not found", success: false });
     }
 
     const code = await generateUniqueRoomCode();
@@ -108,7 +108,7 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     const room = await db.room.create({
       data: {
         code,
-        hostId: body.hostUserId,
+        hostUserId: body.hostUserId,
         maxPlayers: body.maxPlayers,
         status: "WAITING",
         currentRound: 0,
@@ -124,16 +124,16 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       roomId: room.id,
       status: room.status,
       maxPlayers: room.maxPlayers,
-      hostUserId: room.hostId,
+      hostUserId: room.hostUserId,
     };
   });
 
-  app.post("/rooms/:roomId/join", async (request, reply): Promise<JoinRoomResponse> => {
+  app.post("/rooms/:roomId/join", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
     const body = request.body as JoinRoomBody;
 
     if (!body.userId || typeof body.userId !== "string") {
-      return reply.status(400).send({ error: "userId required", success: false } as any);
+      return reply.status(400).send({ error: "userId required", success: false });
     }
 
     const room = await db.room.findUnique({
@@ -142,21 +142,21 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     });
 
     if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false } as any);
+      return reply.status(404).send({ error: "Room not found", success: false });
     }
 
     if (room.status !== RoomStatus.WAITING) {
-      return reply.status(400).send({ error: "Game already started", success: false } as any);
+      return reply.status(400).send({ error: "Game already started", success: false });
     }
 
     const playerCount = room._count.players;
     if (playerCount >= room.maxPlayers) {
-      return reply.status(400).send({ error: "Room is full", success: false } as any);
+      return reply.status(400).send({ error: "Room is full", success: false });
     }
 
     const existingPlayer = room.players.find((p) => p.userId === body.userId);
     if (existingPlayer) {
-      return reply.status(400).send({ error: "User already in room", success: false } as any);
+      return reply.status(400).send({ error: "User already in room", success: false });
     }
 
     await db.roomPlayer.create({
@@ -173,12 +173,12 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     };
   });
 
-  app.post("/rooms/:roomId/leave", async (request, reply): Promise<LeaveRoomResponse> => {
+  app.post("/rooms/:roomId/leave", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
     const body = request.body as LeaveRoomBody;
 
     if (!body.userId || typeof body.userId !== "string") {
-      return reply.status(400).send({ error: "userId required", success: false } as any);
+      return reply.status(400).send({ error: "userId required", success: false });
     }
 
     const room = await db.room.findUnique({
@@ -187,15 +187,15 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     });
 
     if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false } as any);
+      return reply.status(404).send({ error: "Room not found", success: false });
     }
 
     const player = room.players.find((p) => p.userId === body.userId);
     if (!player) {
-      return reply.status(404).send({ error: "Player not in room", success: false } as any);
+      return reply.status(404).send({ error: "Player not in room", success: false });
     }
 
-    const wasHost = room.hostId === body.userId;
+    const wasHost = room.hostUserId === body.userId;
     await db.roomPlayer.delete({ where: { id: player.id } });
 
     let newHostUserId: string | null = null;
@@ -206,7 +206,7 @@ export async function registerRoomRoutes(app: FastifyInstance) {
         newHostUserId = remainingPlayers[0].userId;
         await db.room.update({
           where: { id: roomId },
-          data: { hostId: newHostUserId },
+          data: { hostUserId: newHostUserId },
         });
       } else {
         await db.room.delete({ where: { id: roomId } });
@@ -220,7 +220,7 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     };
   });
 
-  app.get("/rooms/:roomId", async (request, reply): Promise<GetRoomResponse> => {
+  app.get("/rooms/:roomId", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
 
     const room = await db.room.findUnique({
@@ -229,12 +229,12 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     });
 
     if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false } as any);
+      return reply.status(404).send({ error: "Room not found", success: false });
     }
 
     return {
       id: room.id,
-      hostUserId: room.hostId,
+      hostUserId: room.hostUserId,
       status: room.status,
       maxPlayers: room.maxPlayers,
       currentRound: room.currentRound,
@@ -253,7 +253,7 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     const userId = body.userId;
 
     if (!userId) {
-      return reply.status(400).send({ error: "userId required", success: false } as any);
+      return reply.status(400).send({ error: "userId required", success: false });
     }
 
     const room = await db.room.findUnique({
@@ -262,15 +262,15 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     });
 
     if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false } as any);
+      return reply.status(404).send({ error: "Room not found", success: false });
     }
 
-    if (room.hostId !== userId) {
-      return reply.status(403).send({ error: "Only host can start game", success: false } as any);
+    if (room.hostUserId !== userId) {
+      return reply.status(403).send({ error: "Only host can start game", success: false });
     }
 
-    if (room.players.length < 6) {
-      return reply.status(400).send({ error: "Need at least 6 players", success: false } as any);
+    if (room.players.length < 6 || room.players.length > 15) {
+      return reply.status(400).send({ error: "Player count must be between 6 and 15", success: false });
     }
 
     await db.$transaction(async (tx) => {

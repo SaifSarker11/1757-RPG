@@ -77,9 +77,7 @@ model Verification {
 enum RoomStatus {
   WAITING
   IN_PROGRESS
-  GREEN_WIN
-  RED_WIN
-  JAGAT_SETH_WIN
+  FINISHED
 }
 
 enum PlayerTeam {
@@ -90,7 +88,7 @@ enum PlayerTeam {
 
 enum PlayerRole {
   NAWAB_SIRAJ
-  LUTFUNNES
+  LUTFUNNESA
   MIR_MADAN
   MOHON_LAL
   SAINT_FRASY
@@ -108,8 +106,8 @@ enum PlayerRole {
 model Room {
   id          String       @id @default(cuid())
   code        String       @unique
-  hostId      String
-  host        User         @relation(fields: [hostId], references: [id])
+  hostUserId  String
+  host        User         @relation(fields: [hostUserId], references: [id])
   status      RoomStatus   @default(WAITING)
   maxPlayers  Int          @default(15)
   currentRound Int         @default(1)
@@ -153,11 +151,11 @@ model RoundRecord {
   roundNumber     Int
   phase           String   @default("DISCUSSION")
   selectorId      String?
-  proposedTeam    String[] @default([])
+  selectedTeam    String[] @default([])
   teamVotes       Json?
   missionVotes    Json?
-  greenVoteCount  Int      @default(0)
-  redVoteCount    Int      @default(0)
+  greenVotes      Int      @default(0)
+  redVotes        Int      @default(0)
   winner          PlayerTeam?
   rejectionCount  Int      @default(0)
   createdAt       DateTime @default(now())
