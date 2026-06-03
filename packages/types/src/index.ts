@@ -105,5 +105,43 @@ export interface RoomJoinPayload {
 // RoomLeavePayload interface
 export interface RoomLeavePayload {
   roomId: string;
+  userId: string; 
+}
+
+// Role assignment types (for Prompt 3)
+export type RoleName = 
+  | "nawab_siraj"
+  | "lutfunnesa"
+  | "mir_madan"
+  | "mohon_lal"
+  | "saint_frasy"
+  | "de_bussy"
+  | "mir_jafar"
+  | "umichad"
+  | "jean_law"
+  | "ghasheti_begum"
+  | "yar_lutuf"
+  | "tara_bai"
+  | "rai_durlabh"
+  | "jagat_seth";
+
+export type TeamName = "green" | "red" | "gold";
+
+export interface IRoleAssignment {
   userId: string;
-} 
+  role: RoleName;
+  team: TeamName;
+}
+
+export interface IPrivateRoleInfo {
+  role: RoleName;
+  team: TeamName;
+  visiblePlayers: Array<{ userId: string; role: string; team: TeamName }>;
+  isFlustered: boolean;
+  deBussyUsed: boolean;
+}
+
+export interface GameStartPayload {
+  roomId: string;
+  hostUserId: string;
+}
