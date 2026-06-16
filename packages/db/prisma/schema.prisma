@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated"
+  moduleFormat = "esm"
 }
 
 datasource db {
@@ -18,6 +19,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  rooms         Room[]
+  roomPlayers   RoomPlayer[]
 
   @@unique([email])
   @@map("user")
@@ -69,4 +72,95 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum RoomStatus {
+  WAITING
+  IN_PROGRESS
+  FINISHED
+}
+
+enum PlayerTeam {
+  GREEN
+  RED
+  GOLD
+}
+
+enum PlayerRole {
+  NAWAB_SIRAJ
+  LUTFUNNESA
+  MIR_MADAN
+  MOHON_LAL
+  SAINT_FRASY
+  DE_BUSSY
+  MIR_JAFAR
+  UMICHAD
+  JEAN_LAW
+  GHASHETI_BEGUM
+  YAR_LUTUF
+  TARA_BAI
+  RAI_DURLABH
+  JAGAT_SETH
+}
+
+model Room {
+  id          String       @id @default(cuid())
+  code        String       @unique
+  hostUserId  String
+  host        User         @relation(fields: [hostUserId], references: [id])
+  status      RoomStatus   @default(WAITING)
+  maxPlayers  Int          @default(15)
+  currentRound Int         @default(1)
+  greenWins   Int          @default(0)
+  redWins     Int          @default(0)
+  roundRejections Int      @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  players     RoomPlayer[]
+  rounds      RoundRecord[]
+
+  @@index([code])
+  @@map("room")
+}
+
+model RoomPlayer {
+  id               String     @id @default(cuid())
+  roomId           String
+  room             Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User?      @relation(fields: [userId], references: [id])
+  socketId         String?
+  role             PlayerRole?
+  team             PlayerTeam?
+  isSelector       Boolean    @default(false)
+  isLockedByJeanLaw  Boolean   @default(false)
+  hasUsedDeBussyLock Boolean  @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@unique([roomId, userId])
+  @@unique([roomId, socketId])
+  @@index([roomId])
+  @@map("room_player")
+}
+
+model RoundRecord {
+  id              String   @id @default(cuid())
+  roomId          String
+  room            Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roundNumber     Int
+  phase           String   @default("DISCUSSION")
+  selectorId      String?
+  selectedTeam    String[] @default([])
+  teamVotes       Json?
+  missionVotes    Json?
+  greenVotes      Int      @default(0)
+  redVotes        Int      @default(0)
+  winner          PlayerTeam?
+  rejectionCount  Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([roomId, roundNumber])
+  @@map("round_record")
 }
