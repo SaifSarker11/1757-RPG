@@ -2,6 +2,8 @@ import "@repo/config/load-env";
 import { neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import ws from "ws";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 import { PrismaClient } from "./generated/index.js";
 
 neonConfig.webSocketConstructor = ws;
@@ -16,9 +18,19 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const adapter = new PrismaNeon({
+  // Use Neon serverless adapter only if we are connecting to a Neon database
+  if (connectionString.includes("neon.tech")) {
+    const adapter = new PrismaNeon({
+      connectionString,
+    });
+    return new PrismaClient({ adapter });
+  }
+
+  // For local PostgreSQL development, use direct TCP connection via PrismaPg adapter
+  const pool = new pg.Pool({
     connectionString,
   });
+  const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }
 

@@ -12,6 +12,7 @@ import {
   Text,
   TextInput,
   View,
+  Modal,
 } from "react-native";
 import { io } from "socket.io-client";
 import { authClient, signOutMobile } from "@/lib/auth-client";
@@ -33,11 +34,24 @@ export default function HomeScreen() {
   const socketRef = useRef<any>(null);
   const flatListRef = useRef<FlatList | null>(null);
 
+  // Settings states
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   useEffect(() => {
     if (!isPending && !session) {
       router.replace("/");
     }
   }, [isPending, session]);
+
+  useEffect(() => {
+    if (session?.user?.name) {
+      setNickname(session.user.name);
+    }
+  }, [session, isSettingsOpen]);
 
   useEffect(() => {
     if (!session) return;
@@ -86,6 +100,37 @@ export default function HomeScreen() {
     setInputText((prev) => prev + emoji);
   };
 
+  const handleSaveNickname = async () => {
+    if (!nickname.trim() || session?.user?.isAnonymous) return;
+    setSaveLoading(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    try {
+      const { error: updateError } = await authClient.updateUser({
+        name: nickname.trim(),
+      });
+
+      if (updateError) {
+        setSaveError(updateError.message ?? "Unable to update nickname");
+        return;
+      }
+
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveSuccess(false);
+        setIsSettingsOpen(false);
+      }, 1500);
+      
+      // Refresh session cache
+      await authClient.useSession();
+    } catch {
+      setSaveError("Failed to update nickname. Server error.");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
   const formatTime = (isoString: string) => {
     try {
       return new Date(isoString).toLocaleTimeString([], {
@@ -106,6 +151,8 @@ export default function HomeScreen() {
     );
   }
 
+  const isMonospace = Platform.OS === "ios" ? "Courier" : "monospace";
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -115,15 +162,20 @@ export default function HomeScreen() {
       >
         {/* Custom Header */}
         <View style={styles.header}>
-          <View>
+          <View style={{ flex: 1, marginRight: 8 }}>
             <Text style={styles.headerTitle}>Welcome to 1757!</Text>
             <Text style={styles.headerSubtitle}>
               Logged in as: <Text style={styles.usernameHighlight}>{session.user.name}</Text>
             </Text>
           </View>
-          <Pressable style={styles.signOutButton} onPress={handleSignOut}>
-            <Text style={styles.signOutButtonText}>Sign Out</Text>
-          </Pressable>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Pressable style={styles.settingsButton} onPress={() => setIsSettingsOpen(true)}>
+              <Text style={styles.settingsButtonText}>Settings</Text>
+            </Pressable>
+            <Pressable style={styles.signOutButton} onPress={handleSignOut}>
+              <Text style={styles.signOutButtonText}>Sign Out</Text>
+            </Pressable>
+          </View>
         </View>
 
         {/* Messages List */}
@@ -216,6 +268,86 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Profile Settings Modal */}
+      <Modal
+        visible={isSettingsOpen}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsSettingsOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalShadowWrapper}>
+            <View style={styles.modalShadowOffset} />
+            
+            <View style={styles.modalCard}>
+              {/* Modal Header */}
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalHeaderText, { fontFamily: isMonospace }]}>
+                  SYSTEM: SETTINGS // PROFILE
+                </Text>
+                <Pressable onPress={() => setIsSettingsOpen(false)}>
+                  <Text style={[styles.modalCloseText, { fontFamily: isMonospace }]}>[X]</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.modalBody}>
+                <Text style={[styles.modalTitle, { fontFamily: isMonospace }]}>[ PROFILE SETTINGS ]</Text>
+
+                <Text style={[styles.modalLabel, { fontFamily: isMonospace }]}>PLAYER NICKNAME</Text>
+                <TextInput
+                  style={[styles.modalInput, { fontFamily: isMonospace }]}
+                  value={nickname}
+                  onChangeText={setNickname}
+                  editable={!session.user.isAnonymous}
+                  placeholder="Enter nickname"
+                  placeholderTextColor="#a1a1aa"
+                  maxLength={25}
+                />
+
+                {session.user.isAnonymous && (
+                  <Text style={[styles.warningText, { fontFamily: isMonospace }]}>
+                    * Guest accounts cannot customize nicknames. Log in with Google to set a custom name.
+                  </Text>
+                )}
+
+                {saveError && (
+                  <View style={styles.errorBox}>
+                    <Text style={[styles.errorText, { fontFamily: isMonospace }]}>ERROR: {saveError}</Text>
+                  </View>
+                )}
+
+                {saveSuccess && (
+                  <View style={styles.successBox}>
+                    <Text style={[styles.successText, { fontFamily: isMonospace }]}>SUCCESS: PROFILE UPDATED</Text>
+                  </View>
+                )}
+
+                <View style={styles.modalButtonsRow}>
+                  <Pressable style={styles.modalCloseButton} onPress={() => setIsSettingsOpen(false)}>
+                    <Text style={[styles.modalCloseButtonText, { fontFamily: isMonospace }]}>CLOSE</Text>
+                  </Pressable>
+                  
+                  {!session.user.isAnonymous && (
+                    <Pressable 
+                      style={[
+                        styles.modalSaveButton, 
+                        (saveLoading || !nickname.trim() || nickname.trim() === session.user.name) && styles.saveButtonDisabled
+                      ]} 
+                      onPress={handleSaveNickname}
+                      disabled={saveLoading || !nickname.trim() || nickname.trim() === session.user.name}
+                    >
+                      <Text style={[styles.modalSaveButtonText, { fontFamily: isMonospace }]}>
+                        {saveLoading ? "SAVING..." : "SAVE"}
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -265,6 +397,19 @@ const styles = StyleSheet.create({
   usernameHighlight: {
     color: "#7c3aed",
     fontWeight: "600",
+  },
+  settingsButton: {
+    borderWidth: 1,
+    borderColor: "#d4d4d8",
+    backgroundColor: "#f4f4f5",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  settingsButtonText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#71717a",
   },
   signOutButton: {
     borderWidth: 1,
@@ -422,5 +567,146 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontWeight: "700",
     fontSize: 14,
+  },
+  // Modal Styling
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(46, 40, 42, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  modalShadowWrapper: {
+    position: "relative",
+    width: "100%",
+    maxWidth: 320,
+  },
+  modalShadowOffset: {
+    position: "absolute",
+    top: 5,
+    left: 5,
+    right: -5,
+    bottom: -5,
+    backgroundColor: "#2e282a",
+    borderWidth: 3,
+    borderColor: "#2e282a",
+  },
+  modalCard: {
+    backgroundColor: "#ffffff",
+    borderWidth: 3,
+    borderColor: "#2e282a",
+    overflow: "hidden",
+  },
+  modalHeader: {
+    backgroundColor: "#f4f0e6",
+    borderBottomWidth: 3,
+    borderBottomColor: "#2e282a",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  modalHeaderText: {
+    fontSize: 8,
+    fontWeight: "bold",
+    color: "#2e282a",
+  },
+  modalCloseText: {
+    fontSize: 11,
+    fontWeight: "bold",
+    color: "#2e282a",
+    paddingHorizontal: 4,
+  },
+  modalBody: {
+    padding: 16,
+    gap: 10,
+  },
+  modalTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#2e282a",
+    textAlign: "center",
+    marginBottom: 6,
+  },
+  modalLabel: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: "#2e282a",
+    opacity: 0.85,
+  },
+  modalInput: {
+    borderWidth: 2,
+    borderColor: "#2e282a",
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 12,
+    color: "#2e282a",
+  },
+  warningText: {
+    fontSize: 9,
+    fontWeight: "bold",
+    color: "#ca8a04",
+    lineHeight: 12,
+  },
+  errorBox: {
+    borderWidth: 2,
+    borderColor: "#dc2626",
+    backgroundColor: "#fef2f2",
+    padding: 6,
+  },
+  errorText: {
+    color: "#dc2626",
+    fontSize: 9,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  successBox: {
+    borderWidth: 2,
+    borderColor: "#16a34a",
+    backgroundColor: "#f0fdf4",
+    padding: 6,
+  },
+  successText: {
+    color: "#16a34a",
+    fontSize: 9,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalButtonsRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+    marginTop: 8,
+  },
+  modalCloseButton: {
+    borderWidth: 2,
+    borderColor: "#2e282a",
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+  modalCloseButtonText: {
+    fontSize: 11,
+    fontWeight: "900",
+    color: "#2e282a",
+  },
+  modalSaveButton: {
+    borderWidth: 2,
+    borderColor: "#2e282a",
+    backgroundColor: "#ef9fbc",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+  modalSaveButtonText: {
+    fontSize: 11,
+    fontWeight: "900",
+    color: "#2e282a",
+  },
+  saveButtonDisabled: {
+    opacity: 0.5,
   },
 });

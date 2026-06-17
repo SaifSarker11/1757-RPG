@@ -13,16 +13,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo/config": "workspace:*",
     "@neondatabase/serverless": "^1.1.0",
     "@prisma/adapter-neon": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "latest",
+    "@repo/config": "workspace:*",
+    "pg": "^8.21.0",
     "prisma": "latest",
     "ws": "^8.18.3"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
+    "@types/pg": "^8.20.0",
     "@types/ws": "^8.18.1",
     "typescript": "5.9.2"
   }

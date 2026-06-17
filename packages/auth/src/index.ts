@@ -16,8 +16,11 @@ export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
-  emailAndPassword: {
-    enabled: true,
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    },
   },
   advanced: process.env.COOKIE_DOMAIN
     ? {
@@ -27,7 +30,26 @@ export const auth = betterAuth({
         },
       }
     : undefined,
-  plugins: [anonymous(), bearer()],
+  plugins: [
+    anonymous({
+      generateName: () => {
+        const adjectives = [
+          "Sleepy", "Brave", "Clumsy", "Sneaky", "Glorious", "Confused", 
+          "Tactical", "Greedy", "Loyal", "Traitorous", "Sly", "Dramatic", 
+          "Silent", "Rowdy", "Caffeinated", "Defiant"
+        ];
+        const nouns = [
+          "Sepoy", "General", "Nawab", "Merchant", "Spy", "Soldier", 
+          "Diplomat", "Baker", "Lancer", "Elephant", "Cannon", "Ghost", 
+          "Duellist", "Scout", "Conspirator", "Scribe"
+        ];
+        const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const noun = nouns[Math.floor(Math.random() * nouns.length)];
+        return `${adjective}${noun}_${Math.floor(Math.random() * 999) + 1}`;
+      },
+    }),
+    bearer(),
+  ],
 });
 
 export type Auth = typeof auth;
