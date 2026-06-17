@@ -165,18 +165,27 @@ export default function LoginScreen() {
             <View style={styles.cardBody}>
               {/* Geometric Custom Svg Heart */}
               <View style={styles.heartContainer}>
-                <Svg viewBox="0 0 100 100" width={90} height={90}>
+                <Svg viewBox="0 0 120 120" width={100} height={100}>
+                  {/* Static target overlay rings */}
+                  <Circle cx="60" cy="60" r="54" fill="none" stroke="#2e282a" strokeWidth={1} strokeDasharray="4,12" opacity={0.3} />
+                  <Circle cx="60" cy="60" r="46" fill="none" stroke="#2e282a" strokeWidth={1.5} strokeDasharray="20,10" opacity={0.4} />
+                  <Circle cx="60" cy="60" r="38" fill="none" stroke="#2e282a" strokeWidth={0.5} opacity={0.25} />
+                  
+                  {/* Radar lines */}
+                  <Line x1="60" y1="18" x2="60" y2="102" stroke="#2e282a" strokeWidth={1} strokeDasharray="3,3" opacity={0.3} />
+                  <Line x1="18" y1="60" x2="102" y2="60" stroke="#2e282a" strokeWidth={1} strokeDasharray="3,3" opacity={0.3} />
+
+                  {/* Wireframe angular heart */}
                   <Polygon
-                    points="50,90 12,52 12,24 34,10 50,26 66,10 88,24 88,52"
-                    fill="#ff5252"
-                    stroke="#2e282a"
+                    points="60,102 18,60 18,29 42,14 60,32 78,14 102,29 102,60"
+                    fill="none"
+                    stroke="#ff5252"
                     strokeWidth={4.5}
                   />
-                  <Line x1="50" y1="26" x2="50" y2="90" stroke="#2e282a" strokeWidth={2} strokeDasharray="3,3" opacity={0.3} />
-                  <Line x1="12" y1="42" x2="88" y2="42" stroke="#2e282a" strokeWidth={2} strokeDasharray="3,3" opacity={0.3} />
-                  <Circle cx="50" cy="42" r="5.5" fill="#2e282a" />
-                  <Path d="M22,18 L28,18 L28,24" fill="none" stroke="#2e282a" strokeWidth={2} opacity={0.5} />
-                  <Path d="M78,18 L72,18 L72,24" fill="none" stroke="#2e282a" strokeWidth={2} opacity={0.5} />
+                  {/* Geometric inner paths */}
+                  <Path d="M18,29 L60,60 L102,29" fill="none" stroke="#ff5252" strokeWidth={2} opacity={0.6} />
+                  <Line x1="60" y1="32" x2="60" y2="102" stroke="#ff5252" strokeWidth={3} opacity={0.8} />
+                  <Circle cx="60" cy="60" r="4.5" fill="#2e282a" />
                 </Svg>
                 
                 {/* Tech corner frame brackets */}

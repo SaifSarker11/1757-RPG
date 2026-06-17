@@ -1,41 +1,46 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: retro --default, cyberpunk, valentine, synthwave, dark, light;
+  themes: all;
 }
 
 @theme {
   --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
+  --font-tech: var(--font-share-tech-mono), var(--font-geist-mono), monospace;
 }
 
-/* Custom Vectorheart & Neobrutalism Utilities */
+/* Custom Vectorheart & Cyber-Tech Utilities */
+
+.font-tech {
+  font-family: var(--font-share-tech-mono), var(--font-geist-mono), monospace;
+}
 
 /* Responsive Theme-Aware Grid Pattern */
 .bg-grid-pattern {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, color-mix(in srgb, currentColor 6%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, currentColor 6%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, currentColor 8%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, currentColor 8%, transparent) 1px, transparent 1px);
 }
 
-/* Retro Industrial Diagonal Hatch/Stripes */
+/* Retro Industrial Diagonal Hatch/Stripes (Vector Warning Theme) */
 .bg-diagonal-hatch {
   background-image: repeating-linear-gradient(
     -45deg,
     transparent,
     transparent 8px,
-    color-mix(in srgb, currentColor 10%, transparent) 8px,
-    color-mix(in srgb, currentColor 10%, transparent) 16px
+    color-mix(in srgb, currentColor 12%, transparent) 8px,
+    color-mix(in srgb, currentColor 12%, transparent) 16px
   );
 }
 
-/* Subtle scanline animation for the terminal-game look */
+/* Radar scanline animation for the terminal-game look */
 @keyframes scanline {
   0% {
-    background-position: 0 0;
+    transform: translateY(-100%);
   }
   100% {
-    background-position: 0 100%;
+    transform: translateY(100%);
   }
 }
 
@@ -52,10 +57,49 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-  background-size: 100% 4px, 6px 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.08) 50%
+  );
+  background-size: 100% 4px;
   z-index: 2;
   pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Neon glow border style for cyber elements */
+.border-glow {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-primary) 50%, transparent);
+}
+
+/* Technical wireframe borders with angled cuts */
+.tech-card {
+  position: relative;
+  background: color-mix(in srgb, var(--color-base-100) 95%, var(--color-base-200));
+  border: 2px solid var(--color-base-content);
+}
+
+.tech-card::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 10px;
+  height: 10px;
+  border-top: 3px solid var(--color-primary);
+  border-left: 3px solid var(--color-primary);
+}
+
+.tech-card::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-bottom: 3px solid var(--color-secondary);
+  border-right: 3px solid var(--color-secondary);
 }
 
 /* Custom shadow utilities for neobrutalist cards */
@@ -69,5 +113,19 @@
 
 .shadow-neo-lg {
   box-shadow: 10px 10px 0px 0px currentColor;
+}
+
+/* Rotating Radar Angle animation */
+@keyframes rotate-radar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar {
+  animation: rotate-radar 20s linear infinite;
 }
 

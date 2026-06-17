@@ -1,16 +1,18 @@
 import { router } from "expo-router";
 import { useEffect } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View, Platform } from "react-native";
 
 export default function SignupScreen() {
   useEffect(() => {
     router.replace("/");
   }, []);
 
+  const isMonospace = Platform.OS === "ios" ? "Courier" : "monospace";
+
   return (
     <View style={styles.container}>
       <ActivityIndicator size="small" color="#2e282a" />
-      <Text style={styles.text}>Redirecting to login...</Text>
+      <Text style={[styles.text, { fontFamily: isMonospace }]}>Redirecting to login...</Text>
     </View>
   );
 }

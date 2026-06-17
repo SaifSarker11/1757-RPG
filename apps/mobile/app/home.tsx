@@ -13,10 +13,14 @@ import {
   TextInput,
   View,
   Modal,
+  Dimensions,
 } from "react-native";
+import Svg, { Line, Path } from "react-native-svg";
 import { io } from "socket.io-client";
 import { authClient, signOutMobile } from "@/lib/auth-client";
 import { getApiUrl } from "@/lib/api-url";
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 interface ChatMessage {
   id: string;
@@ -33,6 +37,24 @@ export default function HomeScreen() {
   const [inputText, setInputText] = useState("");
   const socketRef = useRef<any>(null);
   const flatListRef = useRef<FlatList | null>(null);
+
+  const renderDiagonalHeaderStripes = () => {
+    const stripes = [];
+    const stripeWidth = 14;
+    const gap = 14;
+    const total = screenWidth + 40;
+    for (let x = -40; x < total; x += stripeWidth + gap) {
+      stripes.push(
+        <Path
+          key={x}
+          d={`M${x},20 L${x + 14},0 L${x + 24},0 L${x + 10},20 Z`}
+          fill="#2e282a"
+          opacity={0.15}
+        />
+      );
+    }
+    return stripes;
+  };
 
   // Settings states
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -144,9 +166,9 @@ export default function HomeScreen() {
 
   if (isPending || !session) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#7c3aed" />
-        <Text style={styles.loadingText}>Loading chat...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: "#f4f0e6" }]}>
+        <ActivityIndicator size="large" color="#2e282a" />
+        <Text style={[styles.loadingText, { fontFamily: isMonospace, color: "#2e282a" }]}>SECURE_PROFILE: LOADING...</Text>
       </View>
     );
   }
@@ -154,37 +176,44 @@ export default function HomeScreen() {
   const isMonospace = Platform.OS === "ios" ? "Courier" : "monospace";
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: "#f4f0e6" }]}>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: "#f4f0e6" }]}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         {/* Custom Header */}
         <View style={styles.header}>
           <View style={{ flex: 1, marginRight: 8 }}>
-            <Text style={styles.headerTitle}>Welcome to 1757!</Text>
-            <Text style={styles.headerSubtitle}>
-              Logged in as: <Text style={styles.usernameHighlight}>{session.user.name}</Text>
+            <Text style={[styles.headerTitle, { fontFamily: isMonospace }]}>1757 // RPG</Text>
+            <Text style={[styles.headerSubtitle, { fontFamily: isMonospace }]}>
+              AGENT_ID: <Text style={[styles.usernameHighlight, { fontFamily: isMonospace }]}>{session.user.name}</Text>
             </Text>
           </View>
           <View style={{ flexDirection: "row", gap: 8 }}>
             <Pressable style={styles.settingsButton} onPress={() => setIsSettingsOpen(true)}>
-              <Text style={styles.settingsButtonText}>Settings</Text>
+              <Text style={[styles.settingsButtonText, { fontFamily: isMonospace }]}>Settings</Text>
             </Pressable>
             <Pressable style={styles.signOutButton} onPress={handleSignOut}>
-              <Text style={styles.signOutButtonText}>Sign Out</Text>
+              <Text style={[styles.signOutButtonText, { fontFamily: isMonospace }]}>Logout</Text>
             </Pressable>
           </View>
+        </View>
+
+        {/* Diagonal Warning Stripe Accent */}
+        <View style={styles.diagonalStripeBar}>
+          <Svg width="100%" height={10}>
+            {renderDiagonalHeaderStripes()}
+          </Svg>
         </View>
 
         {/* Messages List */}
         <View style={styles.chatArea}>
           {messages.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>💬</Text>
-              <Text style={styles.emptyTitle}>No messages yet</Text>
-              <Text style={styles.emptyText}>Be the first to start the conversation!</Text>
+              <Text style={[styles.emptyIcon, { fontFamily: isMonospace }]}>💬</Text>
+              <Text style={[styles.emptyTitle, { fontFamily: isMonospace }]}>COMMS_LOG: EMPTY</Text>
+              <Text style={[styles.emptyText, { fontFamily: isMonospace }]}>Be the first to transmit a message!</Text>
             </View>
           ) : (
             <FlatList
@@ -204,7 +233,7 @@ export default function HomeScreen() {
                     ]}
                   >
                     {!isOwnMessage && (
-                      <Text style={styles.senderName}>{item.username}</Text>
+                      <Text style={[styles.senderName, { fontFamily: isMonospace }]}>{item.username}</Text>
                     )}
                     <View
                       style={[
@@ -216,12 +245,13 @@ export default function HomeScreen() {
                         style={[
                           styles.messageText,
                           isOwnMessage ? styles.ownMessageText : styles.otherMessageText,
+                          { fontFamily: isMonospace },
                         ]}
                       >
                         {item.text}
                       </Text>
                     </View>
-                    <Text style={styles.timestamp}>{formatTime(item.timestamp)}</Text>
+                    <Text style={[styles.timestamp, { fontFamily: isMonospace }]}>[{formatTime(item.timestamp)}]</Text>
                   </View>
                 );
               }}
@@ -236,14 +266,14 @@ export default function HomeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.emojiScroll}
           >
-            <Text style={styles.emojiBarLabel}>QUICK: </Text>
+            <Text style={[styles.emojiBarLabel, { fontFamily: isMonospace }]}>QUICK_INPUT: </Text>
             {QUICK_EMOJIS.map((emoji) => (
               <Pressable
                 key={emoji}
                 style={styles.emojiButton}
                 onPress={() => handleAddEmoji(emoji)}
               >
-                <Text style={styles.emojiText}>{emoji}</Text>
+                <Text style={[styles.emojiText, { fontFamily: isMonospace }]}>{emoji}</Text>
               </Pressable>
             ))}
           </ScrollView>
@@ -252,19 +282,23 @@ export default function HomeScreen() {
         {/* Message Input Form */}
         <View style={styles.inputContainer}>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, { fontFamily: isMonospace }]}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Type your message..."
+            placeholder="Transmit encrypted message..."
             placeholderTextColor="#a1a1aa"
             multiline
           />
           <Pressable
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+            style={({ pressed }) => [
+              styles.sendButton,
+              pressed && styles.buttonPressed,
+              !inputText.trim() && styles.sendButtonDisabled
+            ]}
             disabled={!inputText.trim()}
             onPress={handleSendMessage}
           >
-            <Text style={styles.sendButtonText}>Send</Text>
+            <Text style={[styles.sendButtonText, { fontFamily: isMonospace }]}>TRANSMIT</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>
@@ -355,23 +389,23 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: "#f4f0e6",
   },
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: "#f4f0e6",
   },
   loadingContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: 12,
-    backgroundColor: "#f4f4f5",
+    backgroundColor: "#f4f0e6",
   },
   loadingText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#71717a",
+    fontWeight: "900",
+    color: "#2e282a",
   },
   header: {
     flexDirection: "row",
@@ -379,50 +413,59 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e4e4e7",
+    borderBottomWidth: 3,
+    borderBottomColor: "#2e282a",
     backgroundColor: "#ffffff",
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: "800",
-    color: "#7c3aed",
+    fontWeight: "900",
+    color: "#2e282a",
+    textTransform: "uppercase",
   },
   headerSubtitle: {
-    fontSize: 12,
-    color: "#71717a",
-    fontWeight: "500",
+    fontSize: 11,
+    color: "#2e282a",
+    fontWeight: "bold",
+    opacity: 0.65,
     marginTop: 2,
+    textTransform: "uppercase",
   },
   usernameHighlight: {
-    color: "#7c3aed",
-    fontWeight: "600",
+    color: "#ef9fbc", // pink highlight
+    fontWeight: "bold",
   },
   settingsButton: {
-    borderWidth: 1,
-    borderColor: "#d4d4d8",
-    backgroundColor: "#f4f4f5",
-    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#2e282a",
+    backgroundColor: "#ffffff",
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   settingsButtonText: {
     fontSize: 12,
-    fontWeight: "700",
-    color: "#71717a",
+    fontWeight: "900",
+    color: "#2e282a",
+    textTransform: "uppercase",
   },
   signOutButton: {
-    borderWidth: 1,
-    borderColor: "#fca5a5",
-    backgroundColor: "#fef2f2",
-    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#2e282a",
+    backgroundColor: "#fca5a5", // neon red background
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   signOutButtonText: {
     fontSize: 12,
-    fontWeight: "700",
-    color: "#ef4444",
+    fontWeight: "900",
+    color: "#2e282a",
+    textTransform: "uppercase",
+  },
+  diagonalStripeBar: {
+    borderBottomWidth: 3,
+    borderBottomColor: "#2e282a",
+    backgroundColor: "#ffffff",
+    height: 10,
   },
   chatArea: {
     flex: 1,
@@ -445,47 +488,45 @@ const styles = StyleSheet.create({
   },
   senderName: {
     fontSize: 11,
-    fontWeight: "600",
-    color: "#71717a",
+    fontWeight: "900",
+    color: "#2e282a",
     marginBottom: 4,
     marginLeft: 4,
+    textTransform: "uppercase",
   },
   messageBubble: {
     maxWidth: "80%",
-    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 1,
-    elevation: 1,
+    borderWidth: 2,
+    borderColor: "#2e282a",
   },
   ownMessageBubble: {
     borderBottomRightRadius: 0,
-    backgroundColor: "#7c3aed",
+    backgroundColor: "#ef9fbc", // Y2K pink primary
   },
   otherMessageBubble: {
     borderBottomLeftRadius: 0,
     backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e4e4e7",
   },
   messageText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
   },
   ownMessageText: {
-    color: "#ffffff",
+    color: "#2e282a",
+    fontWeight: "bold",
   },
   otherMessageText: {
-    color: "#18181b",
+    color: "#2e282a",
   },
   timestamp: {
     fontSize: 9,
-    color: "#a1a1aa",
+    color: "#2e282a",
+    opacity: 0.5,
     marginTop: 4,
     marginHorizontal: 4,
+    textTransform: "uppercase",
   },
   emptyContainer: {
     flex: 1,
@@ -499,19 +540,22 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#18181b",
+    fontWeight: "900",
+    color: "#2e282a",
     marginBottom: 4,
+    textTransform: "uppercase",
   },
   emptyText: {
-    fontSize: 13,
-    color: "#71717a",
+    fontSize: 12,
+    color: "#2e282a",
+    opacity: 0.6,
     textAlign: "center",
+    textTransform: "uppercase",
   },
   emojiBarContainer: {
-    borderTopWidth: 1,
-    borderTopColor: "#e4e4e7",
-    backgroundColor: "#f4f4f5",
+    borderTopWidth: 2,
+    borderTopColor: "#2e282a",
+    backgroundColor: "#ffffff",
     paddingVertical: 8,
   },
   emojiScroll: {
@@ -519,10 +563,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   emojiBarLabel: {
-    fontSize: 9,
-    fontWeight: "800",
-    color: "#a1a1aa",
+    fontSize: 10,
+    fontWeight: "900",
+    color: "#2e282a",
     marginRight: 6,
+    textTransform: "uppercase",
   },
   emojiButton: {
     padding: 6,
@@ -535,26 +580,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#e4e4e7",
+    borderTopWidth: 3,
+    borderTopColor: "#2e282a",
     backgroundColor: "#ffffff",
     gap: 8,
   },
   textInput: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#e4e4e7",
-    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#2e282a",
+    backgroundColor: "#ffffff",
     paddingHorizontal: 16,
     paddingVertical: Platform.OS === "ios" ? 12 : 8,
-    fontSize: 14,
-    color: "#18181b",
-    backgroundColor: "#fafafa",
+    fontSize: 13,
+    color: "#2e282a",
     maxHeight: 100,
   },
   sendButton: {
-    backgroundColor: "#7c3aed",
-    borderRadius: 12,
+    backgroundColor: "#ef9fbc",
+    borderWidth: 2,
+    borderColor: "#2e282a",
     paddingHorizontal: 18,
     paddingVertical: 12,
     alignItems: "center",
@@ -564,9 +609,9 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   sendButtonText: {
-    color: "#ffffff",
-    fontWeight: "700",
-    fontSize: 14,
+    color: "#2e282a",
+    fontWeight: "900",
+    fontSize: 12,
   },
   // Modal Styling
   modalOverlay: {

@@ -56,61 +56,110 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center bg-grid-pattern bg-base-200 text-base-content p-6 scanlines">
-      {/* Decorative Technical Crosshairs / Grid Labels */}
-      <div className="hidden md:block absolute top-6 left-6 font-mono text-[10px] text-base-content/40 select-none">
-        + LOC_0.1.7.5.7 // ACCESS_PORTAL
-      </div>
-      <div className="hidden md:block absolute top-6 right-6 font-mono text-[10px] text-base-content/40 select-none">
-        [SYS_STATUS: ONLINE] +
-      </div>
-      <div className="hidden md:block absolute bottom-6 left-6 font-mono text-[10px] text-base-content/40 select-none">
-        + GAME_INIT_KEY_256
-      </div>
-      <div className="hidden md:block absolute bottom-6 right-6 font-mono text-[10px] text-base-content/40 select-none">
-        BATTLE_OF_PLASSEY_1757 +
+    <main className="relative flex min-h-screen items-center justify-center bg-grid-pattern bg-base-200 text-base-content p-6 scanlines font-tech overflow-hidden select-none">
+      {/* Decorative Technical Vector/HUD lines */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        {/* Corner coordinates */}
+        <div className="absolute top-8 left-8 text-xs font-bold text-base-content/50">
+          SYS_LOC: [23.8103° N, 90.4125° E]
+        </div>
+        <div className="absolute top-8 right-8 text-xs font-bold text-base-content/50 text-right">
+          SYS_TIME: {new Date().getFullYear()}-06-17 // ONLINE
+        </div>
+        <div className="absolute bottom-8 left-8 text-xs font-bold text-base-content/50">
+          SECURE_NODE: TCP // PORT_3001
+        </div>
+        <div className="absolute bottom-8 right-8 text-xs font-bold text-base-content/50 text-right">
+          VECTORHEART_PROTO: ACTIVE
+        </div>
+
+        {/* Diagonal wireframe crosshairs */}
+        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="0" x2="100%" y2="100%" stroke="currentColor" strokeWidth="0.5" strokeDasharray="5,5" />
+          <line x1="100%" y1="0" x2="0" y2="100%" stroke="currentColor" strokeWidth="0.5" strokeDasharray="5,5" />
+          {/* Centered target square */}
+          <rect x="calc(50% - 250px)" y="calc(50% - 250px)" width="500" height="500" fill="none" stroke="currentColor" strokeWidth="0.75" strokeDasharray="10,10" />
+          <circle cx="50%" cy="50%" r="300" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2,8" />
+        </svg>
       </div>
 
-      {/* Main Neobrutalist Login Card */}
-      <div className="w-full max-w-md bg-base-100 border-4 border-base-content shadow-neo overflow-hidden relative transition-all">
+      {/* Main Tech/Vectorheart Login Card */}
+      <div className="w-full max-w-md bg-base-100 border-2 border-base-content relative transition-all z-10 shadow-neo">
+        {/* Tech Corner Angle Brackets on Card */}
+        <div className="absolute -top-1.5 -left-1.5 w-6 h-6 border-t-4 border-l-4 border-primary"></div>
+        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 border-t-4 border-r-4 border-primary"></div>
+        <div className="absolute -bottom-1.5 -left-1.5 w-6 h-6 border-b-4 border-l-4 border-secondary"></div>
+        <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 border-b-4 border-r-4 border-secondary"></div>
+
         {/* Diagonal Warning Stripe Header Accent */}
-        <div className="bg-diagonal-hatch h-6 border-b-4 border-base-content flex items-center justify-between px-4 text-[9px] font-mono font-bold tracking-wider text-base-content select-none">
-          <span>PORTAL_SECURITY: OAUTH_GUEST</span>
-          <span>1757_SYS_V2</span>
+        <div className="bg-diagonal-hatch h-8 border-b-2 border-base-content flex items-center justify-between px-4 text-xs font-bold tracking-wider text-base-content">
+          <span>PORTAL_LOCKOUT: SECURE_ENTRY</span>
+          <span className="text-primary font-black">SYS_V2.0.4</span>
         </div>
 
         <div className="p-8 pb-4 flex flex-col items-center text-center">
-          {/* Geometric Custom SVG Heart Logo */}
-          <div className="relative mb-6 mt-2 group cursor-pointer">
+          {/* Advanced Geometric SVG Heart Logo with Rotating Radar Rings */}
+          <div className="relative mb-6 mt-4 group">
+            {/* Outer rotating technical coordinate circle */}
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 100 100"
-              className="w-24 h-24 text-error stroke-base-content stroke-[4] fill-error filter drop-shadow-[4px_4px_0px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-105 active:scale-95"
+              viewBox="0 0 120 120"
+              className="w-32 h-32 text-base-content pointer-events-none"
             >
-              {/* Custom geometric/angular heart shape */}
-              <polygon points="50,90 12,52 12,24 34,10 50,26 66,10 88,24 88,52" />
-              {/* Technical wireframe details */}
-              <line x1="50" y1="26" x2="50" y2="90" stroke="currentColor" strokeWidth="2.5" strokeDasharray="4,4" className="opacity-30" />
-              <line x1="12" y1="42" x2="88" y2="42" stroke="currentColor" strokeWidth="2.5" strokeDasharray="4,4" className="opacity-30" />
-              <circle cx="50" cy="42" r="5" className="fill-base-content stroke-base-100 stroke-2 opacity-90" />
-              {/* Corner design brackets inside heart viewport */}
-              <path d="M22,18 L28,18 L28,24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-50" />
-              <path d="M78,18 L72,18 L72,24" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-50" />
+              {/* Rotating radar elements */}
+              <g className="origin-[60px_60px] animate-radar">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="4,12" className="opacity-40" />
+                <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="40,20" className="text-secondary opacity-60" />
+                {/* Tick markers */}
+                <line x1="60" y1="6" x2="60" y2="12" stroke="currentColor" strokeWidth="2" />
+                <line x1="60" y1="108" x2="60" y2="114" stroke="currentColor" strokeWidth="2" />
+                <line x1="6" y1="60" x2="12" y2="60" stroke="currentColor" strokeWidth="2" />
+                <line x1="108" y1="60" x2="114" y2="60" stroke="currentColor" strokeWidth="2" />
+              </g>
+              
+              {/* Static target overlay */}
+              <circle cx="60" cy="60" r="38" fill="none" stroke="currentColor" strokeWidth="0.5" className="opacity-25" />
+              <line x1="60" y1="18" x2="60" y2="102" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" className="opacity-30" />
+              <line x1="18" y1="60" x2="102" y2="60" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" className="opacity-30" />
+
+              {/* Wireframe Angular Heart */}
+              <polygon
+                points="60,102 18,60 18,29 42,14 60,32 78,14 102,29 102,60"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3.5"
+                className="text-error drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]"
+              />
+              {/* Geometric sub-lines inside heart */}
+              <polyline
+                points="18,29 60,60 102,29"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                className="text-error opacity-60"
+              />
+              <line
+                x1="60" y1="32" x2="60" y2="102"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                className="text-error opacity-80"
+              />
+              <circle cx="60" cy="60" r="4" className="fill-base-100 stroke-base-content stroke-2" />
             </svg>
-            {/* Outer Tech Brackets framing the heart */}
-            <div className="absolute -top-3 -left-3 w-4 h-4 border-t-2 border-l-2 border-base-content opacity-50"></div>
-            <div className="absolute -top-3 -right-3 w-4 h-4 border-t-2 border-r-2 border-base-content opacity-50"></div>
-            <div className="absolute -bottom-3 -left-3 w-4 h-4 border-b-2 border-l-2 border-base-content opacity-50"></div>
-            <div className="absolute -bottom-3 -right-3 w-4 h-4 border-b-2 border-r-2 border-base-content opacity-50"></div>
+            
+            {/* HUD Angle corner brackets around SVG */}
+            <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-primary"></div>
+            <div className="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-primary"></div>
+            <div className="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-secondary"></div>
+            <div className="absolute -bottom-2 -right-2 w-4 h-4 border-b-2 border-r-2 border-secondary"></div>
           </div>
 
-          <h1 className="text-3xl font-black tracking-tight uppercase font-mono flex items-center gap-1.5 text-base-content mt-2 select-none">
+          <h1 className="text-3xl font-black tracking-tighter uppercase flex items-center gap-1 mt-2">
             <span>1757</span>
-            <span className="text-primary">//</span>
-            <span className="text-secondary font-extrabold">RPG</span>
+            <span className="text-primary animate-pulse">//</span>
+            <span className="text-secondary">RPG</span>
           </h1>
-          <p className="text-[10px] font-mono font-bold tracking-widest uppercase text-base-content/60 mt-1 select-none">
-            BATTLE OF PLASSEY social deduction
+          <p className="text-xs font-bold tracking-widest text-base-content/60 mt-1">
+            BATTLE OF PLASSEY: MULTIPLAYER NODE
           </p>
         </div>
 
@@ -118,9 +167,10 @@ export default function LoginPage() {
         <div className="p-8 pt-4 space-y-6">
           {/* Error Message Display */}
           {error ? (
-            <div className="border-2 border-error bg-error/10 p-3 shadow-neo-sm flex items-start gap-2.5">
+            <div className="border border-error bg-error/15 p-3 flex items-start gap-2.5 relative">
+              <div className="absolute top-0 right-0 bg-error text-error-content text-[8px] font-black px-1 py-0.5">ERR</div>
               <Shield size={16} className="text-error shrink-0 mt-0.5" />
-              <div className="font-mono text-xs font-bold uppercase tracking-tight text-error leading-normal animate-pulse">
+              <div className="text-xs font-bold uppercase tracking-tight text-error leading-normal">
                 {error}
               </div>
             </div>
@@ -128,7 +178,7 @@ export default function LoginPage() {
 
           {/* Social Provider Login: Google */}
           <button
-            className="w-full btn bg-white hover:bg-zinc-100 text-black border-2 border-base-content font-mono font-bold uppercase text-xs h-12 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 flex items-center justify-center"
+            className="w-full btn bg-white hover:bg-zinc-100 text-black border-2 border-base-content font-bold uppercase text-xs h-12 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 flex items-center justify-center cursor-pointer"
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
@@ -139,36 +189,36 @@ export default function LoginPage() {
               <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
             </svg>
-            <span>{loading ? "INITIALIZING..." : "SIGN IN WITH GOOGLE"}</span>
+            <span>{loading ? "INITIALIZING SECURE LINK..." : "AUTHORIZE VIA GOOGLE"}</span>
           </button>
 
           {/* Divider with diagonal stripes style */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 bg-diagonal-hatch h-1 opacity-20 border-t border-b border-base-content/40"></div>
-            <span className="relative bg-base-100 px-3 font-mono text-[10px] font-extrabold uppercase text-base-content/65 tracking-wider border-2 border-base-content/50 select-none">
+            <div className="absolute inset-0 bg-diagonal-hatch h-1 opacity-40 border-t border-b border-base-content/40"></div>
+            <span className="relative bg-base-100 px-3 text-[10px] font-extrabold uppercase text-base-content/65 tracking-wider border-2 border-base-content/50">
               OR
             </span>
           </div>
 
           {/* Continue as Guest Button */}
           <button
-            className="w-full btn btn-primary border-2 border-base-content font-mono font-bold uppercase text-xs h-12 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+            className="w-full btn btn-primary border-2 border-base-content font-bold uppercase text-xs h-12 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 cursor-pointer"
             type="button"
             onClick={handleGuestLogin}
             disabled={loading}
           >
             <Play size={14} className="fill-current" />
-            <span>CONTINUE AS GUEST (RANDOM NICKNAME)</span>
+            <span>GENERATE GUEST CREDENTIALS</span>
           </button>
 
           {/* Decal status label */}
-          <div className="text-center pt-2 font-mono text-[9px] font-bold text-base-content/40 uppercase tracking-widest select-none">
-            [ SECURE ACCESS PORTAL // INITIALIZED ]
+          <div className="text-center pt-2 text-[9px] font-bold text-base-content/40 uppercase tracking-widest">
+            [ SECURE ACCESS PORTAL // ACTIVE_LOBBY ]
           </div>
         </div>
 
         {/* Diagonal Warning Stripe Footer Accent */}
-        <div className="bg-diagonal-hatch h-4 border-t-4 border-base-content" />
+        <div className="bg-diagonal-hatch h-4 border-t-2 border-base-content" />
       </div>
     </main>
   );
