@@ -1,0 +1,4113 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "SPL@",
+    "languages": [
+      "css",
+      "html",
+      "javascript",
+      "json",
+      "markdown",
+      "prisma",
+      "typescript",
+      "yaml"
+    ],
+    "frameworks": [
+      "@repo/auth",
+      "@repo/config",
+      "@repo/db",
+      "@repo/eslint-config",
+      "@repo/typescript-config",
+      "Docker Compose",
+      "Turborepo",
+      "better-auth",
+      "expo",
+      "expo-constants",
+      "expo-linking",
+      "expo-router",
+      "expo-secure-store",
+      "expo-status-bar",
+      "fastify",
+      "next",
+      "prisma",
+      "react",
+      "react-dom",
+      "react-native",
+      "react-native-safe-area-context",
+      "react-native-screens",
+      "socket.io",
+      "socket.io-client",
+      "tailwindcss"
+    ],
+    "description": "SPL@ monorepo: Turborepo workspace with Next.js web/admin apps, an Express + Socket.IO API, a Prisma database package, Better Auth, shared types, UI library, and an Expo mobile app.",
+    "analyzedAt": "2026-06-17T10:50:20.664Z",
+    "gitCommitHash": "b74e2a52e70bbe153f56fef7e8749326caec4631"
+  },
+  "nodes": [
+    {
+      "id": "file:apps/mobile/app/_layout.tsx",
+      "type": "file",
+      "name": "_layout.tsx",
+      "summary": "Expo Router root layout with navigation and theme providers.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native",
+        "layout"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/app/_layout.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/app/_layout.tsx:RootLayout",
+      "type": "function",
+      "name": "RootLayout",
+      "summary": "Function RootLayout (13 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        5,
+        17
+      ]
+    },
+    {
+      "id": "file:apps/mobile/app/home.tsx",
+      "type": "file",
+      "name": "home.tsx",
+      "summary": "Expo Router home screen for the mobile app.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/mobile/app/home.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/app/home.tsx:HomeScreen",
+      "type": "function",
+      "name": "HomeScreen",
+      "summary": "Function HomeScreen (193 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        29,
+        221
+      ]
+    },
+    {
+      "id": "file:apps/mobile/app/index.tsx",
+      "type": "file",
+      "name": "index.tsx",
+      "summary": "Mobile app entry point route.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/mobile/app/index.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/app/index.tsx:LoginScreen",
+      "type": "function",
+      "name": "LoginScreen",
+      "summary": "Function LoginScreen (105 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        14,
+        118
+      ]
+    },
+    {
+      "id": "file:apps/mobile/app/signup.tsx",
+      "type": "file",
+      "name": "signup.tsx",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/mobile/app/signup.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/app/signup.tsx:SignupScreen",
+      "type": "function",
+      "name": "SignupScreen",
+      "summary": "Function SignupScreen (67 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        6,
+        72
+      ]
+    },
+    {
+      "id": "file:apps/mobile/lib/api-url.ts",
+      "type": "file",
+      "name": "api-url.ts",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/lib/api-url.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/lib/api-url.ts:getApiUrl",
+      "type": "function",
+      "name": "getApiUrl",
+      "summary": "Function getApiUrl (29 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        10,
+        38
+      ]
+    },
+    {
+      "id": "file:apps/mobile/lib/auth-client.ts",
+      "type": "file",
+      "name": "auth-client.ts",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/lib/auth-client.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/lib/auth-client.ts:initializeAuthClient",
+      "type": "function",
+      "name": "initializeAuthClient",
+      "summary": "Function initializeAuthClient (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        30,
+        32
+      ]
+    },
+    {
+      "id": "function:apps/mobile/lib/auth-client.ts:signOutMobile",
+      "type": "function",
+      "name": "signOutMobile",
+      "summary": "Function signOutMobile (4 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        34,
+        37
+      ]
+    },
+    {
+      "id": "file:apps/mobile/lib/token-storage.ts",
+      "type": "file",
+      "name": "token-storage.ts",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/mobile/lib/token-storage.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/mobile/lib/token-storage.ts:loadAuthToken",
+      "type": "function",
+      "name": "loadAuthToken",
+      "summary": "Function loadAuthToken (8 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        7,
+        14
+      ]
+    },
+    {
+      "id": "function:apps/mobile/lib/token-storage.ts:saveAuthToken",
+      "type": "function",
+      "name": "saveAuthToken",
+      "summary": "Function saveAuthToken(token) (4 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        16,
+        19
+      ]
+    },
+    {
+      "id": "function:apps/mobile/lib/token-storage.ts:clearAuthToken",
+      "type": "function",
+      "name": "clearAuthToken",
+      "summary": "Function clearAuthToken (4 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        21,
+        24
+      ]
+    },
+    {
+      "id": "function:apps/mobile/lib/token-storage.ts:getCachedAuthToken",
+      "type": "function",
+      "name": "getCachedAuthToken",
+      "summary": "Function getCachedAuthToken (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "mobile"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        26,
+        28
+      ]
+    },
+    {
+      "id": "file:apps/api/src/game/redisKeys.ts",
+      "type": "file",
+      "name": "redisKeys.ts",
+      "summary": "Game logic for the socket-based real-time game (rounds, roles, scoring).",
+      "tags": [
+        "code",
+        "backend",
+        "game-logic",
+        "redis"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/api/src/game/redisKeys.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:gameStateKey",
+      "type": "function",
+      "name": "gameStateKey",
+      "summary": "Function gameStateKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:approvalVotesKey",
+      "type": "function",
+      "name": "approvalVotesKey",
+      "summary": "Function approvalVotesKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        7,
+        9
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:missionVotesKey",
+      "type": "function",
+      "name": "missionVotesKey",
+      "summary": "Function missionVotesKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        11,
+        13
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:playersKey",
+      "type": "function",
+      "name": "playersKey",
+      "summary": "Function playersKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        15,
+        17
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:selectedTeamKey",
+      "type": "function",
+      "name": "selectedTeamKey",
+      "summary": "Function selectedTeamKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        19,
+        21
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:deBussyUsedKey",
+      "type": "function",
+      "name": "deBussyUsedKey",
+      "summary": "Function deBussyUsedKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        23,
+        25
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:jeanLawTargetKey",
+      "type": "function",
+      "name": "jeanLawTargetKey",
+      "summary": "Function jeanLawTargetKey(roomId) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        27,
+        29
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/redisKeys.ts:allKeys",
+      "type": "function",
+      "name": "allKeys",
+      "summary": "Function allKeys(roomId) (11 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        31,
+        41
+      ]
+    },
+    {
+      "id": "file:apps/api/src/game/roundConfig.ts",
+      "type": "file",
+      "name": "roundConfig.ts",
+      "summary": "Game logic for the socket-based real-time game (rounds, roles, scoring).",
+      "tags": [
+        "code",
+        "backend",
+        "game-logic"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/api/src/game/roundConfig.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/api/src/game/roundEngine.ts",
+      "type": "file",
+      "name": "roundEngine.ts",
+      "summary": "Game logic for the socket-based real-time game (rounds, roles, scoring).",
+      "tags": [
+        "code",
+        "backend",
+        "game-logic"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/api/src/game/roundEngine.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:initGameState",
+      "type": "function",
+      "name": "initGameState",
+      "summary": "Function initGameState(roomId, playerIds, firstSelectorId) (18 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        59,
+        76
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:clearGameState",
+      "type": "function",
+      "name": "clearGameState",
+      "summary": "Function clearGameState(roomId) (6 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        78,
+        83
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:startDiscussionPhase",
+      "type": "function",
+      "name": "startDiscussionPhase",
+      "summary": "Function startDiscussionPhase(roomId, io) (44 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        85,
+        128
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleTeamProposal",
+      "type": "function",
+      "name": "handleTeamProposal",
+      "summary": "Function handleTeamProposal(roomId, selectorId, proposedTeam, io) (28 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        130,
+        157
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleApprovalVote",
+      "type": "function",
+      "name": "handleApprovalVote",
+      "summary": "Function handleApprovalVote(roomId, userId, vote, io) (91 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        159,
+        249
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleMissionVote",
+      "type": "function",
+      "name": "handleMissionVote",
+      "summary": "Function handleMissionVote(roomId, userId, vote, io) (88 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        251,
+        338
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleTransition",
+      "type": "function",
+      "name": "handleTransition",
+      "summary": "Function handleTransition(roomId, io) (28 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        340,
+        367
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:triggerEndgame",
+      "type": "function",
+      "name": "triggerEndgame",
+      "summary": "Function triggerEndgame(roomId, io) (12 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        369,
+        380
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleEndgameGuess",
+      "type": "function",
+      "name": "handleEndgameGuess",
+      "summary": "Function handleEndgameGuess(roomId, userId, targetUserId, guessType, io) (51 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        382,
+        432
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:endGame",
+      "type": "function",
+      "name": "endGame",
+      "summary": "Function endGame(roomId, winner, reason, io, extra) (43 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        434,
+        476
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleDebussyLockOn",
+      "type": "function",
+      "name": "handleDebussyLockOn",
+      "summary": "Function handleDebussyLockOn(roomId, userId, targetUserId, io) (44 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        478,
+        521
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roundEngine.ts:handleJeanLawLock",
+      "type": "function",
+      "name": "handleJeanLawLock",
+      "summary": "Function handleJeanLawLock(roomId, userId, targetUserId, io) (38 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        523,
+        560
+      ]
+    },
+    {
+      "id": "file:apps/api/src/lib/redis.ts",
+      "type": "file",
+      "name": "redis.ts",
+      "summary": "Redis key/value helpers used for ephemeral game state.",
+      "tags": [
+        "code",
+        "backend",
+        "redis"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/api/src/lib/redis.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/api/src/socket/roomHandler.ts",
+      "type": "file",
+      "name": "roomHandler.ts",
+      "summary": "Socket.IO server setup defining real-time channels and event handlers.",
+      "tags": [
+        "code",
+        "backend",
+        "realtime",
+        "socket.io"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/api/src/socket/roomHandler.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/socket/roomHandler.ts:registerRoomHandlers",
+      "type": "function",
+      "name": "registerRoomHandlers",
+      "summary": "Function registerRoomHandlers(io) (181 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        20,
+        200
+      ]
+    },
+    {
+      "id": "file:apps/admin/app/home/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/app/home/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/admin/app/home/page.tsx:HomePage",
+      "type": "function",
+      "name": "HomePage",
+      "summary": "Function HomePage (39 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        7,
+        45
+      ]
+    },
+    {
+      "id": "file:apps/admin/app/login/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin",
+        "app-router"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/admin/app/login/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/admin/app/login/page.tsx:LoginPage",
+      "type": "function",
+      "name": "LoginPage",
+      "summary": "Function LoginPage (106 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        7,
+        112
+      ]
+    },
+    {
+      "id": "file:apps/admin/app/signup/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin",
+        "app-router"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/admin/app/signup/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/admin/app/signup/page.tsx:SignupPage",
+      "type": "function",
+      "name": "SignupPage",
+      "summary": "Function SignupPage (93 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        7,
+        99
+      ]
+    },
+    {
+      "id": "file:apps/admin/lib/auth-client.ts",
+      "type": "file",
+      "name": "auth-client.ts",
+      "summary": "Client-side helper module for the web app.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/lib/auth-client.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/web/app/home/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "app-router"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/web/app/home/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/web/app/home/page.tsx:HomePage",
+      "type": "function",
+      "name": "HomePage",
+      "summary": "Function HomePage (210 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        17,
+        226
+      ]
+    },
+    {
+      "id": "file:apps/web/app/login/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "app-router"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/web/app/login/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/web/app/login/page.tsx:LoginPage",
+      "type": "function",
+      "name": "LoginPage",
+      "summary": "Function LoginPage (124 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        7,
+        130
+      ]
+    },
+    {
+      "id": "file:apps/web/app/signup/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "app-router"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/web/app/signup/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/web/app/signup/page.tsx:SignupPage",
+      "type": "function",
+      "name": "SignupPage",
+      "summary": "Function SignupPage (102 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        7,
+        108
+      ]
+    },
+    {
+      "id": "file:apps/web/lib/auth-client.ts",
+      "type": "file",
+      "name": "auth-client.ts",
+      "summary": "Client-side helper module for the web app.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "client-helper"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/lib/auth-client.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/api/src/auth-routes.ts",
+      "type": "file",
+      "name": "auth-routes.ts",
+      "summary": "Express auth route handlers (sign-in, sign-up, session) wiring Better Auth into the API.",
+      "tags": [
+        "code",
+        "backend",
+        "auth",
+        "better-auth"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/api/src/auth-routes.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/auth-routes.ts:getRequestBody",
+      "type": "function",
+      "name": "getRequestBody",
+      "summary": "Function getRequestBody(request) (16 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        5,
+        20
+      ]
+    },
+    {
+      "id": "function:apps/api/src/auth-routes.ts:registerAuthRoutes",
+      "type": "function",
+      "name": "registerAuthRoutes",
+      "summary": "Function registerAuthRoutes(app) (47 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        22,
+        68
+      ]
+    },
+    {
+      "id": "file:apps/api/src/game/roleAssignment.ts",
+      "type": "file",
+      "name": "roleAssignment.ts",
+      "summary": "Game logic for the socket-based real-time game (rounds, roles, scoring).",
+      "tags": [
+        "code",
+        "backend",
+        "game-logic"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/api/src/game/roleAssignment.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/game/roleAssignment.ts:getRolePool",
+      "type": "function",
+      "name": "getRolePool",
+      "summary": "Function getRolePool(playerCount) (43 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        58,
+        100
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roleAssignment.ts:assignRoles",
+      "type": "function",
+      "name": "assignRoles",
+      "summary": "Function assignRoles(userIds, playerCount) (18 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        108,
+        125
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roleAssignment.ts:getTeamForRole",
+      "type": "function",
+      "name": "getTeamForRole",
+      "summary": "Function getTeamForRole(role) (33 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        130,
+        162
+      ]
+    },
+    {
+      "id": "function:apps/api/src/game/roleAssignment.ts:buildPrivateRoleInfo",
+      "type": "function",
+      "name": "buildPrivateRoleInfo",
+      "summary": "Function buildPrivateRoleInfo(assignment, allAssignments) (109 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        167,
+        275
+      ]
+    },
+    {
+      "id": "file:apps/api/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "summary": "API server entry point: Express + Socket.IO bootstrap, route registration, middleware wiring.",
+      "tags": [
+        "code",
+        "backend",
+        "entry-point"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/api/src/index.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:packages/eslint-config/base.js",
+      "type": "file",
+      "name": "base.js",
+      "summary": "javascript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/eslint-config/base.js",
+      "language": "javascript"
+    },
+    {
+      "id": "file:packages/eslint-config/next.js",
+      "type": "file",
+      "name": "next.js",
+      "summary": "javascript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "moderate",
+      "filePath": "packages/eslint-config/next.js",
+      "language": "javascript"
+    },
+    {
+      "id": "file:packages/eslint-config/react-internal.js",
+      "type": "file",
+      "name": "react-internal.js",
+      "summary": "javascript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/eslint-config/react-internal.js",
+      "language": "javascript"
+    },
+    {
+      "id": "pipeline:.github/workflows/ci.yml",
+      "type": "pipeline",
+      "name": "ci.yml",
+      "summary": "GitHub Actions CI workflow running install, typecheck, lint, build, and Docker image push.",
+      "tags": [
+        "infrastructure",
+        "ci-cd",
+        "github-actions"
+      ],
+      "complexity": "moderate",
+      "filePath": ".github/workflows/ci.yml",
+      "language": "yaml"
+    },
+    {
+      "id": "service:.dockerignore",
+      "type": "service",
+      "name": ".dockerignore",
+      "summary": "Docker build ignore patterns excluding node_modules, build outputs, and local logs.",
+      "tags": [
+        "infrastructure"
+      ],
+      "complexity": "simple",
+      "filePath": ".dockerignore",
+      "language": "unknown"
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "summary": "Sample environment variables for the API and web apps (DB URL, auth secrets, URLs, ports).",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": ".env.example",
+      "language": "config"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "summary": "AI assistant guidance document describing the project context, stack, and conventions.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "moderate",
+      "filePath": "CLAUDE.md",
+      "language": "markdown"
+    },
+    {
+      "id": "document:IMPORTANT.md",
+      "type": "document",
+      "name": "IMPORTANT.md",
+      "summary": "Project notes capturing important decisions and constraints.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "IMPORTANT.md",
+      "language": "markdown"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "summary": "Project README introducing the Turborepo monorepo layout, apps, packages, and workflows.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "moderate",
+      "filePath": "README.md",
+      "language": "markdown"
+    },
+    {
+      "id": "document:api.err.txt",
+      "type": "document",
+      "name": "api.err.txt",
+      "summary": "txt file in the SPL@ monorepo.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "api.err.txt",
+      "language": "txt"
+    },
+    {
+      "id": "document:api.out.txt",
+      "type": "document",
+      "name": "api.out.txt",
+      "summary": "txt file in the SPL@ monorepo.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "api.out.txt",
+      "language": "txt"
+    },
+    {
+      "id": "service:docker-compose.yml",
+      "type": "service",
+      "name": "docker-compose.yml",
+      "summary": "Docker Compose stack for the local API service.",
+      "tags": [
+        "infrastructure",
+        "docker",
+        "orchestration"
+      ],
+      "complexity": "simple",
+      "filePath": "docker-compose.yml",
+      "language": "yaml"
+    },
+    {
+      "id": "document:err.txt",
+      "type": "document",
+      "name": "err.txt",
+      "summary": "txt file in the SPL@ monorepo.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "err.txt",
+      "language": "txt"
+    },
+    {
+      "id": "document:known-errors.md",
+      "type": "document",
+      "name": "known-errors.md",
+      "summary": "Documented known errors and their workarounds.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "known-errors.md",
+      "language": "markdown"
+    },
+    {
+      "id": "document:out.txt",
+      "type": "document",
+      "name": "out.txt",
+      "summary": "txt file in the SPL@ monorepo.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "out.txt",
+      "language": "txt"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "Root package.json defining workspace scripts (dev, build, lint, typecheck, db) and tooling.",
+      "tags": [
+        "configuration",
+        "monorepo",
+        "tooling"
+      ],
+      "complexity": "simple",
+      "filePath": "package.json",
+      "language": "json"
+    },
+    {
+      "id": "config:pnpm-workspace.yaml",
+      "type": "config",
+      "name": "pnpm-workspace.yaml",
+      "summary": "pnpm workspace declaration listing apps/* and packages/* as workspace members.",
+      "tags": [
+        "configuration",
+        "monorepo",
+        "tooling"
+      ],
+      "complexity": "simple",
+      "filePath": "pnpm-workspace.yaml",
+      "language": "yaml"
+    },
+    {
+      "id": "file:test-socket.html",
+      "type": "file",
+      "name": "test-socket.html",
+      "summary": "Local HTML page for manually testing Socket.IO connectivity in the browser.",
+      "tags": [
+        "markup"
+      ],
+      "complexity": "moderate",
+      "filePath": "test-socket.html",
+      "language": "html"
+    },
+    {
+      "id": "config:turbo.json",
+      "type": "config",
+      "name": "turbo.json",
+      "summary": "Turborepo pipeline configuration declaring tasks (build, dev, lint, typecheck, db) and global env.",
+      "tags": [
+        "configuration",
+        "monorepo",
+        "tooling"
+      ],
+      "complexity": "simple",
+      "filePath": "turbo.json",
+      "language": "json"
+    },
+    {
+      "id": "document:apps/web/README.md",
+      "type": "document",
+      "name": "README.md",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "documentation",
+        "frontend",
+        "nextjs"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/README.md",
+      "language": "markdown"
+    },
+    {
+      "id": "config:apps/web/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "configuration",
+        "frontend",
+        "nextjs"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/package.json",
+      "language": "json"
+    },
+    {
+      "id": "config:apps/web/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "configuration",
+        "frontend",
+        "nextjs"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/config/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/config/package.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/config/tsconfig.base.json",
+      "type": "config",
+      "name": "tsconfig.base.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/config/tsconfig.base.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/config/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/config/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/typescript-config/base.json",
+      "type": "config",
+      "name": "base.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/typescript-config/base.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/typescript-config/nextjs.json",
+      "type": "config",
+      "name": "nextjs.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/typescript-config/nextjs.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/typescript-config/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/typescript-config/package.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/typescript-config/react-library.json",
+      "type": "config",
+      "name": "react-library.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/typescript-config/react-library.json",
+      "language": "json"
+    },
+    {
+      "id": "file:.npmrc",
+      "type": "file",
+      "name": ".npmrc",
+      "summary": "pnpm/npm registry and strict-peer-dependencies configuration.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": ".npmrc",
+      "language": "unknown"
+    },
+    {
+      "id": "config:.puku-cli/settings.local.json",
+      "type": "config",
+      "name": "settings.local.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": ".puku-cli/settings.local.json",
+      "language": "json"
+    },
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "summary": "unknown file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": ".understand-anything/.understandignore",
+      "language": "unknown"
+    },
+    {
+      "id": "file:apps/admin/app/globals.css",
+      "type": "file",
+      "name": "globals.css",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "markup",
+        "frontend",
+        "nextjs",
+        "admin",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/app/globals.css",
+      "language": "css"
+    },
+    {
+      "id": "file:apps/admin/app/layout.tsx",
+      "type": "file",
+      "name": "layout.tsx",
+      "summary": "Root layout for the Next.js app: wraps pages with global providers and styling.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/app/layout.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/admin/app/layout.tsx:RootLayout",
+      "type": "function",
+      "name": "RootLayout",
+      "summary": "Function RootLayout({\r\n  children,\r\n}) (14 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        20,
+        33
+      ]
+    },
+    {
+      "id": "file:apps/admin/app/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/app/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/admin/app/page.tsx:Home",
+      "type": "function",
+      "name": "Home",
+      "summary": "Function Home (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "file:apps/admin/next-env.d.ts",
+      "type": "file",
+      "name": "next-env.d.ts",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/next-env.d.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/admin/next.config.ts",
+      "type": "file",
+      "name": "next.config.ts",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/next.config.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "config:apps/admin/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "configuration",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/package.json",
+      "language": "json"
+    },
+    {
+      "id": "file:apps/admin/postcss.config.mjs",
+      "type": "file",
+      "name": "postcss.config.mjs",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/postcss.config.mjs",
+      "language": "javascript"
+    },
+    {
+      "id": "config:apps/admin/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "configuration",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "file:apps/admin/tsconfig.tsbuildinfo",
+      "type": "file",
+      "name": "tsconfig.tsbuildinfo",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "admin"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/admin/tsconfig.tsbuildinfo",
+      "language": "tsbuildinfo"
+    },
+    {
+      "id": "config:apps/api/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/api/package.json",
+      "language": "json"
+    },
+    {
+      "id": "file:apps/api/src/routes/rooms.ts",
+      "type": "file",
+      "name": "rooms.ts",
+      "summary": "Backend source module for the SPL@ API service.",
+      "tags": [
+        "code",
+        "backend"
+      ],
+      "complexity": "complex",
+      "filePath": "apps/api/src/routes/rooms.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/routes/rooms.ts:registerRoomRoutes",
+      "type": "function",
+      "name": "registerRoomRoutes",
+      "summary": "Function registerRoomRoutes(app) (245 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "complex",
+      "lineRange": [
+        77,
+        321
+      ]
+    },
+    {
+      "id": "file:apps/api/src/services/roleAssignmentService.ts",
+      "type": "file",
+      "name": "roleAssignmentService.ts",
+      "summary": "Backend source module for the SPL@ API service.",
+      "tags": [
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/api/src/services/roleAssignmentService.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/services/roleAssignmentService.ts:assignRoles",
+      "type": "function",
+      "name": "assignRoles",
+      "summary": "Function assignRoles(playerCount) (46 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        38,
+        83
+      ]
+    },
+    {
+      "id": "function:apps/api/src/services/roleAssignmentService.ts:isRaiDurlabh",
+      "type": "function",
+      "name": "isRaiDurlabh",
+      "summary": "Function isRaiDurlabh(role) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        92,
+        94
+      ]
+    },
+    {
+      "id": "file:apps/api/src/services/roundService.ts",
+      "type": "file",
+      "name": "roundService.ts",
+      "summary": "Backend source module for the SPL@ API service.",
+      "tags": [
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "filePath": "apps/api/src/services/roundService.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/api/src/services/roundService.ts:advancePhase",
+      "type": "function",
+      "name": "advancePhase",
+      "summary": "Function advancePhase(roomId, phase) (30 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "moderate",
+      "lineRange": [
+        18,
+        47
+      ]
+    },
+    {
+      "id": "function:apps/api/src/services/roundService.ts:calculateRoundWinner",
+      "type": "function",
+      "name": "calculateRoundWinner",
+      "summary": "Function calculateRoundWinner(roundId) (29 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        49,
+        77
+      ]
+    },
+    {
+      "id": "function:apps/api/src/services/roundService.ts:getNextSelector",
+      "type": "function",
+      "name": "getNextSelector",
+      "summary": "Function getNextSelector(roomId, currentSelectorId) (14 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        79,
+        92
+      ]
+    },
+    {
+      "id": "function:apps/api/src/services/roundService.ts:getTeamSizeForRound",
+      "type": "function",
+      "name": "getTeamSizeForRound",
+      "summary": "Function getTeamSizeForRound(roundNumber) (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "backend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        94,
+        96
+      ]
+    },
+    {
+      "id": "config:apps/api/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/api/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "file:apps/api/tsconfig.tsbuildinfo",
+      "type": "file",
+      "name": "tsconfig.tsbuildinfo",
+      "summary": "tsbuildinfo file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/api/tsconfig.tsbuildinfo",
+      "language": "tsbuildinfo"
+    },
+    {
+      "id": "config:apps/mobile/.expo/devices.json",
+      "type": "config",
+      "name": "devices.json",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "configuration",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/.expo/devices.json",
+      "language": "json"
+    },
+    {
+      "id": "document:apps/mobile/.expo/README.md",
+      "type": "document",
+      "name": "README.md",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "documentation",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/.expo/README.md",
+      "language": "markdown"
+    },
+    {
+      "id": "file:apps/mobile/.expo/types/router.d.ts",
+      "type": "file",
+      "name": "router.d.ts",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/.expo/types/router.d.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/mobile/app.config.ts",
+      "type": "file",
+      "name": "app.config.ts",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "code",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/app.config.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "config:apps/mobile/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "configuration",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/package.json",
+      "language": "json"
+    },
+    {
+      "id": "config:apps/mobile/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "Expo Router screen or shared component.",
+      "tags": [
+        "configuration",
+        "mobile",
+        "expo",
+        "react-native"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/mobile/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "file:apps/web/app/globals.css",
+      "type": "file",
+      "name": "globals.css",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "markup",
+        "frontend",
+        "nextjs",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/app/globals.css",
+      "language": "css"
+    },
+    {
+      "id": "file:apps/web/app/layout.tsx",
+      "type": "file",
+      "name": "layout.tsx",
+      "summary": "Root layout for the Next.js app: wraps pages with global providers and styling.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/app/layout.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/web/app/layout.tsx:RootLayout",
+      "type": "function",
+      "name": "RootLayout",
+      "summary": "Function RootLayout({\r\n  children,\r\n}) (14 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        20,
+        33
+      ]
+    },
+    {
+      "id": "file:apps/web/app/page.tsx",
+      "type": "file",
+      "name": "page.tsx",
+      "summary": "Next.js page component for the home route.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs",
+        "app-router"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/app/page.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:apps/web/app/page.tsx:Home",
+      "type": "function",
+      "name": "Home",
+      "summary": "Function Home (3 lines).",
+      "tags": [
+        "function",
+        "code",
+        "frontend"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        3,
+        5
+      ]
+    },
+    {
+      "id": "file:apps/web/eslint.config.mjs",
+      "type": "file",
+      "name": "eslint.config.mjs",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/eslint.config.mjs",
+      "language": "javascript"
+    },
+    {
+      "id": "file:apps/web/next.config.ts",
+      "type": "file",
+      "name": "next.config.ts",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/next.config.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:apps/web/postcss.config.mjs",
+      "type": "file",
+      "name": "postcss.config.mjs",
+      "summary": "Next.js app route or component.",
+      "tags": [
+        "code",
+        "frontend",
+        "nextjs"
+      ],
+      "complexity": "simple",
+      "filePath": "apps/web/postcss.config.mjs",
+      "language": "javascript"
+    },
+    {
+      "id": "document:docs/socketio-chat-tutorial.md",
+      "type": "document",
+      "name": "socketio-chat-tutorial.md",
+      "summary": "markdown file in the SPL@ monorepo.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "moderate",
+      "filePath": "docs/socketio-chat-tutorial.md",
+      "language": "markdown"
+    },
+    {
+      "id": "config:packages/auth/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/auth/package.json",
+      "language": "json"
+    },
+    {
+      "id": "file:packages/auth/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/auth/src/index.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "config:packages/auth/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/auth/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "file:packages/config/load-env.mjs",
+      "type": "file",
+      "name": "load-env.mjs",
+      "summary": "javascript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/config/load-env.mjs",
+      "language": "javascript"
+    },
+    {
+      "id": "config:packages/db/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/db/package.json",
+      "language": "json"
+    },
+    {
+      "id": "file:packages/db/prisma.config.ts",
+      "type": "file",
+      "name": "prisma.config.ts",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/db/prisma.config.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "schema:packages/db/prisma/schema.prisma",
+      "type": "schema",
+      "name": "schema.prisma",
+      "summary": "prisma file in the SPL@ monorepo.",
+      "tags": [
+        "data"
+      ],
+      "complexity": "moderate",
+      "filePath": "packages/db/prisma/schema.prisma",
+      "language": "prisma"
+    },
+    {
+      "id": "file:packages/db/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/db/src/index.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "function:packages/db/src/index.ts:createPrismaClient",
+      "type": "function",
+      "name": "createPrismaClient",
+      "summary": "Function createPrismaClient (11 lines).",
+      "tags": [
+        "function",
+        "code"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        13,
+        23
+      ]
+    },
+    {
+      "id": "config:packages/db/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/db/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "config:packages/eslint-config/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/eslint-config/package.json",
+      "language": "json"
+    },
+    {
+      "id": "document:packages/eslint-config/README.md",
+      "type": "document",
+      "name": "README.md",
+      "summary": "markdown file in the SPL@ monorepo.",
+      "tags": [
+        "documentation"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/eslint-config/README.md",
+      "language": "markdown"
+    },
+    {
+      "id": "config:packages/types/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/types/package.json",
+      "language": "json"
+    },
+    {
+      "id": "file:packages/types/src/index.d.ts",
+      "type": "file",
+      "name": "index.d.ts",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "complex",
+      "filePath": "packages/types/src/index.d.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "file:packages/types/src/index.js",
+      "type": "file",
+      "name": "index.js",
+      "summary": "javascript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/types/src/index.js",
+      "language": "javascript"
+    },
+    {
+      "id": "file:packages/types/src/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "complex",
+      "filePath": "packages/types/src/index.ts",
+      "language": "typescript"
+    },
+    {
+      "id": "config:packages/types/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/types/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "file:packages/types/tsconfig.tsbuildinfo",
+      "type": "file",
+      "name": "tsconfig.tsbuildinfo",
+      "summary": "tsbuildinfo file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/types/tsconfig.tsbuildinfo",
+      "language": "tsbuildinfo"
+    },
+    {
+      "id": "file:packages/ui/eslint.config.mjs",
+      "type": "file",
+      "name": "eslint.config.mjs",
+      "summary": "javascript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/ui/eslint.config.mjs",
+      "language": "javascript"
+    },
+    {
+      "id": "config:packages/ui/package.json",
+      "type": "config",
+      "name": "package.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/ui/package.json",
+      "language": "json"
+    },
+    {
+      "id": "file:packages/ui/src/button.tsx",
+      "type": "file",
+      "name": "button.tsx",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/ui/src/button.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:packages/ui/src/button.tsx:Button",
+      "type": "function",
+      "name": "Button",
+      "summary": "Function Button({ children, className, appName }) (10 lines).",
+      "tags": [
+        "function",
+        "code"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        11,
+        20
+      ]
+    },
+    {
+      "id": "file:packages/ui/src/card.tsx",
+      "type": "file",
+      "name": "card.tsx",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/ui/src/card.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:packages/ui/src/card.tsx:Card",
+      "type": "function",
+      "name": "Card",
+      "summary": "Function Card({\r\n  className,\r\n  title,\r\n  children,\r\n  href,\r\n}) (25 lines).",
+      "tags": [
+        "function",
+        "code"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        3,
+        27
+      ]
+    },
+    {
+      "id": "file:packages/ui/src/code.tsx",
+      "type": "file",
+      "name": "code.tsx",
+      "summary": "typescript file in the SPL@ monorepo.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/ui/src/code.tsx",
+      "language": "typescript"
+    },
+    {
+      "id": "function:packages/ui/src/code.tsx:Code",
+      "type": "function",
+      "name": "Code",
+      "summary": "Function Code({\r\n  children,\r\n  className,\r\n}) (9 lines).",
+      "tags": [
+        "function",
+        "code"
+      ],
+      "complexity": "simple",
+      "lineRange": [
+        3,
+        11
+      ]
+    },
+    {
+      "id": "config:packages/ui/tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "summary": "json file in the SPL@ monorepo.",
+      "tags": [
+        "configuration"
+      ],
+      "complexity": "simple",
+      "filePath": "packages/ui/tsconfig.json",
+      "language": "json"
+    },
+    {
+      "id": "file:scripts/kill-dev-ports.mjs",
+      "type": "file",
+      "name": "kill-dev-ports.mjs",
+      "summary": "Node script that frees ports 3000/3001/3002 for clean dev startup.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "scripts/kill-dev-ports.mjs",
+      "language": "javascript"
+    },
+    {
+      "id": "file:test-socket.js",
+      "type": "file",
+      "name": "test-socket.js",
+      "summary": "Local Node script for manually testing Socket.IO connectivity to the API.",
+      "tags": [
+        "code"
+      ],
+      "complexity": "simple",
+      "filePath": "test-socket.js",
+      "language": "javascript"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:apps/mobile/app/_layout.tsx",
+      "target": "function:apps/mobile/app/_layout.tsx:RootLayout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/app/_layout.tsx",
+      "target": "function:apps/mobile/app/_layout.tsx:RootLayout",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/app/home.tsx",
+      "target": "function:apps/mobile/app/home.tsx:HomeScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/app/home.tsx",
+      "target": "function:apps/mobile/app/home.tsx:HomeScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/app/index.tsx",
+      "target": "function:apps/mobile/app/index.tsx:LoginScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/app/index.tsx",
+      "target": "function:apps/mobile/app/index.tsx:LoginScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/app/signup.tsx",
+      "target": "function:apps/mobile/app/signup.tsx:SignupScreen",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/app/signup.tsx",
+      "target": "function:apps/mobile/app/signup.tsx:SignupScreen",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/api-url.ts",
+      "target": "function:apps/mobile/lib/api-url.ts:getApiUrl",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/api-url.ts",
+      "target": "function:apps/mobile/lib/api-url.ts:getApiUrl",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/auth-client.ts",
+      "target": "function:apps/mobile/lib/auth-client.ts:initializeAuthClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/auth-client.ts",
+      "target": "function:apps/mobile/lib/auth-client.ts:initializeAuthClient",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/auth-client.ts",
+      "target": "function:apps/mobile/lib/auth-client.ts:signOutMobile",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/auth-client.ts",
+      "target": "function:apps/mobile/lib/auth-client.ts:signOutMobile",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:loadAuthToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:loadAuthToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:saveAuthToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:saveAuthToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:clearAuthToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:clearAuthToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:getCachedAuthToken",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/mobile/lib/token-storage.ts",
+      "target": "function:apps/mobile/lib/token-storage.ts:getCachedAuthToken",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/mobile/app/_layout.tsx",
+      "target": "file:apps/mobile/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/app/home.tsx",
+      "target": "file:apps/mobile/lib/api-url.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/app/home.tsx",
+      "target": "file:apps/mobile/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/app/index.tsx",
+      "target": "file:apps/mobile/lib/api-url.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/app/index.tsx",
+      "target": "file:apps/mobile/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/app/signup.tsx",
+      "target": "file:apps/mobile/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/lib/auth-client.ts",
+      "target": "file:apps/mobile/lib/api-url.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/mobile/lib/auth-client.ts",
+      "target": "file:apps/mobile/lib/token-storage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:gameStateKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:gameStateKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:approvalVotesKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:approvalVotesKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:missionVotesKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:missionVotesKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:playersKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:playersKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:selectedTeamKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:selectedTeamKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:deBussyUsedKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:deBussyUsedKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:jeanLawTargetKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:jeanLawTargetKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:allKeys",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/redisKeys.ts",
+      "target": "function:apps/api/src/game/redisKeys.ts:allKeys",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:initGameState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:initGameState",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:clearGameState",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:clearGameState",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:startDiscussionPhase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:startDiscussionPhase",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleTeamProposal",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleTeamProposal",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleApprovalVote",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleApprovalVote",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleMissionVote",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleMissionVote",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleTransition",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleTransition",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:triggerEndgame",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:triggerEndgame",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleEndgameGuess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleEndgameGuess",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:endGame",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:endGame",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleDebussyLockOn",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleDebussyLockOn",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleJeanLawLock",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "function:apps/api/src/game/roundEngine.ts:handleJeanLawLock",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/socket/roomHandler.ts",
+      "target": "function:apps/api/src/socket/roomHandler.ts:registerRoomHandlers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/socket/roomHandler.ts",
+      "target": "function:apps/api/src/socket/roomHandler.ts:registerRoomHandlers",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "file:apps/api/src/game/redisKeys.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "file:apps/api/src/game/roundConfig.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/api/src/game/roundEngine.ts",
+      "target": "file:apps/api/src/lib/redis.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/api/src/socket/roomHandler.ts",
+      "target": "file:apps/api/src/lib/redis.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/admin/app/home/page.tsx",
+      "target": "function:apps/admin/app/home/page.tsx:HomePage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/admin/app/home/page.tsx",
+      "target": "function:apps/admin/app/home/page.tsx:HomePage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/admin/app/login/page.tsx",
+      "target": "function:apps/admin/app/login/page.tsx:LoginPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/admin/app/login/page.tsx",
+      "target": "function:apps/admin/app/login/page.tsx:LoginPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/admin/app/signup/page.tsx",
+      "target": "function:apps/admin/app/signup/page.tsx:SignupPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/admin/app/signup/page.tsx",
+      "target": "function:apps/admin/app/signup/page.tsx:SignupPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/admin/app/home/page.tsx",
+      "target": "file:apps/admin/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/admin/app/login/page.tsx",
+      "target": "file:apps/admin/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/admin/app/signup/page.tsx",
+      "target": "file:apps/admin/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/web/app/home/page.tsx",
+      "target": "function:apps/web/app/home/page.tsx:HomePage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/app/home/page.tsx",
+      "target": "function:apps/web/app/home/page.tsx:HomePage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/web/app/login/page.tsx",
+      "target": "function:apps/web/app/login/page.tsx:LoginPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/app/login/page.tsx",
+      "target": "function:apps/web/app/login/page.tsx:LoginPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/web/app/signup/page.tsx",
+      "target": "function:apps/web/app/signup/page.tsx:SignupPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/app/signup/page.tsx",
+      "target": "function:apps/web/app/signup/page.tsx:SignupPage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/web/app/home/page.tsx",
+      "target": "file:apps/web/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/web/app/login/page.tsx",
+      "target": "file:apps/web/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/web/app/signup/page.tsx",
+      "target": "file:apps/web/lib/auth-client.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/api/src/auth-routes.ts",
+      "target": "function:apps/api/src/auth-routes.ts:getRequestBody",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/auth-routes.ts",
+      "target": "function:apps/api/src/auth-routes.ts:registerAuthRoutes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/auth-routes.ts",
+      "target": "function:apps/api/src/auth-routes.ts:registerAuthRoutes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:getRolePool",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:assignRoles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:assignRoles",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:getTeamForRole",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:getTeamForRole",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:buildPrivateRoleInfo",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/game/roleAssignment.ts",
+      "target": "function:apps/api/src/game/roleAssignment.ts:buildPrivateRoleInfo",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/index.ts",
+      "target": "file:apps/api/src/auth-routes.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:apps/api/src/index.ts",
+      "target": "file:apps/api/src/game/roleAssignment.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/eslint-config/next.js",
+      "target": "file:packages/eslint-config/base.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:packages/eslint-config/react-internal.js",
+      "target": "file:packages/eslint-config/base.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "pipeline:.github/workflows/ci.yml",
+      "target": "file:apps/api/src/index.ts",
+      "type": "triggers",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "service:.dockerignore",
+      "target": "file:apps/api/src/index.ts",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:apps/api/src/index.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "service:docker-compose.yml",
+      "target": "file:apps/api/src/index.ts",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:.npmrc",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:.understand-anything/.understandignore",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:apps/admin/app/home/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:apps/admin/app/layout.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:apps/admin/app/login/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:pnpm-workspace.yaml",
+      "target": "file:.npmrc",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:pnpm-workspace.yaml",
+      "target": "file:.understand-anything/.understandignore",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:pnpm-workspace.yaml",
+      "target": "file:apps/admin/app/home/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:pnpm-workspace.yaml",
+      "target": "file:apps/admin/app/layout.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:pnpm-workspace.yaml",
+      "target": "file:apps/admin/app/login/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:turbo.json",
+      "target": "file:.npmrc",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:turbo.json",
+      "target": "file:.understand-anything/.understandignore",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:turbo.json",
+      "target": "file:apps/admin/app/home/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:turbo.json",
+      "target": "file:apps/admin/app/layout.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:turbo.json",
+      "target": "file:apps/admin/app/login/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/app/home/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/app/layout.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/app/login/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/app/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/app/signup/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/lib/auth-client.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/web/tsconfig.json",
+      "target": "file:apps/web/next.config.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:apps/admin/app/layout.tsx",
+      "target": "function:apps/admin/app/layout.tsx:RootLayout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/admin/app/layout.tsx",
+      "target": "function:apps/admin/app/layout.tsx:RootLayout",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/admin/app/page.tsx",
+      "target": "function:apps/admin/app/page.tsx:Home",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/admin/app/page.tsx",
+      "target": "function:apps/admin/app/page.tsx:Home",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/routes/rooms.ts",
+      "target": "function:apps/api/src/routes/rooms.ts:registerRoomRoutes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/routes/rooms.ts",
+      "target": "function:apps/api/src/routes/rooms.ts:registerRoomRoutes",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/services/roleAssignmentService.ts",
+      "target": "function:apps/api/src/services/roleAssignmentService.ts:assignRoles",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/roleAssignmentService.ts",
+      "target": "function:apps/api/src/services/roleAssignmentService.ts:assignRoles",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/services/roleAssignmentService.ts",
+      "target": "function:apps/api/src/services/roleAssignmentService.ts:isRaiDurlabh",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/roleAssignmentService.ts",
+      "target": "function:apps/api/src/services/roleAssignmentService.ts:isRaiDurlabh",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:advancePhase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:advancePhase",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:calculateRoundWinner",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:calculateRoundWinner",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:getNextSelector",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:getNextSelector",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:getTeamSizeForRound",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/api/src/services/roundService.ts",
+      "target": "function:apps/api/src/services/roundService.ts:getTeamSizeForRound",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/admin/app/layout.tsx",
+      "target": "file:apps/admin/app/globals.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/app/home/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/app/layout.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/app/login/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/app/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/app/signup/page.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/lib/auth-client.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/next-env.d.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/admin/tsconfig.json",
+      "target": "file:apps/admin/next.config.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/auth-routes.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/game/redisKeys.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/game/roleAssignment.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/game/roundConfig.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/game/roundEngine.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/lib/redis.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/routes/rooms.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/services/roleAssignmentService.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/services/roundService.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/api/tsconfig.json",
+      "target": "file:apps/api/src/socket/roomHandler.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/.expo/types/router.d.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/app.config.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/app/_layout.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/app/home.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/app/index.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/app/signup.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/lib/api-url.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/lib/auth-client.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:apps/mobile/tsconfig.json",
+      "target": "file:apps/mobile/lib/token-storage.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:apps/web/app/layout.tsx",
+      "target": "function:apps/web/app/layout.tsx:RootLayout",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/app/layout.tsx",
+      "target": "function:apps/web/app/layout.tsx:RootLayout",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:apps/web/app/page.tsx",
+      "target": "function:apps/web/app/page.tsx:Home",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/app/page.tsx",
+      "target": "function:apps/web/app/page.tsx:Home",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/db/src/index.ts",
+      "target": "function:packages/db/src/index.ts:createPrismaClient",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:apps/web/app/layout.tsx",
+      "target": "file:apps/web/app/globals.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "config:packages/auth/tsconfig.json",
+      "target": "file:packages/auth/src/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/db/tsconfig.json",
+      "target": "file:packages/db/prisma.config.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/db/tsconfig.json",
+      "target": "file:packages/db/src/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/types/tsconfig.json",
+      "target": "file:packages/types/src/index.d.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/types/tsconfig.json",
+      "target": "file:packages/types/src/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:packages/ui/src/button.tsx",
+      "target": "function:packages/ui/src/button.tsx:Button",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/ui/src/button.tsx",
+      "target": "function:packages/ui/src/button.tsx:Button",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/ui/src/card.tsx",
+      "target": "function:packages/ui/src/card.tsx:Card",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/ui/src/card.tsx",
+      "target": "function:packages/ui/src/card.tsx:Card",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:packages/ui/src/code.tsx",
+      "target": "function:packages/ui/src/code.tsx:Code",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:packages/ui/src/code.tsx",
+      "target": "function:packages/ui/src/code.tsx:Code",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "config:packages/ui/tsconfig.json",
+      "target": "file:packages/ui/src/button.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/ui/tsconfig.json",
+      "target": "file:packages/ui/src/card.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:packages/ui/tsconfig.json",
+      "target": "file:packages/ui/src/code.tsx",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:monorepo-tooling",
+      "name": "Monorepo Tooling",
+      "description": "Root-level monorepo configuration: package.json, turbo.json, pnpm workspace, tsconfig, eslint, gitignore, dev scripts.",
+      "nodeIds": [
+        "config:package.json",
+        "config:turbo.json",
+        "config:pnpm-workspace.yaml",
+        "file:.npmrc",
+        "config:.puku-cli/settings.local.json",
+        "file:scripts/kill-dev-ports.mjs",
+        "file:.understand-anything/.understandignore",
+        "config:.env.example"
+      ]
+    },
+    {
+      "id": "layer:documentation",
+      "name": "Documentation",
+      "description": "Project documentation, READMEs, AI guidance, known-error notes, tutorial markdown, and local socket test harness pages.",
+      "nodeIds": [
+        "document:CLAUDE.md",
+        "document:IMPORTANT.md",
+        "document:README.md",
+        "document:known-errors.md",
+        "document:docs/socketio-chat-tutorial.md",
+        "document:api.err.txt",
+        "document:api.out.txt",
+        "document:err.txt",
+        "document:out.txt",
+        "document:apps/web/README.md",
+        "document:packages/eslint-config/README.md",
+        "file:test-socket.html",
+        "file:test-socket.js"
+      ]
+    },
+    {
+      "id": "layer:shared-packages",
+      "name": "Shared Packages",
+      "description": "Reusable workspace packages: Better Auth config (auth), shared TS types (types), shared React UI components (ui), env/tsconfig base (config), TS preset configs (typescript-config), and shared ESLint presets (eslint-config).",
+      "nodeIds": [
+        "config:packages/auth/package.json",
+        "config:packages/auth/tsconfig.json",
+        "file:packages/auth/src/index.ts",
+        "config:packages/types/package.json",
+        "config:packages/types/tsconfig.json",
+        "file:packages/types/src/index.d.ts",
+        "file:packages/types/src/index.js",
+        "file:packages/types/src/index.ts",
+        "file:packages/types/tsconfig.tsbuildinfo",
+        "config:packages/ui/package.json",
+        "config:packages/ui/tsconfig.json",
+        "file:packages/ui/eslint.config.mjs",
+        "file:packages/ui/src/button.tsx",
+        "file:packages/ui/src/card.tsx",
+        "file:packages/ui/src/code.tsx",
+        "config:packages/config/package.json",
+        "config:packages/config/tsconfig.json",
+        "config:packages/config/tsconfig.base.json",
+        "file:packages/config/load-env.mjs",
+        "config:packages/typescript-config/package.json",
+        "config:packages/typescript-config/base.json",
+        "config:packages/typescript-config/nextjs.json",
+        "config:packages/typescript-config/react-library.json",
+        "config:packages/eslint-config/package.json",
+        "file:packages/eslint-config/base.js",
+        "file:packages/eslint-config/next.js",
+        "file:packages/eslint-config/react-internal.js"
+      ]
+    },
+    {
+      "id": "layer:database-package",
+      "name": "Database Package",
+      "description": "Prisma-backed database package: schema definition, generated client, package config, and Prisma tooling.",
+      "nodeIds": [
+        "config:packages/db/package.json",
+        "config:packages/db/tsconfig.json",
+        "schema:packages/db/prisma/schema.prisma",
+        "file:packages/db/prisma.config.ts",
+        "file:packages/db/src/index.ts"
+      ]
+    },
+    {
+      "id": "layer:web-app",
+      "name": "Web App",
+      "description": "Customer-facing Next.js web app (App Router): pages, root layout, global styles, auth client helpers, and Next.js / TypeScript / PostCSS configs.",
+      "nodeIds": [
+        "config:apps/web/package.json",
+        "config:apps/web/tsconfig.json",
+        "file:apps/web/next.config.ts",
+        "file:apps/web/postcss.config.mjs",
+        "file:apps/web/eslint.config.mjs",
+        "file:apps/web/app/layout.tsx",
+        "file:apps/web/app/page.tsx",
+        "file:apps/web/app/globals.css",
+        "file:apps/web/app/home/page.tsx",
+        "file:apps/web/app/login/page.tsx",
+        "file:apps/web/app/signup/page.tsx",
+        "file:apps/web/lib/auth-client.ts"
+      ]
+    },
+    {
+      "id": "layer:admin-app",
+      "name": "Admin App",
+      "description": "Internal admin Next.js app (App Router): dashboard pages, root layout, global styles, auth client helpers, and Next.js / TypeScript / PostCSS configs.",
+      "nodeIds": [
+        "config:apps/admin/package.json",
+        "config:apps/admin/tsconfig.json",
+        "file:apps/admin/next-env.d.ts",
+        "file:apps/admin/next.config.ts",
+        "file:apps/admin/postcss.config.mjs",
+        "file:apps/admin/tsconfig.tsbuildinfo",
+        "file:apps/admin/app/layout.tsx",
+        "file:apps/admin/app/page.tsx",
+        "file:apps/admin/app/globals.css",
+        "file:apps/admin/app/home/page.tsx",
+        "file:apps/admin/app/login/page.tsx",
+        "file:apps/admin/app/signup/page.tsx",
+        "file:apps/admin/lib/auth-client.ts"
+      ]
+    },
+    {
+      "id": "layer:mobile-app",
+      "name": "Mobile App",
+      "description": "Expo (React Native) mobile app using Expo Router: screens (_layout, index/home/signup), auth/api client libs, Expo device/router type metadata, and app/TS configs.",
+      "nodeIds": [
+        "config:apps/mobile/package.json",
+        "config:apps/mobile/tsconfig.json",
+        "config:apps/mobile/.expo/devices.json",
+        "document:apps/mobile/.expo/README.md",
+        "file:apps/mobile/.expo/types/router.d.ts",
+        "file:apps/mobile/app.config.ts",
+        "file:apps/mobile/app/_layout.tsx",
+        "file:apps/mobile/app/index.tsx",
+        "file:apps/mobile/app/home.tsx",
+        "file:apps/mobile/app/signup.tsx",
+        "file:apps/mobile/lib/api-url.ts",
+        "file:apps/mobile/lib/auth-client.ts",
+        "file:apps/mobile/lib/token-storage.ts"
+      ]
+    },
+    {
+      "id": "layer:api-backend",
+      "name": "API Backend",
+      "description": "Express + Socket.IO backend (apps/api): HTTP server entry, auth routes, Socket.IO room handlers, Redis-backed game-state engine, round/role logic, and TypeScript build config.",
+      "nodeIds": [
+        "config:apps/api/package.json",
+        "config:apps/api/tsconfig.json",
+        "file:apps/api/tsconfig.tsbuildinfo",
+        "file:apps/api/src/index.ts",
+        "file:apps/api/src/auth-routes.ts",
+        "file:apps/api/src/routes/rooms.ts",
+        "file:apps/api/src/socket/roomHandler.ts",
+        "file:apps/api/src/lib/redis.ts",
+        "file:apps/api/src/game/redisKeys.ts",
+        "file:apps/api/src/game/roundConfig.ts",
+        "file:apps/api/src/game/roundEngine.ts",
+        "file:apps/api/src/game/roleAssignment.ts",
+        "file:apps/api/src/services/roleAssignmentService.ts",
+        "file:apps/api/src/services/roundService.ts"
+      ]
+    },
+    {
+      "id": "layer:cicd-infrastructure",
+      "name": "CI/CD & Infrastructure",
+      "description": "Continuous integration pipelines and Docker/Compose infrastructure for local and containerized runtime environments.",
+      "nodeIds": [
+        "pipeline:.github/workflows/ci.yml",
+        "service:docker-compose.yml",
+        "service:.dockerignore"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Project Overview",
+      "description": "Start with README.md to understand the monorepo purpose: a Turborepo containing apps (docs, web, admin, api, mobile) and shared packages (@repo/ui, @repo/auth, @repo/db, @repo/types, etc.). CLAUDE.md captures the AI-assistant conventions used throughout this codebase.",
+      "nodeIds": [
+        "document:README.md",
+        "document:CLAUDE.md"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Monorepo Tooling",
+      "description": "Tour the root build orchestration: package.json declares scripts and workspaces, turbo.json defines Turborepo task pipelines, and pnpm-workspace.yaml lists the apps and packages that pnpm links together.",
+      "nodeIds": [
+        "config:package.json",
+        "config:turbo.json",
+        "config:pnpm-workspace.yaml"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Database Schema",
+      "description": "Inspect packages/db/prisma/schema.prisma to see the canonical data model for the system — the entities that back rooms, rounds, users, and game state used by the api server.",
+      "nodeIds": [
+        "schema:packages/db/prisma/schema.prisma",
+        "config:packages/db/package.json"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Database Client & Migrations",
+      "description": "Look at packages/db/src/index.ts (the generated/extended Prisma client entry point) and prisma.config.ts to see how migrations and the client are wired up for use by the api and shared packages.",
+      "nodeIds": [
+        "file:packages/db/src/index.ts",
+        "file:packages/db/prisma.config.ts"
+      ]
+    },
+    {
+      "order": 5,
+      "title": "API Server Entry Point",
+      "description": "Open apps/api/src/index.ts — the Express + Socket.IO boot file. This is where the HTTP server, auth routes, and real-time socket handlers are wired up and the app starts listening.",
+      "nodeIds": [
+        "file:apps/api/src/index.ts"
+      ]
+    },
+    {
+      "order": 6,
+      "title": "Game Logic & Real-time Channels",
+      "description": "Explore apps/api/src/game/* (Redis-backed round, role, and scoring logic) and apps/api/src/socket/roomHandler.ts, which implements the Socket.IO room/channel handlers that drive the live game.",
+      "nodeIds": [
+        "file:apps/api/src/game/redisKeys.ts",
+        "file:apps/api/src/socket/roomHandler.ts"
+      ]
+    },
+    {
+      "order": 7,
+      "title": "Shared Auth",
+      "description": "packages/auth houses the Better Auth configuration reused by web, admin, api, and mobile. The package's index.ts and package.json are the integration points for cross-app authentication.",
+      "nodeIds": [
+        "config:packages/auth/package.json",
+        "file:packages/auth/src/index.ts"
+      ]
+    },
+    {
+      "order": 8,
+      "title": "Web & Admin Apps",
+      "description": "Both apps/web and apps/admin are Next.js (App Router) apps with home, login, and signup pages. Review the page.tsx files in app/page.tsx, app/login/page.tsx, and app/signup/page.tsx to see the customer and admin entry points.",
+      "nodeIds": [
+        "file:apps/web/app/page.tsx",
+        "file:apps/web/app/login/page.tsx",
+        "file:apps/web/app/signup/page.tsx",
+        "file:apps/admin/app/page.tsx",
+        "file:apps/admin/app/login/page.tsx",
+        "file:apps/admin/app/signup/page.tsx"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Mobile App",
+      "description": "apps/mobile is an Expo + Expo Router app. The app/index.tsx (login), app/home.tsx, and app/signup.tsx screens are the main user-facing routes registered through the root layout.",
+      "nodeIds": [
+        "file:apps/mobile/app/index.tsx",
+        "file:apps/mobile/app/home.tsx",
+        "file:apps/mobile/app/signup.tsx"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "CI/CD",
+      "description": "Wrap up with the continuous-integration pipeline at .github/workflows/ci.yml and the docker-compose.yml that orchestrates the local services (api, db, redis, etc.) for development and testing.",
+      "nodeIds": [
+        "pipeline:.github/workflows/ci.yml",
+        "service:docker-compose.yml"
+      ]
+    }
+  ]
+}
