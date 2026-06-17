@@ -17,7 +17,7 @@ export default function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/home",
+        callbackURL: `${window.location.origin}/home`,
       });
     } catch (err) {
       setError(
