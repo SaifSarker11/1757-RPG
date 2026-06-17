@@ -75,7 +75,7 @@ const io = new Server(app.server, {
 });
 
 registerRoomHandlers(io);
-registerRoomRoutes(app);
+registerRoomRoutes(app, io);
 
 app.get("/health", async () => {
   return { status: "ok", timestamp: new Date().toISOString() };

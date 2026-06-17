@@ -1,4 +1,4 @@
-﻿import { Server, Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { db, PlayerTeam, RoomStatus } from "@repo/db";
 import redis from "../lib/redis";
 
@@ -17,9 +17,75 @@ const ROUND_TEAM_SIZES: Record<number, number> = {
 
 const DISCUSSION_DURATION_MS = 120000;
 
+async function broadcastOnlineUsers(io: Server) {
+  try {
+    const onlineUsersMap = new Map<string, { userId: string; username: string; socketId: string }>();
+    for (const [id, s] of io.sockets.sockets) {
+      const userId = s.data.userId;
+      const username = s.data.username || "Guest";
+      if (userId) {
+        onlineUsersMap.set(userId, { userId, username, socketId: id });
+      }
+    }
+
+    const onlineUsers = Array.from(onlineUsersMap.values());
+    const userIds = onlineUsers.map((u) => u.userId);
+
+    const activePlayers = await db.roomPlayer.findMany({
+      where: { userId: { in: userIds } },
+      include: { room: true },
+    });
+
+    const activeUserRoomMap = new Map<string, string>();
+    for (const player of activePlayers) {
+      if (player.room && player.room.status !== "FINISHED") {
+        activeUserRoomMap.set(player.userId, player.roomId);
+      }
+    }
+
+    const usersList = onlineUsers.map((u) => ({
+      userId: u.userId,
+      username: u.username,
+      roomId: activeUserRoomMap.get(u.userId) || null,
+    }));
+
+    io.emit("online-users:update", usersList);
+  } catch (error) {
+    console.error("Error broadcasting online users:", error);
+  }
+}
+
 export function registerRoomHandlers(io: Server): void {
   io.on("connection", (socket: Socket) => {
     const socketRooms = new Set<string>();
+
+    socket.on("user:identify", async ({ userId, username }: { userId: string; username: string }) => {
+      if (!userId || typeof userId !== "string") return;
+      socket.data.userId = userId;
+      socket.data.username = username || "Anonymous";
+      
+      const privateRoom = `user:${userId}`;
+      socket.join(privateRoom);
+      socketRooms.add(privateRoom);
+
+      await broadcastOnlineUsers(io);
+    });
+
+    socket.on("room:invite", ({ targetUserId, roomId, roomCode, hostName }: { targetUserId: string; roomId: string; roomCode: string; hostName: string }) => {
+      if (!targetUserId || !roomId || !roomCode || !hostName) return;
+      io.to(`user:${targetUserId}`).emit("room:invited", { roomId, roomCode, hostName });
+    });
+
+    socket.on("room:send-message", ({ roomId, username, text }: { roomId: string; username: string; text: string }) => {
+      if (!roomId || !username || !text) return;
+      const message = {
+        id: Math.random().toString(36).substring(2, 11),
+        username,
+        text,
+        timestamp: new Date().toISOString(),
+      };
+      io.to(roomId).emit("room:message", message);
+    });
 
     socket.on("room:join", ({ roomId, userId }: { roomId: string; userId: string; socketId?: string }) => {
       if (!roomId || typeof roomId !== "string" || !userId || typeof userId !== "string") {
@@ -31,6 +97,7 @@ export function registerRoomHandlers(io: Server): void {
       socketRooms.add(roomId);
 
       io.to(roomId).emit("game:join", { roomId, userId });
+      broadcastOnlineUsers(io); // Update lobby statuses to in-room
     });
 
     socket.on("room:leave", ({ roomId, userId }: { roomId: string; userId: string }) => {
@@ -42,6 +109,7 @@ export function registerRoomHandlers(io: Server): void {
       socketRooms.delete(roomId);
 
       io.to(roomId).emit("game:leave", { roomId, userId });
+      broadcastOnlineUsers(io); // Update lobby statuses to idle
     });
 
     socket.on("round:propose-team", async ({ roomId, playerIds }: { roomId: string; playerIds: string[] }) => {
@@ -192,9 +260,10 @@ export function registerRoomHandlers(io: Server): void {
       }
     });
 
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       // Clean up socket room tracking
       socketRooms.clear();
+      await broadcastOnlineUsers(io);
     });
   });
 }

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { authClient } from "@/lib/auth-client";
-import { Settings, LogOut, ChevronDown, Send, MessageSquare } from "lucide-react";
+import { Settings, LogOut, ChevronDown, Send, MessageSquare, Plus, Shuffle, LogIn, Users, AlertTriangle } from "lucide-react";
 
 interface ChatMessage {
   id: string;
@@ -20,9 +20,17 @@ export default function HomePage() {
   const { data: session, isPending } = authClient.useSession();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
-  const [theme, setTheme] = useState<string>("retro");
+  const [theme, setTheme] = useState<string>("lemonade");
   const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Room & Online states
+  const [onlineUsers, setOnlineUsers] = useState<{ userId: string; username: string; roomId: string | null }[]>([]);
+  const [roomInvite, setRoomInvite] = useState<{ roomId: string; roomCode: string; hostName: string } | null>(null);
+  const [maxPlayers, setMaxPlayers] = useState<number>(10);
+  const [roomCodeInput, setRoomCodeInput] = useState<string>("");
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Themes list
   const DAISYUI_THEMES = [
@@ -49,7 +57,7 @@ export default function HomePage() {
 
   // Initialize theme from localStorage/document
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "retro";
+    const savedTheme = localStorage.getItem("theme") || "lemonade";
     setTheme(savedTheme);
   }, []);
 
@@ -82,6 +90,9 @@ export default function HomePage() {
     });
     socketRef.current = socket;
 
+    // Identify user
+    socket.emit("user:identify", { userId: session.user.id, username: session.user.name });
+
     // Listen for past message history
     socket.on("chat:history", (history: ChatMessage[]) => {
       setMessages(history);
@@ -90,6 +101,16 @@ export default function HomePage() {
     // Listen for new incoming messages
     socket.on("chat:message", (message: ChatMessage) => {
       setMessages((prev) => [...prev, message]);
+    });
+
+    // Listen for online users update
+    socket.on("online-users:update", (users: any[]) => {
+      setOnlineUsers(users);
+    });
+
+    // Listen for room invitation
+    socket.on("room:invited", (invite: any) => {
+      setRoomInvite(invite);
     });
 
     return () => {
@@ -154,6 +175,83 @@ export default function HomePage() {
       setSaveError(err instanceof Error ? err.message : "Failed to update profile");
     } finally {
       setSaveLoading(false);
+    }
+  };
+
+  const handleCreateRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!session?.user?.id) return;
+    setActionLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const createRes = await fetch("/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hostUserId: session.user.id, maxPlayers }),
+      });
+
+      const createData = await createRes.json();
+      if (!createRes.ok || !createData.roomId) {
+        throw new Error(createData.error || "Failed to create room");
+      }
+
+      router.push(`/room/${createData.roomId}`);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleJoinRandom = async () => {
+    if (!session?.user?.id) return;
+    setActionLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/rooms/join-random", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user.id }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.roomId) {
+        throw new Error(data.error || "Failed to join random room");
+      }
+
+      router.push(`/room/${data.roomId}`);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleJoinByCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roomCodeInput.trim() || !session?.user?.id) return;
+    setActionLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch(`/rooms/${roomCodeInput.trim()}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user.id }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.roomId) {
+        throw new Error(data.error || "Failed to join room");
+      }
+
+      router.push(`/room/${data.roomId}`);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "Room not found or game already in progress");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -233,106 +331,300 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Main Chat Container */}
-      <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col p-4 md:py-6">
-        <div className="flex flex-1 flex-col overflow-hidden border-4 border-base-content bg-base-100 shadow-neo">
-          
-          {/* Diagnostic Info Stripe */}
-          <div className="bg-diagonal-hatch h-5 border-b-2 border-base-content flex items-center justify-between px-4 text-[9px] font-mono font-bold tracking-wider text-base-content/80 select-none">
-            <span>SESSION_ADDR: {SOCKET_URL}</span>
-            <span>REALTIME_COMMS: CONNECTED</span>
-          </div>
+      {/* Main Console Layout */}
+      <section className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 md:py-6 lg:flex-row">
+        {/* Left Column: Lobby Gateway */}
+        <div className="flex flex-1 flex-col gap-6 lg:max-w-md">
+          {/* Create / Join Console */}
+          <div className="flex flex-col border-4 border-base-content bg-base-100 shadow-neo relative">
+            <div className="absolute -top-1.5 -left-1.5 w-4 h-4 border-t-2 border-l-2 border-primary"></div>
+            <div className="absolute -bottom-1.5 -right-1.5 w-4 h-4 border-b-2 border-r-2 border-secondary"></div>
+            
+            <div className="bg-diagonal-hatch h-6 border-b-2 border-base-content flex items-center justify-between px-3 text-[10px] font-mono font-bold tracking-wider text-base-content/85 select-none">
+              <span>CONSOLE: LOBBY_GATEWAY</span>
+              <span>SYS_ACTIVE</span>
+            </div>
 
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-6 bg-base-100">
-            {messages.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-center p-4">
-                <div className="mb-4 border-2 border-base-content bg-base-200 p-4 shadow-neo-sm text-base-content">
-                  <MessageSquare size={32} />
+            <div className="p-5 space-y-6">
+              {errorMessage && (
+                <div className="border border-error bg-error/10 p-2 text-error text-[10px] font-bold uppercase shadow-neo-sm animate-pulse flex items-center gap-1.5">
+                  <AlertTriangle size={12} />
+                  <span>ERROR: {errorMessage}</span>
                 </div>
-                <h3 className="text-lg font-black font-mono uppercase">COMMS_LOG: EMPTY</h3>
-                <p className="text-xs font-mono text-base-content/60 mt-1 uppercase">Be the first to transmit a message!</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-5">
-                {messages.map((msg) => {
-                  const isOwnMessage = msg.username === session.user.name;
-                  return (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
-                    >
-                      {/* Sender username */}
-                      {!isOwnMessage && (
-                        <span className="mb-1 ml-1 font-mono text-xs font-black uppercase text-secondary">
-                          {msg.username}
-                        </span>
-                      )}
-                      
-                      {/* Message Bubble */}
-                      <div
-                        className={`max-w-[80%] px-4 py-3 font-mono text-xs shadow-neo-sm border-2 border-base-content break-words ${
-                          isOwnMessage
-                            ? "rounded-2xl rounded-tr-none bg-primary text-primary-content"
-                            : "rounded-2xl rounded-tl-none bg-base-200 text-base-content"
-                        }`}
-                      >
-                        <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                      </div>
+              )}
 
-                      {/* Timestamp */}
-                      <span className="mt-1 px-1.5 font-mono text-[9px] font-bold text-base-content/50 uppercase">
-                        [{formatTime(msg.timestamp)}]
-                      </span>
-                    </div>
-                  );
-                })}
-                <div ref={messagesEndRef} />
-              </div>
-            )}
-          </div>
-
-          {/* Quick Emoji Toolbar */}
-          <div className="flex items-center gap-2 overflow-x-auto border-t-2 border-base-content bg-base-200 px-4 py-2 select-none">
-            <span className="font-mono text-[10px] font-black text-base-content/70 uppercase tracking-wider shrink-0 border-r border-base-content/30 pr-2">
-              QUICK_INPUT:
-            </span>
-            <div className="flex items-center gap-1.5">
-              {quickEmojis.map((emoji) => (
+              {/* Join Random Room */}
+              <div className="space-y-2">
+                <h3 className="text-xs font-black uppercase text-base-content/90 font-mono tracking-wider flex items-center gap-1.5">
+                  <Shuffle size={14} className="text-primary animate-pulse" />
+                  <span>[ Random Ingress ]</span>
+                </h3>
+                <p className="text-[10px] text-base-content/60 font-mono">
+                  Enter the first queue waiting for agents, or deploy a new node if none exist.
+                </p>
                 <button
-                  key={emoji}
-                  type="button"
-                  onClick={() => handleAddEmoji(emoji)}
-                  className="rounded-md px-1.5 py-0.5 text-sm font-mono border border-transparent hover:border-base-content hover:bg-base-100 transition-all hover:scale-110 active:scale-90"
+                  onClick={handleJoinRandom}
+                  disabled={actionLoading}
+                  className="btn btn-primary w-full border-2 border-base-content font-mono font-bold uppercase text-xs shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 h-11"
                 >
-                  {emoji}
+                  {actionLoading ? "CONNECTING..." : "JOIN RANDOM ROOM"}
                 </button>
-              ))}
+              </div>
+
+              <div className="border-t-2 border-dashed border-base-content/20 my-4"></div>
+
+              {/* Join by Code */}
+              <form onSubmit={handleJoinByCode} className="space-y-3">
+                <h3 className="text-xs font-black uppercase text-base-content/90 font-mono tracking-wider flex items-center gap-1.5">
+                  <LogIn size={14} className="text-secondary" />
+                  <span>[ Join by Node ID/Code ]</span>
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter 6-char Room Code or ID"
+                    value={roomCodeInput}
+                    onChange={(e) => setRoomCodeInput(e.target.value)}
+                    maxLength={32}
+                    className="flex-1 border-2 border-base-content bg-base-100 px-3 py-2 font-mono text-xs shadow-neo-sm focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-neo transition-all placeholder:text-base-content/30"
+                  />
+                  <button
+                    type="submit"
+                    disabled={actionLoading || !roomCodeInput.trim()}
+                    className="btn btn-secondary border-2 border-base-content font-mono font-bold uppercase text-xs px-4 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all disabled:opacity-50"
+                  >
+                    CONNECT
+                  </button>
+                </div>
+              </form>
+
+              <div className="border-t-2 border-dashed border-base-content/20 my-4"></div>
+
+              {/* Create Custom Room */}
+              <form onSubmit={handleCreateRoom} className="space-y-3">
+                <h3 className="text-xs font-black uppercase text-base-content/90 font-mono tracking-wider flex items-center gap-1.5">
+                  <Plus size={14} className="text-accent" />
+                  <span>[ Deploy Custom Node ]</span>
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-mono text-base-content/80">
+                    <span>MAX PLAYER SLOTS:</span>
+                    <span className="font-bold text-accent">{maxPlayers} PLYRS</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="6"
+                    max="15"
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(parseInt(e.target.value))}
+                    className="range range-accent range-xs border border-base-content"
+                  />
+                  <div className="flex justify-between text-[8px] font-mono opacity-50 px-1">
+                    <span>MIN: 6</span>
+                    <span>MID: 10</span>
+                    <span>MAX: 15</span>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="btn btn-accent w-full border-2 border-base-content font-mono font-bold uppercase text-xs shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50 h-11 text-accent-content"
+                >
+                  {actionLoading ? "PROVISIONING..." : "CREATE CUSTOM LOBBY"}
+                </button>
+              </form>
             </div>
           </div>
 
-          {/* Message Input Form */}
-          <form
-            onSubmit={handleSendMessage}
-            className="flex gap-2.5 border-t-4 border-base-content bg-base-100 p-4"
-          >
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Transmit encrypted message..."
-              className="flex-1 border-2 border-base-content bg-base-100 px-4 py-3 font-mono text-xs shadow-neo-sm focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-neo transition-all placeholder:text-base-content/40"
-            />
-            <button
-              type="submit"
-              disabled={!inputText.trim()}
-              className="btn btn-primary border-2 border-base-content font-mono font-bold uppercase text-xs px-6 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
-            >
-              <Send size={14} />
-              <span className="hidden sm:inline ml-1.5">TRANSMIT</span>
-            </button>
-          </form>
+          {/* Incoming Invitations Alerts */}
+          {roomInvite && (
+            <div className="flex flex-col border-4 border-primary bg-base-100 shadow-neo relative">
+              <div className="absolute -top-1.5 -left-1.5 w-4 h-4 border-t-2 border-l-2 border-primary"></div>
+              <div className="absolute -bottom-1.5 -right-1.5 w-4 h-4 border-b-2 border-r-2 border-primary"></div>
+              <div className="bg-primary px-3 py-1 text-[9px] font-mono font-bold text-primary-content uppercase tracking-wider">
+                ⚡ INCOMING ROOM INVITATION
+              </div>
+              <div className="p-4 space-y-4 font-mono text-xs">
+                <p>
+                  Host <span className="font-bold text-primary">{roomInvite.hostName}</span> invites you to join Room <span className="font-bold text-secondary uppercase bg-base-200 px-1.5 py-0.5 border border-base-content/20">{roomInvite.roomCode}</span>.
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => setRoomInvite(null)}
+                    className="btn btn-outline border-2 border-base-content btn-xs font-bold font-mono h-8 px-3"
+                  >
+                    DECLINE
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setActionLoading(true);
+                      setErrorMessage(null);
+                      try {
+                        const res = await fetch(`/rooms/${roomInvite.roomId}/join`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ userId: session.user.id }),
+                        });
+                        const data = await res.json();
+                        if (!res.ok || !data.roomId) {
+                          throw new Error(data.error || "Failed to join room");
+                        }
+                        router.push(`/room/${data.roomId}`);
+                      } catch (err) {
+                        setErrorMessage(err instanceof Error ? err.message : "Error joining room");
+                      } finally {
+                        setActionLoading(false);
+                        setRoomInvite(null);
+                      }
+                    }}
+                    className="btn btn-primary border-2 border-base-content btn-xs font-bold font-mono h-8 px-3"
+                  >
+                    ACCEPT
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
+        {/* Right Column: Comms Console & Users */}
+        <div className="flex-1 flex flex-col gap-6">
+          {/* Online Users Module */}
+          <div className="flex flex-col border-4 border-base-content bg-base-100 shadow-neo relative max-h-[160px]">
+            <div className="absolute -top-1.5 -left-1.5 w-4 h-4 border-t-2 border-l-2 border-secondary"></div>
+            
+            <div className="bg-diagonal-hatch h-6 shrink-0 border-b-2 border-base-content flex items-center justify-between px-3 text-[10px] font-mono font-bold tracking-wider text-base-content/85 select-none">
+              <span className="flex items-center gap-1.5">
+                <Users size={12} className="text-secondary" />
+                <span>ONLINE_RADAR: ACTIVE_USERS ({onlineUsers.length})</span>
+              </span>
+              <span>RADAR</span>
+            </div>
+
+            <div className="p-3 overflow-y-auto flex-1 bg-base-100">
+              {onlineUsers.length <= 1 ? (
+                <p className="text-[10px] font-mono text-base-content/50 uppercase italic text-center p-3">No other agents online.</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {onlineUsers.map(user => {
+                    const isSelf = user.userId === session.user.id;
+                    if (isSelf) return null;
+                    return (
+                      <div
+                        key={user.userId}
+                        className="flex items-center gap-1.5 px-2.5 py-1 border border-base-content bg-base-200 text-[10px] font-mono shadow-neo-sm"
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${user.roomId ? 'bg-secondary animate-pulse' : 'bg-success'}`}></span>
+                        <span className="font-bold text-base-content">{user.username}</span>
+                        <span className="opacity-50 text-[8px]">
+                          [{user.roomId ? "IN_ROOM" : "IDLE"}]
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Global Chat logs */}
+          <div className="flex-1 flex flex-col overflow-hidden border-4 border-base-content bg-base-100 shadow-neo relative min-h-[300px]">
+            {/* Corner Angle Brackets */}
+            <div className="absolute -top-1.5 -right-1.5 w-4 h-4 border-t-2 border-r-2 border-primary"></div>
+            <div className="absolute -bottom-1.5 -left-1.5 w-4 h-4 border-b-2 border-l-2 border-secondary"></div>
+
+            <div className="bg-diagonal-hatch h-6 shrink-0 border-b-2 border-base-content flex items-center justify-between px-4 text-[9px] font-mono font-bold tracking-wider text-base-content/80 select-none">
+              <span>SESSION_ADDR: {SOCKET_URL}</span>
+              <span>GLOBAL_COMMS: CONNECTED</span>
+            </div>
+
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 bg-base-100">
+              {messages.length === 0 ? (
+                <div className="flex h-full flex-col items-center justify-center text-center p-4">
+                  <div className="mb-3 border-2 border-base-content bg-base-200 p-3 shadow-neo-sm text-base-content">
+                    <MessageSquare size={24} />
+                  </div>
+                  <h3 className="text-xs font-black font-mono uppercase">COMMS_LOG: EMPTY</h3>
+                  <p className="text-[9px] font-mono text-base-content/50 mt-1 uppercase">Be the first to transmit a message!</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {messages.map((msg) => {
+                    const isOwnMessage = msg.username === session.user.name;
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
+                      >
+                        {!isOwnMessage && (
+                          <span className="mb-0.5 ml-1 font-mono text-[9px] font-black uppercase text-secondary">
+                            {msg.username}
+                          </span>
+                        )}
+                        
+                        <div
+                          className={`max-w-[85%] px-3 py-2 font-mono text-[11px] shadow-neo-sm border-2 border-base-content break-words ${
+                            isOwnMessage
+                              ? "rounded-xl rounded-tr-none bg-primary text-primary-content"
+                              : "rounded-xl rounded-tl-none bg-base-200 text-base-content"
+                          }`}
+                        >
+                          <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                        </div>
+
+                        <span className="mt-0.5 px-1 font-mono text-[8px] font-bold text-base-content/50 uppercase">
+                          [{formatTime(msg.timestamp)}]
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
+            </div>
+
+            {/* Quick Emoji Toolbar */}
+            <div className="flex items-center gap-1.5 overflow-x-auto border-t-2 border-base-content bg-base-200 px-3 py-1.5 select-none shrink-0">
+              <span className="font-mono text-[9px] font-black text-base-content/70 uppercase tracking-wider shrink-0 border-r border-base-content/30 pr-2">
+                QUICK_INPUT:
+              </span>
+              <div className="flex items-center gap-1">
+                {quickEmojis.map((emoji) => (
+                  <button
+                    key={emoji}
+                    type="button"
+                    onClick={() => handleAddEmoji(emoji)}
+                    className="rounded-md px-1.5 py-0.5 text-xs font-mono border border-transparent hover:border-base-content hover:bg-base-100 transition-all hover:scale-110 active:scale-90"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Message Input Form */}
+            <form
+              onSubmit={handleSendMessage}
+              className="flex gap-2 border-t-2 border-base-content bg-base-100 p-3 shrink-0"
+            >
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Transmit global broadcast..."
+                className="flex-1 border-2 border-base-content bg-base-100 px-3 py-2 font-mono text-xs shadow-neo-sm focus:outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-neo transition-all placeholder:text-base-content/30"
+              />
+              <button
+                type="submit"
+                disabled={!inputText.trim()}
+                className="btn btn-primary border-2 border-base-content font-mono font-bold uppercase text-xs px-4 shadow-neo-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo transition-all"
+              >
+                <Send size={12} />
+                <span className="hidden sm:inline ml-1 font-mono text-[10px]">SEND</span>
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 

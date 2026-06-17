@@ -40,7 +40,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var theme = localStorage.getItem('theme') || 'retro';
+                var theme = localStorage.getItem('theme') || 'lemonade';
                 document.documentElement.setAttribute('data-theme', theme);
               } catch (_) {}
             `,

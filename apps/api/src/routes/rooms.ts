@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { randomBytes } from "crypto";
 import { db, RoomStatus } from "@repo/db";
 import { assignRoles } from "../services/roleAssignmentService.js";
+import { Server } from "socket.io";
 
 function generateRoomCode(): string {
   const bytes = randomBytes(4);
@@ -74,7 +75,7 @@ type GetRoomResponse = {
   players: { userId: string; team: string | null }[];
 };
 
-export async function registerRoomRoutes(app: FastifyInstance) {
+export async function registerRoomRoutes(app: FastifyInstance, io: Server) {
   if (process.env.NODE_ENV !== "production") {
     app.post("/rooms/dev/create-user", async (request, reply) => {
       const { name } = request.body as { name?: string };
@@ -128,6 +129,79 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     };
   });
 
+  app.post("/rooms/join-random", async (request, reply) => {
+    const { userId } = request.body as { userId?: string };
+    if (!userId || typeof userId !== "string") {
+      return reply.status(400).send({ error: "userId required", success: false });
+    }
+
+    const user = await db.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return reply.status(400).send({ error: "User not found", success: false });
+    }
+
+    const waitingRooms = await db.room.findMany({
+      where: { status: "WAITING" },
+      include: { players: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const roomToJoin = waitingRooms.find((r) => r.players.length < r.maxPlayers);
+
+    if (roomToJoin) {
+      const existingPlayer = roomToJoin.players.find((p) => p.userId === userId);
+      if (existingPlayer) {
+        return reply.send({
+          roomId: roomToJoin.id,
+          code: roomToJoin.code,
+          status: roomToJoin.status,
+          maxPlayers: roomToJoin.maxPlayers,
+          hostUserId: roomToJoin.hostUserId,
+        });
+      }
+
+      await db.roomPlayer.create({
+        data: {
+          roomId: roomToJoin.id,
+          userId,
+        },
+      });
+
+      return reply.send({
+        roomId: roomToJoin.id,
+        code: roomToJoin.code,
+        status: roomToJoin.status,
+        maxPlayers: roomToJoin.maxPlayers,
+        hostUserId: roomToJoin.hostUserId,
+      });
+    }
+
+    // No room available, create a new one!
+    const code = await generateUniqueRoomCode();
+    const newRoom = await db.room.create({
+      data: {
+        code,
+        hostUserId: userId,
+        maxPlayers: 10,
+        status: "WAITING",
+        currentRound: 0,
+        players: {
+          create: {
+            userId,
+          },
+        },
+      },
+    });
+
+    return reply.send({
+      roomId: newRoom.id,
+      code: newRoom.code,
+      status: newRoom.status,
+      maxPlayers: newRoom.maxPlayers,
+      hostUserId: newRoom.hostUserId,
+    });
+  });
+
   app.post("/rooms/:roomId/join", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
     const body = request.body as JoinRoomBody;
@@ -136,8 +210,14 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: "userId required", success: false });
     }
 
-    const room = await db.room.findUnique({
-      where: { id: roomId },
+    // Support code search too
+    const room = await db.room.findFirst({
+      where: {
+        OR: [
+          { id: roomId },
+          { code: roomId.toUpperCase() }
+        ]
+      },
       include: { players: true, _count: { select: { players: true } } },
     });
 
@@ -161,13 +241,13 @@ export async function registerRoomRoutes(app: FastifyInstance) {
 
     await db.roomPlayer.create({
       data: {
-        roomId,
+        roomId: room.id,
         userId: body.userId,
       },
     });
 
     return {
-      roomId,
+      roomId: room.id,
       userId: body.userId,
       playerCount: playerCount + 1,
     };
@@ -220,8 +300,13 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     };
   });
 
-  app.get("/rooms/:roomId", async (request, reply) => {
+  app.post("/rooms/:roomId/kick", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
+    const { userId, targetUserId } = request.body as { userId?: string; targetUserId?: string };
+
+    if (!userId || !targetUserId) {
+      return reply.status(400).send({ error: "userId and targetUserId required", success: false });
+    }
 
     const room = await db.room.findUnique({
       where: { id: roomId },
@@ -232,8 +317,142 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: "Room not found", success: false });
     }
 
+    if (room.hostUserId !== userId) {
+      return reply.status(403).send({ error: "Only the host can kick players", success: false });
+    }
+
+    const player = room.players.find((p) => p.userId === targetUserId);
+    if (!player) {
+      return reply.status(404).send({ error: "Player not in room", success: false });
+    }
+
+    await db.roomPlayer.delete({ where: { id: player.id } });
+
+    // Notify clients in the room
+    io.to(roomId).emit("room:kicked", { userId: targetUserId });
+    io.to(roomId).emit("game:leave", { roomId, userId: targetUserId });
+
+    return reply.send({ success: true, roomId, kickedUserId: targetUserId });
+  });
+
+  app.post("/rooms/:roomId/promote", async (request, reply) => {
+    const { roomId } = request.params as { roomId: string };
+    const { userId, targetUserId } = request.body as { userId?: string; targetUserId?: string };
+
+    if (!userId || !targetUserId) {
+      return reply.status(400).send({ error: "userId and targetUserId required", success: false });
+    }
+
+    const room = await db.room.findUnique({
+      where: { id: roomId },
+      include: { players: true },
+    });
+
+    if (!room) {
+      return reply.status(404).send({ error: "Room not found", success: false });
+    }
+
+    if (room.hostUserId !== userId) {
+      return reply.status(403).send({ error: "Only the host can promote another user", success: false });
+    }
+
+    const isTargetInRoom = room.players.some((p) => p.userId === targetUserId);
+    if (!isTargetInRoom) {
+      return reply.status(400).send({ error: "Target player not in room", success: false });
+    }
+
+    await db.room.update({
+      where: { id: roomId },
+      data: { hostUserId: targetUserId },
+    });
+
+    // Notify clients in the room
+    io.to(roomId).emit("room:host-changed", { hostUserId: targetUserId });
+
+    return reply.send({ success: true, roomId, newHostUserId: targetUserId });
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    app.post("/rooms/:roomId/dev/fill-bots", async (request, reply) => {
+      const { roomId } = request.params as { roomId: string };
+
+      try {
+        const room = await db.room.findUnique({
+          where: { id: roomId },
+          include: { players: true },
+        });
+
+        if (!room) {
+          return reply.status(404).send({ error: "Room not found", success: false });
+        }
+
+        const currentCount = room.players.length;
+        const neededCount = Math.max(0, 6 - currentCount);
+        if (neededCount === 0) {
+          return reply.send({ success: true, message: "Room already has enough players", botsAdded: 0 });
+        }
+
+        const botsAdded = [];
+        for (let i = 0; i < neededCount; i++) {
+          const id = `bot-${generateId()}`;
+          const name = `Bot_${i + 1}`;
+          const email = `${id}@bot.local`;
+
+          const user = await db.user.create({
+            data: { id, name, email, isAnonymous: true },
+          });
+
+          await db.roomPlayer.create({
+            data: {
+              roomId,
+              userId: user.id,
+            },
+          });
+
+          botsAdded.push({ userId: user.id, username: name });
+        }
+
+        // Trigger socket events for bots joining and delayed messages
+        botsAdded.forEach((bot, index) => {
+          io.to(roomId).emit("game:join", { roomId, userId: bot.userId });
+
+          setTimeout(() => {
+            const message = {
+              id: Math.random().toString(36).substring(2, 11),
+              username: bot.username,
+              text: `hi, I am ${bot.username}! Ready to start!`,
+              timestamp: new Date().toISOString(),
+            };
+            io.to(roomId).emit("chat:message", message);
+          }, (index + 1) * 3000 + 4000); // Send message after 7s, 10s, 13s, etc.
+        });
+
+        return reply.send({ success: true, botsAdded });
+      } catch (error) {
+        request.log.error(error, "Error filling bots");
+        return reply.status(500).send({
+          error: error instanceof Error ? error.message : "Failed to fill bots",
+          success: false,
+        });
+      }
+    });
+  }
+
+  app.get("/rooms/:roomId", async (request, reply) => {
+    const { roomId } = request.params as { roomId: string };
+
+    const room = await db.room.findUnique({
+      where: { id: roomId },
+      include: { players: { include: { user: true } } },
+    });
+
+    if (!room) {
+      return reply.status(404).send({ error: "Room not found", success: false });
+    }
+
     return {
       id: room.id,
+      code: room.code,
       hostUserId: room.hostUserId,
       status: room.status,
       maxPlayers: room.maxPlayers,
@@ -242,7 +461,9 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       redWins: room.redWins,
       players: room.players.map((p) => ({
         userId: p.userId,
+        username: p.user?.name || "Guest",
         team: p.team,
+        isSelector: p.isSelector,
       })),
     };
   });
