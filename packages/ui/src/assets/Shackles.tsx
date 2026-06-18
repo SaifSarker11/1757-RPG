@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -8,106 +10,86 @@ export interface ShackleProps {
 }
 
 export function Shackles({ size = 120, className, opacity = 1 }: ShackleProps) {
-  const { theme } = useTheme();
-  const colors = theme.colors;
+  const { colors } = useTheme();
 
   return (
     <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 100 100" 
-      fill="none" 
+      width={size} height={size} 
+      viewBox="0 0 100 100" fill="none" 
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      opacity={opacity}
+      className={className} opacity={opacity}
     >
-      <defs>
-        {/* Glow effect specifically for the cyberpunk energy tether chains */}
-        <filter id="energyGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
+      {/* Background Y2K Tech Grid/Spikes */}
+      <path d="M 10 50 L 90 50 M 50 10 L 50 90" stroke={colors.accent} strokeWidth="1" strokeDasharray="2 4" />
+      <circle cx="50" cy="50" r="35" stroke={colors.accent} strokeWidth="1.5" strokeDasharray="6 12" />
 
       {/* 
-        CENTRAL CHAIN / ENERGY TETHER
-        Uses a thick dashed line to simulate chain links. 
-        In cyberpunk theme, it looks like a pulsing laser tether.
+        SHARP METALLIC CHAINS (Diamond Link Chain)
+        Classic Y2K style sharp interlocking diamond polygons.
       */}
-      <path 
-        d="M 30 65 Q 50 95 70 65" 
-        fill="none" 
-        stroke={colors.shackleChain} 
-        strokeWidth="6" 
-        strokeDasharray="8 6" 
-        strokeLinecap="round" 
-        filter="url(#energyGlow)"
-      />
-      {/* Inner chain ring connector shadow to give 3D depth to the links */}
-      <path 
-        d="M 30 65 Q 50 95 70 65" 
-        fill="none" 
-        stroke={colors.shackleShadow} 
-        strokeWidth="2" 
-        strokeDasharray="14 14" 
-        strokeLinecap="round" 
-      />
-
-      {/* LEFT CUFF */}
-      <g>
-        {/* Back Half of Cuff (Interior) */}
-        <path 
-          d="M 12 55 A 15 8 0 0 1 38 55" 
-          fill="none" 
-          stroke={colors.shackleShadow} 
-          strokeWidth="6" 
-          strokeLinecap="round" 
-        />
-        {/* Front Half of Cuff (Exterior) */}
-        <path 
-          d="M 10 55 A 15 8 0 0 0 40 55" 
-          fill="none" 
-          stroke={colors.shackleBase} 
-          strokeWidth="8" 
-          strokeLinecap="round" 
-        />
-        {/* Cuff Lock Mechanism */}
-        <rect x="20" y="60" width="10" height="6" rx="1" fill={colors.shackleHighlight} />
-        {/* Keyhole */}
-        <circle cx="25" cy="63" r="1.5" fill={colors.shackleShadow} />
+      <g stroke={colors.baseContent} strokeWidth="2.5" strokeLinejoin="miter">
+        {/* Link 1 */}
+        <polygon points="32,58 38,62 32,66 26,62" fill={colors.accent} />
+        {/* Link 2 */}
+        <polygon points="41,64 47,68 41,72 35,68" fill={colors.primary} />
+        {/* Link 3 (Center hanging link) */}
+        <polygon points="50,68 56,72 50,76 44,72" fill={colors.accent} />
+        {/* Link 4 */}
+        <polygon points="59,64 65,68 59,72 53,68" fill={colors.primary} />
+        {/* Link 5 */}
+        <polygon points="68,58 74,62 68,66 62,62" fill={colors.accent} />
       </g>
 
-      {/* RIGHT CUFF (Broken/Open state for dramatic effect) */}
-      <g>
-        {/* Back Half of Cuff */}
-        <path 
-          d="M 62 55 A 15 8 0 0 1 88 55" 
-          fill="none" 
-          stroke={colors.shackleShadow} 
-          strokeWidth="6" 
-          strokeLinecap="round" 
+      {/* LEFT CUFF (Sharp octagonal cuff) */}
+      <g stroke={colors.baseContent} strokeWidth="3" strokeLinejoin="miter">
+        {/* Shackle body */}
+        <polygon 
+          points="8,46 22,36 36,46 36,60 22,70 8,60" 
+          fill={colors.neutral} 
         />
-        {/* Front Half of Cuff - Only drawing the bottom part because it's swung open! */}
-        <path 
-          d="M 60 55 A 15 8 0 0 0 78 62" 
-          fill="none" 
-          stroke={colors.shackleBase} 
-          strokeWidth="8" 
-          strokeLinecap="round" 
+        {/* Inner negative space (cuff opening) - sharp hexagon */}
+        <polygon 
+          points="14,48 22,42 30,48 30,58 22,64 14,58" 
+          fill={colors.base100} 
         />
-        
-        {/* The broken top part of the front cuff, swung down */}
-        <path 
-          d="M 78 62 L 92 68" 
-          fill="none" 
-          stroke={colors.shackleBase} 
-          strokeWidth="8" 
-          strokeLinecap="round" 
-        />
-        
-        {/* Cuff Lock Mechanism attached to the broken hinge */}
-        <rect x="65" y="58" width="10" height="6" rx="1" fill={colors.shackleHighlight} transform="rotate(15, 65, 58)" />
+        {/* Lock box */}
+        <polygon points="32,48 38,48 38,58 32,58" fill={colors.primary} />
+        {/* Keyhole (Sharp diamond cutout) */}
+        <polygon points="22,51 24,53 22,55 20,53" fill={colors.baseContent} stroke="none" />
       </g>
+
+      {/* RIGHT CUFF (Shattered / Open Cuff) */}
+      <g stroke={colors.baseContent} strokeWidth="3" strokeLinejoin="miter">
+        {/* Right shackle body - rotated/hinged open */}
+        <g transform="translate(62, 36) rotate(35 0 0)">
+          {/* Back jaw */}
+          <path d="M 0,0 L 14,-10 L 28,0 L 28,14 L 14,24 L 0,14 Z" fill={colors.neutral} />
+          <path d="M 6,2 L 14,-4 L 22,2 L 22,12 L 14,18 L 6,12 Z" fill={colors.base100} />
+          
+          {/* Swung open front jaw */}
+          <g transform="translate(28, 0) rotate(60 0 0)">
+            <polygon points="0,0 -4,14 10,24 14,10" fill={colors.neutral} />
+            <polygon points="2,2 0,12 8,18 10,8" fill={colors.accent} />
+          </g>
+          
+          {/* Lock latch piece */}
+          <polygon points="-2,2 -8,2 -8,12 -2,12" fill={colors.primary} />
+        </g>
+      </g>
+
+      {/* Y2K 4-Point Star Sparkles */}
+      <path 
+        d="M 22 28 Q 22 35 15 35 Q 22 35 22 42 Q 22 35 29 35 Q 22 35 22 28 Z" 
+        fill={colors.accent} 
+        stroke={colors.baseContent}
+        strokeWidth="1.5"
+      />
+      <path 
+        d="M 78 22 Q 78 27 73 27 Q 78 27 78 32 Q 78 27 83 27 Q 78 27 78 22 Z" 
+        fill={colors.accent} 
+        stroke={colors.baseContent}
+        strokeWidth="1"
+      />
     </svg>
   );
 }

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/ui": "workspace:*",
     "better-auth": "latest",
     "next": "16.2.6",
     "react": "19.2.4",

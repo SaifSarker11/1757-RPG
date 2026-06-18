@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -8,112 +10,90 @@ export interface MaskProps {
 }
 
 export function Masquerade({ size = 120, className, opacity = 1 }: MaskProps) {
-  const { theme } = useTheme();
-  const colors = theme.colors;
+  const { colors } = useTheme();
 
   return (
     <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 100 100" 
-      fill="none" 
+      width={size} height={size} 
+      viewBox="0 0 100 100" fill="none" 
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      opacity={opacity}
+      className={className} opacity={opacity}
     >
+      {/* Background Y2K Tech Orbit Rings */}
+      <circle cx="50" cy="50" r="44" stroke={colors.accent} strokeWidth="1" strokeDasharray="4 4" />
+      <ellipse cx="50" cy="50" rx="42" ry="18" stroke={colors.accent} strokeWidth="1.5" transform="rotate(25 50 50)" />
+
       {/* 
-        Tilt the entire mask slightly for a dramatic, resting profile 
+        Tilt the entire mask slightly for a rakish Y2K look 
       */}
       <g transform="rotate(-8, 50, 50)">
         
-        {/* RIBBONS (Drawn behind the mask) */}
-        {/* Left Ribbon */}
-        <path 
-          d="M 15 48 Q 5 70 8 95" 
-          fill="none" 
-          stroke={colors.maskRibbon} 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-        />
-        {/* Right Ribbon */}
-        <path 
-          d="M 85 48 Q 95 70 90 95" 
-          fill="none" 
-          stroke={colors.maskRibbon} 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-        />
+        {/* RIBBONS - Sharp zigzag ties */}
+        <path d="M 15 48 L 5 70 L 10 95" fill="none" stroke={colors.neutral} strokeWidth="2.5" strokeLinecap="square" />
+        <path d="M 85 48 L 95 70 L 90 95" fill="none" stroke={colors.neutral} strokeWidth="2.5" strokeLinecap="square" />
 
-        {/* FEATHERS (Attached to the top right of the mask) */}
-        {/* Feather 1 (Long, arching left over the forehead) */}
-        <g>
-          <path 
-            d="M 75 38 Q 60 -5 25 10 Q 55 20 75 38 Z" 
-            fill={colors.maskFeather1} 
-            opacity="0.9"
-          />
-          {/* Feather 1 Stem */}
-          <path 
-            d="M 75 38 Q 60 -5 25 10" 
-            fill="none" 
-            stroke={colors.maskAccent} 
-            strokeWidth="1" 
-            opacity="0.6"
-          />
-        </g>
+        {/* FEATHERS - Sharp geometric arrow shapes */}
+        {/* Feather 1 (Long, arching left) */}
+        <polygon 
+          points="75,38 55,2 25,12 55,20" 
+          fill={colors.secondary} stroke={colors.baseContent} strokeWidth="2.5" strokeLinejoin="miter"
+        />
+        {/* Feather 1 Spine */}
+        <path d="M 75 38 L 40 10" fill="none" stroke={colors.accent} strokeWidth="1.5" />
 
         {/* Feather 2 (Shorter, arching right) */}
-        <g>
-          <path 
-            d="M 78 40 Q 100 10 95 30 Q 88 35 78 40 Z" 
-            fill={colors.maskFeather2} 
-            opacity="0.9"
-          />
-          {/* Feather 2 Stem */}
-          <path 
-            d="M 78 40 Q 100 10 95 30" 
-            fill="none" 
-            stroke={colors.maskAccent} 
-            strokeWidth="1" 
-            opacity="0.6"
-          />
-        </g>
+        <polygon 
+          points="78,40 102,10 95,32 85,35" 
+          fill={colors.accent} stroke={colors.baseContent} strokeWidth="2.5" strokeLinejoin="miter"
+        />
+        {/* Feather 2 Spine */}
+        <path d="M 78 40 L 92 21" fill="none" stroke={colors.primary} strokeWidth="1.5" />
 
         {/* 
           MAIN MASK BASE & EYE HOLES 
-          Using fillRule="evenodd" allows us to perfectly punch the eye holes 
-          out of the mask, so whatever background is behind the SVG shows through!
+          Sharp polygonal contours, sharp diamond eye cutouts.
+          Uses evenodd to punch clean holes through the mask.
         */}
         <path 
           fillRule="evenodd" 
           clipRule="evenodd"
           d="
-            M 15 40 
-            Q 50 20 85 40 
-            Q 95 60 80 65 
-            Q 65 70 50 55 
-            Q 35 70 20 65 
-            Q 5 60 15 40 
+            M 15,40 
+            L 50,22 
+            L 85,40 
+            L 92,60 
+            L 80,68 
+            L 50,55 
+            L 20,68 
+            L 8,60 
             Z
             
-            M 25 45 Q 35 37 45 45 Q 35 53 25 45 Z
-            M 55 45 Q 65 37 75 45 Q 65 53 55 45 Z
+            M 22,46 L 32,38 L 42,46 L 32,54 Z
+            M 58,46 L 68,38 L 78,46 L 68,54 Z
           "
-          fill={colors.maskBase} 
-          stroke={colors.maskAccent} 
-          strokeWidth="2.5" 
-          strokeLinejoin="round"
+          fill={colors.base100} 
+          stroke={colors.primary} 
+          strokeWidth="3.5" 
+          strokeLinejoin="miter"
         />
 
-        {/* DECORATIVE TRIM / FILIGREE ON THE MASK */}
-        {/* Forehead Swirls */}
-        <path d="M 50 28 Q 62 25 70 35" fill="none" stroke={colors.maskAccent} strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M 50 28 Q 38 25 30 35" fill="none" stroke={colors.maskAccent} strokeWidth="1.5" strokeLinecap="round" />
+        {/* DECORATIVE TRIM / FILIGREE - Sharp lines and diamond accents */}
+        <path d="M 50,28 L 62,25 L 70,35" fill="none" stroke={colors.primary} strokeWidth="2" strokeLinecap="square" />
+        <path d="M 50,28 L 38,25 L 30,35" fill="none" stroke={colors.primary} strokeWidth="2" strokeLinecap="square" />
         
-        {/* Cheek Drops */}
-        <path d="M 35 55 Q 30 65 25 60" fill="none" stroke={colors.maskAccent} strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M 65 55 Q 70 65 75 60" fill="none" stroke={colors.maskAccent} strokeWidth="1.5" strokeLinecap="round" />
+        {/* Diamond accents */}
+        <polygon points="50,30 52,33 50,36 48,33" fill={colors.accent} />
+        <polygon points="28,58 30,60 28,62 26,60" fill={colors.accent} />
+        <polygon points="72,58 74,60 72,62 70,60" fill={colors.accent} />
       </g>
+
+      {/* Y2K Starburst Sparkle (top left) */}
+      <path 
+        d="M 18 12 Q 18 19 11 19 Q 18 19 18 26 Q 18 19 25 19 Q 18 19 18 12 Z" 
+        fill={colors.accent} 
+        stroke={colors.baseContent}
+        strokeWidth="1.5"
+      />
     </svg>
   );
 }

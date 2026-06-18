@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useTheme } from '../theme/ThemeContext';
 
@@ -8,114 +10,67 @@ export interface CrownProps {
 }
 
 export function BrokenCrown({ size = 120, className, opacity = 1 }: CrownProps) {
-  const { theme } = useTheme();
-  const colors = theme.colors;
+  const { colors } = useTheme();
 
   return (
     <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 100 100" 
-      fill="none" 
+      width={size} height={size} 
+      viewBox="0 0 100 100" fill="none" 
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      opacity={opacity}
+      className={className} opacity={opacity}
     >
-      <defs>
-        {/* Adds a slight drop shadow to the broken right piece so it feels detached and hovering/falling */}
-        <filter id="fallingShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="2" dy="5" stdDeviation="2" floodColor="#000000" floodOpacity="0.4" />
-        </filter>
-      </defs>
+      {/* Y2K Orbit Tech Rings */}
+      <ellipse cx="50" cy="80" rx="35" ry="8" stroke={colors.accent} strokeWidth="1" strokeDasharray="3 3" />
+      <ellipse cx="50" cy="80" rx="42" ry="12" stroke={colors.accent} strokeWidth="1.5" />
 
       {/* 
-        LEFT HALF (Intact base) 
-        The crown is mathematically split perfectly down the middle with a jagged fracture.
+        RIGHT HALF SHATTERED OFFSET SHADOW (Vector block shadow)
+        Instead of fuzzy filter blurs, we use offset duplicate paths!
       */}
-      <g stroke={colors.crownShadow} strokeWidth="2.5" strokeLinejoin="round">
-        
-        {/* Main Body Left */}
-        <path 
-          d="M 15 80 Q 32.5 85 50 87 L 45 60 L 55 45 L 48 30 L 50 15 L 30 50 L 10 30 Z" 
-          fill={colors.crownBase} 
-        />
-        
-        {/* Left Bottom Band/Rim for 3D depth */}
-        <path 
-          d="M 15 80 Q 32.5 85 50 87 L 47 75 Q 32.5 73 17 68 Z" 
-          fill={colors.crownHighlight} 
-          opacity="0.6"
-        />
-
-        {/* Left Jewel */}
-        <circle cx="28" cy="65" r="4" fill={colors.crownJewel} />
-        {/* Left Jewel Highlight */}
-        <circle cx="26.5" cy="63.5" r="1.5" fill="#FFFFFF" opacity="0.8" stroke="none" />
+      <g transform="translate(8, 6) rotate(14, 70, 70)" stroke="none" fill={colors.neutral} opacity="0.3">
+        <path d="M 50 87 Q 67.5 85 85 80 L 90 30 L 70 50 L 50 15 L 48 30 L 55 45 L 45 60 Z" />
       </g>
 
-      {/* 
-        RIGHT HALF (Broken off) 
-        We use a transform to physically shift and rotate this half off the crown!
-      */}
-      <g 
-        transform="translate(6, 4) rotate(14, 70, 70)" 
-        stroke={colors.crownShadow} 
-        strokeWidth="2.5" 
-        strokeLinejoin="round"
-        filter="url(#fallingShadow)"
-      >
-        
-        {/* Main Body Right */}
-        <path 
-          d="M 50 87 Q 67.5 85 85 80 L 90 30 L 70 50 L 50 15 L 48 30 L 55 45 L 45 60 Z" 
-          fill={colors.crownBase} 
-        />
-        
-        {/* Right Bottom Band/Rim */}
-        <path 
-          d="M 50 87 Q 67.5 85 85 80 L 83 68 Q 67.5 73 47 75 Z" 
-          fill={colors.crownHighlight} 
-          opacity="0.6"
-        />
-
-        {/* Right Jewel */}
-        <circle cx="72" cy="65" r="4" fill={colors.crownJewel} />
-        {/* Right Jewel Highlight */}
-        <circle cx="70.5" cy="63.5" r="1.5" fill="#FFFFFF" opacity="0.8" stroke="none" />
-        
-        {/* Center Jewel (attached to the broken right half so it falls with it) */}
-        <circle cx="53" cy="72" r="5" fill={colors.crownJewel} />
-        {/* Center Jewel Highlight */}
-        <circle cx="51.5" cy="70.5" r="2" fill="#FFFFFF" opacity="0.8" stroke="none" />
+      {/* LEFT HALF (Intact base) - Sharp edges */}
+      <g stroke={colors.baseContent} strokeWidth="3" strokeLinejoin="miter">
+        <path d="M 15 80 L 50 87 L 45 60 L 55 45 L 48 30 L 50 15 L 30 50 L 10 30 Z" fill={colors.primary} />
+        {/* Left Bottom Band - sharp blocky shape */}
+        <polygon points="15,80 50,87 48,77 16,71" fill={colors.accent} />
+        {/* Left Jewel - Diamond shape */}
+        <polygon points="28,60 32,65 28,70 24,65" fill={colors.secondary} />
       </g>
 
-      {/* 
-        THE FRACTURE ENERGY 
-        In Cyberpunk or magical themes, the crack itself can glow or have energy.
-      */}
-      <path 
-        d="M 50 87 L 45 60 L 55 45 L 48 30 L 50 15" 
-        stroke={colors.crownFracture} 
-        strokeWidth="1.5" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        fill="none"
-        opacity="0.8"
-      />
-      <path 
-        d="M 56 91 L 51 64 L 61 49 L 54 34 L 56 19" // Translated offset for the gap
-        stroke={colors.crownFracture} 
-        strokeWidth="1" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        fill="none"
-        opacity="0.4"
-      />
+      {/* RIGHT HALF (Broken off) */}
+      <g transform="translate(6, 4) rotate(14, 70, 70)" stroke={colors.baseContent} strokeWidth="3" strokeLinejoin="miter">
+        <path d="M 50 87 L 85 80 L 90 30 L 70 50 L 50 15 L 48 30 L 55 45 L 45 60 Z" fill={colors.primary} />
+        {/* Right Bottom Band */}
+        <polygon points="50,87 85,80 83,70 48,77" fill={colors.accent} />
+        {/* Right Jewel - Diamond shape */}
+        <polygon points="72,60 76,65 72,70 68,65" fill={colors.secondary} />
+        
+        {/* Center Jewel - Y2K stylized Vector Heart Centerpiece */}
+        {/* Formed by two overlapping triangles and a bottom tip */}
+        <g fill={colors.secondary}>
+          <polygon points="53,64 57,69 53,74 49,69" />
+          <polygon points="49,64 53,69 49,74 45,69" />
+          <polygon points="51,69 55,69 51,77 47,77" />
+        </g>
+      </g>
+
+      {/* THE FRACTURE - Sharp jagged lightning line */}
+      <path d="M 50 87 L 45 60 L 55 45 L 48 30 L 50 15" stroke={colors.neutral} strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" fill="none" />
       
-      {/* Floating debris/shards falling from the crack */}
-      <polygon points="50,48 53,52 49,55" fill={colors.crownBase} stroke={colors.crownShadow} strokeWidth="1" />
-      <polygon points="56,38 59,40 55,44" fill={colors.crownBase} stroke={colors.crownShadow} strokeWidth="1" />
+      {/* Floating sharp debris shards */}
+      <polygon points="50,48 53,52 49,55" fill={colors.primary} stroke={colors.baseContent} strokeWidth="1.5" />
+      <polygon points="56,38 59,40 55,44" fill={colors.primary} stroke={colors.baseContent} strokeWidth="1.5" />
 
+      {/* 4-Point Star Sparkle floating above the break */}
+      <path 
+        d="M 50 5 Q 50 12 43 12 Q 50 12 50 19 Q 50 12 57 12 Q 50 12 50 5 Z" 
+        fill={colors.accent} 
+        stroke={colors.baseContent}
+        strokeWidth="1.5"
+      />
     </svg>
   );
 }

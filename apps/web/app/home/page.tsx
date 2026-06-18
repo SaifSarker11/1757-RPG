@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { authClient } from "@/lib/auth-client";
 import { Settings, LogOut, ChevronDown, Send, MessageSquare, Plus, Shuffle, LogIn, Users, AlertTriangle } from "lucide-react";
+import { useTheme } from "@repo/ui/theme/ThemeContext";
 
 interface ChatMessage {
   id: string;
@@ -68,10 +69,14 @@ export default function HomePage() {
     }
   }, [session, isSettingsOpen]);
 
+  const { syncTheme } = useTheme();
+
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.setAttribute("data-theme", newTheme);
+    // Sync theme to SVG asset context so all dynamic assets re-theme
+    syncTheme(newTheme);
   };
 
   useEffect(() => {

@@ -13,6 +13,7 @@ loadEnvConfig(monorepoRoot);
 const apiUrl = process.env.API_URL ?? "http://localhost:3001";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@repo/ui"],
   async rewrites() {
     return [
       {

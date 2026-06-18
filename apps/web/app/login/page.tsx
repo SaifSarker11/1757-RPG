@@ -98,7 +98,7 @@ export default function LoginPage() {
         </div>
 
         <div className="p-8 pb-4 flex flex-col items-center text-center">
-          {/* Advanced Geometric SVG Heart Logo with Rotating Radar Rings */}
+          {/* Advanced Y2K Polashi Vectorheart Logo with Rotating Radar Rings */}
           <div className="relative mb-6 mt-4 group">
             {/* Outer rotating technical coordinate circle */}
             <svg
@@ -121,29 +121,52 @@ export default function LoginPage() {
               <line x1="60" y1="18" x2="60" y2="102" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" className="opacity-30" />
               <line x1="18" y1="60" x2="102" y2="60" stroke="currentColor" strokeWidth="1" strokeDasharray="3,3" className="opacity-30" />
 
-              {/* Wireframe Angular Heart */}
+              {/* Crossed Battle Sabres (Depicting Plassey/Polashi Battle & Card Duel) */}
+              <g stroke="currentColor" strokeWidth="2.5" className="text-base-content opacity-40">
+                {/* Sabre 1 (Bottom-Left to Top-Right) */}
+                <line x1="28" y1="92" x2="88" y2="32" strokeLinecap="square" />
+                <line x1="22" y1="94" x2="34" y2="82" />
+                <circle cx="20" cy="96" r="2.5" fill="currentColor" />
+
+                {/* Sabre 2 (Bottom-Right to Top-Left) */}
+                <line x1="92" y1="92" x2="32" y2="32" strokeLinecap="square" />
+                <line x1="98" y1="94" x2="86" y2="82" />
+                <circle cx="100" cy="96" r="2.5" fill="currentColor" />
+              </g>
+
+              {/* Outer Y2K Vectorheart (Depicting Card Hearts / Spades) */}
               <polygon
-                points="60,102 18,60 18,29 42,14 60,32 78,14 102,29 102,60"
+                points="60,38 42,22 24,36 24,56 60,92 96,56 96,36 78,22"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="3.5"
-                className="text-error drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]"
+                className="text-error"
               />
-              {/* Geometric sub-lines inside heart */}
-              <polyline
-                points="18,29 60,60 102,29"
+
+              {/* Inner Palash Flower Petal (The Flame of Polashi / Central Card Suit) */}
+              <polygon
+                points="60,44 46,58 60,80 74,58"
+                fill="currentColor"
+                className="text-primary opacity-20"
+              />
+              <polygon
+                points="60,44 46,58 60,80 74,58"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.5"
-                className="text-error opacity-60"
+                strokeWidth="2"
+                className="text-primary"
               />
-              <line
-                x1="60" y1="32" x2="60" y2="102"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                className="text-error opacity-80"
-              />
-              <circle cx="60" cy="60" r="4" className="fill-base-100 stroke-base-content stroke-2" />
+              {/* Petal Rib lines */}
+              <line x1="60" y1="80" x2="60" y2="44" stroke="currentColor" strokeWidth="2" className="text-primary" />
+              <line x1="60" y1="68" x2="52" y2="60" stroke="currentColor" strokeWidth="1.5" className="text-primary" />
+              <line x1="60" y1="68" x2="68" y2="60" stroke="currentColor" strokeWidth="1.5" className="text-primary" />
+
+              {/* Central Pivot Jewel / Heart Core */}
+              <polygon points="60,57 63,60 60,63 57,60" fill="currentColor" className="text-secondary" />
+
+              {/* Y2K Starburst Sparkles */}
+              <path d="M 20 20 Q 20 25 15 25 Q 20 25 20 30 Q 20 25 25 25 Q 20 25 20 20 Z" fill="currentColor" className="text-accent" />
+              <path d="M 100 20 Q 100 25 95 25 Q 100 25 100 30 Q 100 25 105 25 Q 100 25 100 20 Z" fill="currentColor" className="text-accent" />
             </svg>
             
             {/* HUD Angle corner brackets around SVG */}
