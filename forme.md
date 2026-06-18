@@ -63,3 +63,10 @@ If a dev server hangs or you get a `Port already in use` error on 3000/3001, run
 pnpm dev:kill
 ```
 *(Runs the custom `scripts/kill-dev-ports.mjs` script to clear blocked dev ports).*
+
+
+
+
+## DOCKER FIX
+docker compose up -d 
+docker ps

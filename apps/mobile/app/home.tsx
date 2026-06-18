@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -38,6 +38,41 @@ export default function HomeScreen() {
   const socketRef = useRef<any>(null);
   const flatListRef = useRef<FlatList | null>(null);
 
+  const params = useLocalSearchParams<{ token?: string }>();
+  const [authChecking, setAuthChecking] = useState(true);
+
+  // Diagnostic Logs
+  useEffect(() => {
+    console.log("---------------------------------------");
+    console.log("MOBILE_API_URL IS RESOLVED TO:", getApiUrl());
+    console.log("SESSION STATE - Pending:", isPending, "| Session:", session ? "ACTIVE" : "NONE", "| Auth Checking:", authChecking);
+    console.log("---------------------------------------");
+  }, [isPending, session, authChecking]);
+
+  // Capture token if passed in deep link from social login redirect
+  useEffect(() => {
+    async function checkTokenParam() {
+      if (params.token) {
+        try {
+          console.log("Found session token from deep link:", params.token);
+          // Save the bearer token to storage
+          const { saveAuthToken } = await import("@/lib/token-storage");
+          await saveAuthToken(params.token);
+          
+          // Force refresh session state
+          await authClient.useSession();
+          
+          // Clean up the URL params so it doesn't run repeatedly
+          router.setParams({ token: undefined });
+        } catch (err) {
+          console.error("Error saving deep link token:", err);
+        }
+      }
+      setAuthChecking(false);
+    }
+    checkTokenParam();
+  }, [params.token]);
+
   const renderDiagonalHeaderStripes = () => {
     const stripes = [];
     const stripeWidth = 14;
@@ -64,10 +99,10 @@ export default function HomeScreen() {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isPending && !session) {
+    if (!authChecking && !isPending && !session) {
       router.replace("/");
     }
-  }, [isPending, session]);
+  }, [authChecking, isPending, session]);
 
   useEffect(() => {
     if (session?.user?.name) {
@@ -164,7 +199,7 @@ export default function HomeScreen() {
     }
   };
 
-  if (isPending || !session) {
+  if (isPending || !session || authChecking) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: "#f4f0e6" }]}>
         <ActivityIndicator size="large" color="#2e282a" />

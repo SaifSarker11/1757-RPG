@@ -65,4 +65,27 @@ export async function registerAuthRoutes(app: FastifyInstance) {
 
     return reply.send(session);
   });
+
+  app.get("/api/auth/mobile-callback", async (request, reply) => {
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(request.headers),
+    });
+
+    const query = request.query as { appRedirect?: string };
+    const appRedirect = query.appRedirect || "1757://home";
+
+    if (!session) {
+      const redirectUrl = appRedirect.includes("?") 
+        ? `${appRedirect}&error=auth_failed` 
+        : `${appRedirect}?error=auth_failed`;
+      return reply.redirect(redirectUrl);
+    }
+
+    const token = session.session.token;
+    const redirectUrl = appRedirect.includes("?") 
+      ? `${appRedirect}&token=${token}` 
+      : `${appRedirect}?token=${token}`;
+    
+    return reply.redirect(redirectUrl);
+  });
 }

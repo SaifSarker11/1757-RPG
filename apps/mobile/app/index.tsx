@@ -9,8 +9,8 @@ import {
   Dimensions,
   Platform,
   ScrollView,
-  Linking,
 } from "react-native";
+import * as Linking from "expo-linking";
 import Svg, { Polygon, Line, Circle, Path } from "react-native-svg";
 import { getApiUrl } from "@/lib/api-url";
 import { authClient } from "@/lib/auth-client";
@@ -33,8 +33,13 @@ export default function LoginScreen() {
     setError(null);
 
     try {
-      // Direct user to Fastify API server's Google Auth endpoint
-      const authUrl = `${getApiUrl()}/api/auth/login/google?callbackURL=${getApiUrl()}/api/auth/callback/google`;
+      // Generate the deep link URL back to this app (works with Expo Go & Dev Builds)
+      const appRedirect = Linking.createURL("/home");
+      
+      // Redirect to the Fastify server's OAuth logic, pointing it to our custom mobile callback
+      const callbackURL = `${getApiUrl()}/api/auth/mobile-callback?appRedirect=${encodeURIComponent(appRedirect)}`;
+      const authUrl = `${getApiUrl()}/api/auth/login/google?callbackURL=${encodeURIComponent(callbackURL)}`;
+      
       await Linking.openURL(authUrl);
     } catch {
       setError("Failed to open Google authentication browser.");
