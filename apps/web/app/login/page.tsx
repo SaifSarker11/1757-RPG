@@ -2,58 +2,43 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
 import { Shield, Play } from "lucide-react";
+import { signIn, createGuest, useGoogleAuth } from "./google-auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleGoogleLogin() {
-    setLoading(true);
-    setError(null);
+  // Initialise Google SDK once on client side
+  useGoogleAuth();
 
+  async function handleGoogleLogin() {
     try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: `${window.location.origin}/home`,
-      });
+      setLoading(true);
+      setError(null);
+      await signIn(); // triggers Google popup and handles callback
+      // After successful sign‑in, redirect (the callback in google-auth.ts will store token)
+      router.push("/home");
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to connect to auth API. Make sure the API backend is running."
-      );
+      setError(err instanceof Error ? err.message : "Google sign‑in failed");
     } finally {
       setLoading(false);
     }
   }
 
   async function handleGuestLogin() {
-    setLoading(true);
-    setError(null);
-
     try {
-      const { error: guestError } = await authClient.signIn.anonymous();
-
-      if (guestError) {
-        setError(guestError.message ?? "Unable to continue as guest");
-        return;
-      }
-
-      router.push("/home");
-      router.refresh();
+      setLoading(true);
+      setError(null);
+      await createGuest(); // stores guest token and redirects
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Cannot reach auth API. Start the API first: pnpm --filter api dev"
-      );
+      setError(err instanceof Error ? err.message : "Guest login failed");
     } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <main className="relative flex min-h-screen items-center justify-center bg-grid-pattern bg-base-200 text-base-content p-6 scanlines font-tech overflow-hidden select-none">
@@ -135,13 +120,10 @@ export default function LoginPage() {
               </g>
 
               {/* Outer Y2K Vectorheart (Depicting Card Hearts / Spades) */}
-              <polygon
-                points="60,38 42,22 24,36 24,56 60,92 96,56 96,36 78,22"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3.5"
-                className="text-error"
-              />
+              <g className="text-error">
+  <line x1="40" y1="30" x2="80" y2="70" stroke="currentColor" strokeWidth="3.5" />
+  <line x1="80" y1="30" x2="40" y2="70" stroke="currentColor" strokeWidth="3.5" />
+</g>
 
               {/* Inner Palash Flower Petal (The Flame of Polashi / Central Card Suit) */}
               <polygon

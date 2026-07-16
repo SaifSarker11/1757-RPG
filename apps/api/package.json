@@ -23,7 +23,7 @@
     "better-auth": "latest",
     "fastify": "latest",
     "ioredis": "^5.11.0",
-    "socket.io": "latest"
+    "dotenv": "latest"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",

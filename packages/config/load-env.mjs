@@ -1,4 +1,4 @@
-import { config } from "dotenv";
+import dotenv from "dotenv";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,5 +8,5 @@ export const monorepoRoot = resolve(__dirname, "../..");
 export const envPath = resolve(monorepoRoot, ".env");
 
 if (existsSync(envPath)) {
-  config({ path: envPath });
+  dotenv.config({ path: envPath });
 }
