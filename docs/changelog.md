@@ -63,4 +63,4 @@ This document records the architectural changes, gameplay fixes, and UI/UX desig
 ## 6. Leave Room Mechanics
 
 *   **API Leave Endpoint:** Connected the client to the `POST /rooms/:roomId/leave` endpoint.
-*   **Leave Room Controls:** Added a prominent **"Leave Room"** button to the navbar of [room/[id]/page.tsx](file:///d:/iut%20student%20life/labtasks/spl2/1757/apps/web/app/room/%5Bid%5D/page.tsx). Clicking it removes the player from the database list, broadcasts a leave event to the socket channel, and redirects them to the main dashboard.
+*   **Leave Room Controls:** Added a prominent **"Leave Room"** button to the navbar of [apps/web/app/room/[id]/page.tsx](../apps/web/app/room/%5Bid%5D/page.tsx). Clicking it removes the player from the database list, broadcasts a leave event to the socket channel, and redirects them to the main dashboard.
