@@ -185,7 +185,8 @@ export type RoleName =
   | "yar_lutuf"
   | "tara_bai"
   | "rai_durlabh"
-  | "jagat_seth";
+  | "jagat_seth"
+  | "raja_ramnarain";
 
 export type TeamName = "green" | "red" | "gold";
 

@@ -1,8 +1,8 @@
 import { RoleName, TeamName, IRoleAssignment, IPrivateRoleInfo } from "@repo/types";
+import { PlayerRole, PlayerTeam } from "@repo/db";
 
 // Balance table: total counts for each team per player count
 // Format: { green: number, red: number, hasJagatSeth: boolean }
-// Note: green and red counts include the always-present mir_madan and mir_jafar respectively.
 const ROLE_BALANCE: Record<number, { green: number; red: number; hasJagatSeth: boolean }> = {
   6: { green: 4, red: 2, hasJagatSeth: false },
   7: { green: 4, red: 2, hasJagatSeth: true },
@@ -23,7 +23,7 @@ const GREEN_ROLES_POOL: RoleName[] = [
   "saint_frasy",
   "de_bussy",
   "mohon_lal",
-  "tara_bai",
+  "raja_ramnarain",
 ];
 
 // Roles that can be randomly selected for red slots (excluding mir_jafar)
@@ -33,6 +33,7 @@ const RED_ROLES_POOL: RoleName[] = [
   "yar_lutuf",
   "umichad",
   "rai_durlabh",
+  "tara_bai",
 ];
 
 /**
@@ -47,13 +48,6 @@ function shuffleArray<T>(array: T[]): void {
 
 /**
  * Returns a shuffled array of role names for the given player count.
- * The array includes:
- *   - mir_madan (always)
- *   - mir_jafar (always)
- *   - (greenCount - 1) roles from GREEN_ROLES_POOL
- *   - (redCount - 1) roles from RED_ROLES_POOL
- *   - jagat_seth if hasJagatSeth is true
- * Then shuffles the entire array.
  */
 function getRolePool(playerCount: number): RoleName[] {
   if (playerCount < 6 || playerCount > 15) {
@@ -101,9 +95,6 @@ function getRolePool(playerCount: number): RoleName[] {
 
 /**
  * Assigns roles to the given user IDs.
- * @param userIds - Array of user IDs
- * @param playerCount - Number of players (should match userIds.length)
- * @returns Array of role assignments
  */
 export function assignRoles(userIds: string[], playerCount: number): IRoleAssignment[] {
   if (userIds.length !== playerCount) {
@@ -128,17 +119,15 @@ export function assignRoles(userIds: string[], playerCount: number): IRoleAssign
  * Returns the team for a given role.
  */
 export function getTeamForRole(role: RoleName): TeamName {
-  // Green team roles
   const greenRoles: RoleName[] = [
     "mir_madan",
     "nawab_siraj",
-  "lutfunnesa",
+    "lutfunnesa",
     "saint_frasy",
     "de_bussy",
     "mohon_lal",
-    "tara_bai",
+    "raja_ramnarain",
   ];
-  // Red team roles
   const redRoles: RoleName[] = [
     "mir_jafar",
     "jean_law",
@@ -146,8 +135,9 @@ export function getTeamForRole(role: RoleName): TeamName {
     "yar_lutuf",
     "umichad",
     "rai_durlabh",
+    "tara_bai",
   ];
-  // Gold team role
+
   if (role === "jagat_seth") {
     return "gold";
   }
@@ -157,8 +147,14 @@ export function getTeamForRole(role: RoleName): TeamName {
   if (redRoles.includes(role)) {
     return "red";
   }
-  // Should never happen if role is valid
   throw new Error(`Unknown role: ${role}`);
+}
+
+/**
+ * Helper to check if a DB role is Rai Durlabh.
+ */
+export function isRaiDurlabh(role: PlayerRole | null): boolean {
+  return role === PlayerRole.RAI_DURLABH;
 }
 
 /**
@@ -169,98 +165,108 @@ export function buildPrivateRoleInfo(
   allAssignments: IRoleAssignment[]
 ): IPrivateRoleInfo {
   const { role, team, userId } = assignment;
-
-  // Find all other players
   const otherPlayers = allAssignments.filter((a) => a.userId !== userId);
 
-  // Initialize visible players as empty
   let visiblePlayers: Array<{ userId: string; role: string; team: TeamName }> = [];
   let isFlustered = false;
-  let deBussyUsed = false; // This would be set elsewhere, e.g., when de_bussy uses their lock
+  let deBussyUsed = false;
 
   switch (role) {
-    case "nawab_siraj":
-      // Sees lutfunnesa
-      const lutfunnesaAssignment = otherPlayers.find(
-        (a) => a.role === "lutfunnesa"
-      );
-      if (lutfunnesaAssignment) {
+    case "nawab_siraj": {
+      // Nawab Siraj sees the real Lutfunnesa
+      const realLutfunnesa = otherPlayers.find((a) => a.role === "lutfunnesa");
+      if (realLutfunnesa) {
         visiblePlayers.push({
-          userId: lutfunnesaAssignment.userId,
-          role: lutfunnesaAssignment.role,
-          team: lutfunnesaAssignment.team,
+          userId: realLutfunnesa.userId,
+          role: "lutfunnesa",
+          team: "green",
         });
       }
-      // isFlustered if tara_bai is present
-      const taraBaiAssignment = otherPlayers.find(
-        (a) => a.role === "tara_bai"
-      );
-      isFlustered = !!taraBaiAssignment;
+      // If Tara Bai is in the game, he is flustered and sees her as "Lutfunnesa" too
+      const taraBai = otherPlayers.find((a) => a.role === "tara_bai");
+      if (taraBai) {
+        visiblePlayers.push({
+          userId: taraBai.userId,
+          role: "lutfunnesa",
+          team: "green",
+        });
+        isFlustered = true;
+      }
       break;
+    }
 
-    case "lutfunnesa":
-      // Sees nawab_siraj
-      const nawabSirajAssignment = otherPlayers.find(
-        (a) => a.role === "nawab_siraj"
-      );
-      if (nawabSirajAssignment) {
+    case "lutfunnesa": {
+      // Lutfunnesa sees the real Nawab Siraj
+      const realNawab = otherPlayers.find((a) => a.role === "nawab_siraj");
+      if (realNawab) {
         visiblePlayers.push({
-          userId: nawabSirajAssignment.userId,
-          role: nawabSirajAssignment.role,
-          team: nawabSirajAssignment.team,
+          userId: realNawab.userId,
+          role: "nawab_siraj",
+          team: "green",
         });
       }
-      // isFlustered if tara_bai is present
-      const taraBaiAssignment2 = otherPlayers.find(
-        (a) => a.role === "tara_bai"
-      );
-      isFlustered = !!taraBaiAssignment2;
+      // If Tara Bai is in the game, she is flustered and sees her as "Nawab Siraj" too
+      const taraBai = otherPlayers.find((a) => a.role === "tara_bai");
+      if (taraBai) {
+        visiblePlayers.push({
+          userId: taraBai.userId,
+          role: "nawab_siraj",
+          team: "green",
+        });
+        isFlustered = true;
+      }
       break;
+    }
 
     case "mir_madan":
-      // Sees all red except rai_durlabh
+      // Sees all red except rai_durlabh as "red"
       const redPlayers = otherPlayers.filter(
-        (a) =>
-          getTeamForRole(a.role) === "red" && a.role !== "rai_durlabh"
+        (a) => getTeamForRole(a.role) === "red" && a.role !== "rai_durlabh"
       );
       visiblePlayers = redPlayers.map((a) => ({
         userId: a.userId,
-        role: a.role,
-        team: a.team,
+        role: "red",
+        team: "red",
       }));
       break;
 
     case "mohon_lal":
-      // Sees mir_madan and ghasheti_begum as "spy" (masked role)
-      const mirMadanAssignment = otherPlayers.find(
-        (a) => a.role === "mir_madan"
-      );
-      if (mirMadanAssignment) {
+      // Sees both Mir Madan and Ghasheti Begum as "spy"
+      const mirMadan = otherPlayers.find((a) => a.role === "mir_madan");
+      if (mirMadan) {
         visiblePlayers.push({
-          userId: mirMadanAssignment.userId,
-          role: "spy", // Masked role
-          team: mirMadanAssignment.team,
+          userId: mirMadan.userId,
+          role: "spy",
+          team: "green",
         });
       }
-      const ghashetiBegumAssignment = otherPlayers.find(
-        (a) => a.role === "ghasheti_begum"
-      );
-      if (ghashetiBegumAssignment) {
+      const ghasheti = otherPlayers.find((a) => a.role === "ghasheti_begum");
+      if (ghasheti) {
         visiblePlayers.push({
-          userId: ghashetiBegumAssignment.userId,
-          role: "spy", // Masked role
-          team: ghashetiBegumAssignment.team,
+          userId: ghasheti.userId,
+          role: "spy",
+          team: "red",
         });
       }
       break;
 
+    case "raja_ramnarain": {
+      const nawab = otherPlayers.find((a) => a.role === "nawab_siraj");
+      if (nawab) {
+        visiblePlayers.push({
+          userId: nawab.userId,
+          role: "nawab_siraj",
+          team: "green",
+        });
+      }
+      break;
+    }
+
     case "rai_durlabh":
-      // Sees nothing (invisible)
       visiblePlayers = [];
       break;
 
     default:
-      // All others: see nothing
       visiblePlayers = [];
       break;
   }

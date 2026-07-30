@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { randomBytes } from "crypto";
-import { db, RoomStatus } from "@repo/db";
-import { assignRoles } from "../services/roleAssignmentService.js";
+import { assignRoles } from "../game/roles.js";
+import { db, RoomStatus, PlayerRole, PlayerTeam } from "@repo/db";
 
 function generateRoomCode(): string {
   const bytes = randomBytes(4);
@@ -220,6 +220,17 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     };
   });
 
+  app.get("/rooms/code/:code", async (request, reply) => {
+    const { code } = request.params as { code: string };
+    const room = await db.room.findUnique({
+      where: { code: code.toUpperCase() },
+    });
+    if (!room) {
+      return reply.status(404).send({ error: "Room not found", success: false });
+    }
+    return { roomId: room.id };
+  });
+
   app.get("/rooms/:roomId", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
 
@@ -274,18 +285,21 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     }
 
     await db.$transaction(async (tx) => {
-      const roles = assignRoles(room.players.length);
+      const userIds = room.players.map((p) => p.userId);
+      const roles = assignRoles(userIds, room.players.length);
 
       for (let i = 0; i < room.players.length; i++) {
         const player = room.players[i];
-        const role = roles[i];
-        await tx.roomPlayer.update({
-          where: { id: player.id },
-          data: {
-            role: role.role,
-            team: role.team,
-          },
-        });
+        const assignment = roles.find((r) => r.userId === player.userId);
+        if (assignment) {
+          await tx.roomPlayer.update({
+            where: { id: player.id },
+            data: {
+              role: PlayerRole[assignment.role.toUpperCase() as keyof typeof PlayerRole],
+              team: PlayerTeam[assignment.team.toUpperCase() as keyof typeof PlayerTeam],
+            },
+          });
+        }
       }
 
       const randomIndex = Math.floor(Math.random() * room.players.length);

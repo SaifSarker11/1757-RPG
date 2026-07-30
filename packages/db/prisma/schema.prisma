@@ -101,6 +101,7 @@ enum PlayerRole {
   TARA_BAI
   RAI_DURLABH
   JAGAT_SETH
+  RAJA_RAMNARAIN
 }
 
 model Room {

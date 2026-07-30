@@ -204,7 +204,7 @@ export interface RoomLeavePayload {
     roomId: string;
     userId: string;
 }
-export type RoleName = "nawab_siraj" | "lutfunnesa" | "mir_madan" | "mohon_lal" | "saint_frasy" | "de_bussy" | "mir_jafar" | "umichad" | "jean_law" | "ghasheti_begum" | "yar_lutuf" | "tara_bai" | "rai_durlabh" | "jagat_seth";
+export type RoleName = "nawab_siraj" | "lutfunnesa" | "mir_madan" | "mohon_lal" | "saint_frasy" | "de_bussy" | "mir_jafar" | "umichad" | "jean_law" | "ghasheti_begum" | "yar_lutuf" | "tara_bai" | "rai_durlabh" | "jagat_seth" | "raja_ramnarain";
 export type TeamName = "green" | "red" | "gold";
 export interface IRoleAssignment {
     userId: string;
