@@ -2,9 +2,11 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import InfoModal from "@/components/InfoModal";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { authClient } from "@/lib/auth-client";
+import { gameAudio } from "@/lib/audio";
 
 interface PlayerInfo {
   userId: string;
@@ -106,6 +108,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const roundNumberRef = useRef(roundNumber);
   const proposedTeamRef = useRef(proposedTeam);
 
+  // sound and transition states
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(false);
+  const [phaseTransitionText, setPhaseTransitionText] = useState<string | null>(null);
+  const [activeRolesOnly, setActiveRolesOnly] = useState<boolean>(true);
+  const [rightSidebarTab, setRightSidebarTab] = useState<"chat" | "chronicle">("chat");
+
   useEffect(() => {
     roundNumberRef.current = roundNumber;
   }, [roundNumber]);
@@ -135,12 +143,20 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     const savedTheme = localStorage.getItem("daisyui-theme") || "retro";
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
+    setSoundEnabled(gameAudio.isEnabled());
   }, []);
 
   const changeTheme = (themeName: string) => {
+    gameAudio.playClick();
     setCurrentTheme(themeName);
     localStorage.setItem("daisyui-theme", themeName);
     document.documentElement.setAttribute("data-theme", themeName);
+  };
+
+  const toggleSound = () => {
+    const nextVal = !soundEnabled;
+    gameAudio.setEnabled(nextVal);
+    setSoundEnabled(nextVal);
   };
 
   const fetchRoom = async () => {
@@ -177,46 +193,76 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     }
   }, [roomId, session, isPending]);
 
+  // Phase change transition effect triggers
+  useEffect(() => {
+    if (currentPhase === "LOBBY") return;
+    gameAudio.playPhaseChange();
+
+    let friendlyName = currentPhase.replace(/_/g, " ");
+    if (currentPhase === "DISCUSSION") friendlyName = `Round ${roundNumber}: Discussion Phase`;
+    if (currentPhase === "TEAM_PROPOSAL") friendlyName = `Round ${roundNumber}: Propose Council`;
+    if (currentPhase === "TEAM_APPROVAL") friendlyName = `Round ${roundNumber}: Approval Voting`;
+    if (currentPhase === "MISSION_VOTE") friendlyName = `Round ${roundNumber}: Secretariat Resolution`;
+    if (currentPhase === "ENDGAME") friendlyName = `Chamber Endgame!`;
+
+    setPhaseTransitionText(friendlyName);
+    const timer = setTimeout(() => {
+      setPhaseTransitionText(null);
+    }, 2200);
+    return () => clearTimeout(timer);
+  }, [currentPhase, roundNumber]);
+
   // Socket Connections (Runs exactly once on mount, depends only on roomId and session)
   useEffect(() => {
-    if (!session) return;
+    if (!session?.user?.id) return;
 
     const socket = io(SOCKET_URL, {
-      withCredentials: true,
       transports: ["websocket"],
+      query: { roomId, userId: session.user.id },
     });
+
     socketRef.current = socket;
 
-    socket.emit("user:identify", { userId: session.user.id });
+    socket.emit("room:join", {
+      roomId,
+      userId: session.user.id,
+      name: session.user.name,
+    });
 
-    socket.emit("room:join", { roomId, userId: session.user.id });
-
-    socket.on("chat:history", (history: ChatMessage[]) => {
+    socket.on("room:chat-history", (history: ChatMessage[]) => {
       setMessages(history);
     });
 
-    socket.on("chat:message", (message: ChatMessage) => {
-      setMessages((prev) => [...prev, message]);
+    socket.on("room:update", (data: any) => {
+      setRoomData(data);
+      setRolesInPlay(data.rolesInPlay || []);
+      
+      const mapped = data.players.map((p: any) => ({
+        userId: p.userId,
+        name: p.name,
+        isHost: data.hostUserId === p.userId,
+        isSelector: false,
+      }));
+      setPlayers(mapped);
     });
 
-    socket.on("game:join", () => {
-      fetchRoom();
-    });
-
-    socket.on("game:leave", () => {
-      fetchRoom();
-    });
-
-    socket.on("room:online-list", (userIds: string[]) => {
-      const initialOnline: Record<string, boolean> = {};
-      userIds.forEach((id) => {
-        initialOnline[id] = true;
+    socket.on("room:online-list", (list: string[]) => {
+      const activeMapping: Record<string, boolean> = {};
+      list.forEach((uId) => {
+        activeMapping[uId] = true;
       });
-      setOnlinePlayers(initialOnline);
+      setOnlinePlayers(activeMapping);
     });
 
-    socket.on("player:status", ({ userId, online }: { userId: string; online: boolean }) => {
-      setOnlinePlayers((prev) => ({ ...prev, [userId]: online }));
+    socket.on("player:status", (status: { userId: string; online: boolean }) => {
+      setOnlinePlayers((prev) => ({
+        ...prev,
+        [status.userId]: status.online,
+      }));
+    });
+
+    socket.on("chat:message", (msg: ChatMessage) => {
+      setMessages((prev) => [...prev, msg]);
     });
 
     socket.on("game:started", () => {
@@ -266,8 +312,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       ]);
       if (payload.approved) {
         setCurrentPhase("MISSION_VOTE");
+        gameAudio.playSuccess();
       } else {
         setCurrentPhase("DISCUSSION");
+        gameAudio.playFailure();
       }
     });
 
@@ -282,6 +330,11 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         },
       ]);
       setHasVotedMission(false);
+      if (payload.winner === "green") {
+        gameAudio.playSuccess();
+      } else {
+        gameAudio.playFailure();
+      }
     });
 
     socket.on("round:transition", (payload: { round: number; selectorId: string }) => {
@@ -311,6 +364,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       setRoleReveal(payload.roleReveal);
       setExcludedWinCredit(payload.excludedWinCredit);
       setCurrentPhase("ENDGAME");
+      gameAudio.playVictory();
     });
 
     return () => {
@@ -321,6 +375,11 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   // Discussion countdown timer
   useEffect(() => {
     if (currentPhase !== "DISCUSSION" || discussionTimer <= 0) return;
+    
+    if (discussionTimer <= 10) {
+      gameAudio.playTimerTick();
+    }
+
     const interval = setInterval(() => {
       setDiscussionTimer((prev) => prev - 1);
     }, 1000);
@@ -339,12 +398,14 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   }, [messages]);
 
   const handleStartGame = () => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("game:start", { roomId, hostUserId: session?.user.id });
     }
   };
 
   const handleProposeTeam = () => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("round:proposeTeam", {
         roomId,
@@ -355,6 +416,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleVoteApproval = (vote: "approve" | "reject") => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("round:approvalVote", {
         roomId,
@@ -366,6 +428,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleVoteMission = (vote: "green" | "red") => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("round:missionVote", {
         roomId,
@@ -377,6 +440,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleMirJafarGuessSubmit = (targetUserId: string) => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("endgame:guess", {
         roomId,
@@ -389,6 +453,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleJagatSethGuessSubmit = (targetUserId: string) => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("endgame:guess", {
         roomId,
@@ -400,7 +465,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     }
   };
 
-  const handleDeBussyScan = (targetUserId: string) => {
+  const handleDeBussyLockOn = (targetUserId: string) => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("debussy:lockOn", {
         roomId,
@@ -411,6 +477,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleJeanLawCurse = (targetUserId: string) => {
+    gameAudio.playClick();
     if (socketRef.current) {
       socketRef.current.emit("jeanlaw:lock", {
         roomId,
@@ -433,6 +500,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleLeaveRoom = async () => {
+    gameAudio.playClick();
     if (!session?.user) return;
     try {
       await fetch(`${API_URL}/rooms/${roomId}/leave`, {
@@ -449,44 +517,71 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     }
   };
 
+  const getPlayerAngle = (index: number, total: number) => {
+    const startAngle = -Math.PI / 2; // top of circle
+    return startAngle + (index * 2 * Math.PI) / total;
+  };
+
   const isHost = roomData?.hostUserId === session?.user.id;
   const isMyTurnToSelect = currentSelectorId === session?.user.id || (roomData?.hostUserId === session?.user.id && currentSelectorId === "");
   const sizeToSelect = getTeamSizeForRound(roundNumber, players.length);
 
   if (isPending || !session) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-base-200">
+      <div className="flex min-h-screen items-center justify-center bg-stone-900 text-amber-500 font-retro">
         <div className="text-center font-sans">
-          <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
-          <p className="text-lg font-bold">Unrolling old scrolls...</p>
+          <span className="loading loading-spinner loading-lg text-amber-500 mb-4"></span>
+          <p className="text-2xl font-bold tracking-widest">UNROLLING OLD SCROLLS...</p>
         </div>
       </div>
     );
   }
 
+  const activeRolesFilter = activeRolesOnly && rolesInPlay.length > 0
+    ? CHARACTER_ROLES.filter(r => rolesInPlay.some(rip => rip.replace(/_/g, " ").toLowerCase() === r.name.toLowerCase()))
+    : CHARACTER_ROLES;
+
   return (
-    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center">
+    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center scanlines">
       
-      {/* Decorative Navbar */}
-      <div className="navbar bg-base-100 border border-base-300 shadow-md rounded-box w-full max-w-6xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Phase Transition text overlay */}
+      {phaseTransitionText && (
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[100] animate-fade-in pointer-events-none">
+          <div className="w-full bg-primary py-8 text-center border-y-8 border-double border-primary-content glow-primary transform scale-y-100 transition-all duration-300">
+            <h2 className="text-3xl md:text-5xl font-historical font-extrabold tracking-widest text-primary-content uppercase font-pixel drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+              {phaseTransitionText}
+            </h2>
+          </div>
+        </div>
+      )}
+
+      {/* Decorative Game Header */}
+      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-7xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex-1">
-          <span className="font-serif text-2xl font-extrabold tracking-wide uppercase text-primary">Battle of Plassey 1757</span>
+          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
         </div>
 
         <div className="flex-none flex items-center gap-3">
-          <span className="bg-neutral text-neutral-content px-3 py-1.5 rounded-lg text-xs font-semibold uppercase">
-            Room Code: {roomData?.code ?? roomId.slice(0, 6)}
+          <button 
+            onClick={toggleSound}
+            className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
+          >
+            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
+          </button>
+
+          <span className="bg-neutral text-neutral-content px-3 py-1.5 border border-base-300 text-xs font-pixel">
+            Code: {roomData?.code ?? roomId.slice(0, 6)}
           </span>
 
           {/* Theme Dropdown */}
           <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-outline btn-sm">
+            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
               Theme: {currentTheme}
             </div>
-            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow-lg border border-base-300 max-h-60 overflow-y-auto">
+            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
               {THEMES.map((themeName) => (
                 <li key={themeName}>
-                  <button onClick={() => changeTheme(themeName)} className="capitalize">
+                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
                     {themeName}
                   </button>
                 </li>
@@ -495,556 +590,426 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           </div>
 
           <button
-            onClick={() => setShowInfoModal(true)}
-            className="btn btn-primary btn-sm"
+            onClick={() => { gameAudio.playClick(); setShowInfoModal(true); }}
+            className="btn btn-primary btn-sm rounded-none border-2 font-pixel"
           >
-            Role Abilities Reference
+            INFO CODES
           </button>
 
           <button
             onClick={handleLeaveRoom}
-            className="btn btn-error btn-sm"
+            className="btn btn-error btn-sm rounded-none border-2 font-pixel"
           >
-            Leave Room
+            LEAVE
           </button>
         </div>
       </div>
 
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
-        
-        {/* LEFT COLUMN: Main Game Area (8 Columns) */}
-        <div className="lg:col-span-8 flex flex-col gap-6 h-full">
-          
-          {/* Main Gameplay Screen Card */}
-          <div className="card bg-base-100 border border-base-300 shadow-xl p-6 relative overflow-hidden flex-1 flex flex-col min-h-[450px]">
-            
-            {/* Header Phase and Timer */}
-            <div className="flex justify-between items-center border-b border-base-300 pb-4 mb-4">
-              <div>
-                <h2 className="text-2xl font-serif font-extrabold text-primary uppercase tracking-wide">
-                  Phase: {currentPhase.replace("_", " ")}
-                </h2>
-                <p className="text-sm font-bold text-secondary">
-                  Round {roundNumber} / 5 • Proposed Board Size: {sizeToSelect}
-                </p>
-              </div>
-
-              {currentPhase === "DISCUSSION" && (
-                <div className="flex items-center gap-2 bg-warning/20 border border-warning px-4 py-2 rounded-xl text-warning-content">
-                  <span className="text-xs font-bold uppercase">Timer:</span>
-                  <span className="text-2xl font-mono font-bold">{discussionTimer}s</span>
-                </div>
-              )}
-            </div>
-
-            {/* Roles in Play Reference list */}
-            {rolesInPlay.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-4 items-center bg-base-200 border border-base-300 p-2.5 rounded-xl">
-                <span className="text-[10px] font-bold uppercase text-secondary font-sans tracking-wide">Roles in Play:</span>
-                {rolesInPlay.map((role) => (
-                  <span key={role} className="badge badge-sm badge-neutral font-mono font-bold uppercase py-2">
-                    {role.replace("_", " ")}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Content view based on active phase */}
-            <div className="flex-1 flex flex-col justify-between">
-              
-              {/* LOBBY PHASE */}
-              {currentPhase === "LOBBY" && (
-                <div className="text-center py-12 flex-1 flex flex-col justify-center items-center gap-6">
-                  <h3 className="text-2xl font-serif font-extrabold text-primary">Gathering Ministers in the Nawab's Tent</h3>
-                  <p className="text-sm text-base-content/80 max-w-md">
-                    We currently have <span className="font-bold text-secondary">{players.length}</span> players out of the required 6 to 15. The game can begin once everyone has arrived.
-                  </p>
-
-                  {isHost ? (
-                    <button
-                      onClick={handleStartGame}
-                      disabled={players.length < 6}
-                      className="btn btn-success btn-lg"
-                    >
-                      Start Social Deduction (Min 6 players)
-                    </button>
+      {/* Round & Sabotage Progress Tracker Banner */}
+      <div className="bg-base-100 border-4 border-primary p-3 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mb-6 pixel-card font-pixel text-xs gap-4">
+        <span className="text-secondary font-bold uppercase tracking-wider">ROUND MAP PROGRESS:</span>
+        <div className="flex gap-3 flex-1 justify-center max-w-2xl w-full">
+          {[1, 2, 3, 4, 5].map((r) => {
+            const missionLog = voteLogs.find((l) => l.round === r && l.type === "mission");
+            const isCurrent = roundNumber === r && currentPhase !== "LOBBY" && currentPhase !== "ENDGAME";
+            return (
+              <div 
+                key={r} 
+                className={`flex-1 border-2 py-2 text-center flex flex-col items-center justify-center relative rounded-none ${
+                  isCurrent ? "border-amber-500 bg-amber-500/10 animate-pulse font-bold" : "border-base-content/20"
+                }`}
+              >
+                <span>RD {r}</span>
+                <span className="text-[9px] mt-1 font-bold">
+                  {missionLog ? (
+                    missionLog.winner === "green" ? "🟢 GREEN" : "🔴 RED"
                   ) : (
-                    <div className="alert alert-info max-w-xs font-bold text-center">
-                      <span>Waiting for Host to start...</span>
-                    </div>
+                    isCurrent ? "⚔️ ACTIVE" : "⏳ LOCKED"
                   )}
-                </div>
-              )}
-
-              {/* ACTIVE RUNNING GAMESTATE */}
-              {currentPhase !== "LOBBY" && currentPhase !== "ENDGAME" && (
-                <div className="flex-1 flex flex-col justify-between gap-6">
-                  
-                  {/* Private Role HUD Card */}
-                  {myRoleInfo && (
-                    <div className="card bg-base-200 border border-base-300 p-4 rounded-xl shadow-inner flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                      <div>
-                        <span className="text-xs uppercase font-bold tracking-wider text-base-content/65">Your Secretariat Role:</span>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xl font-serif font-extrabold uppercase text-primary">{myRoleInfo.role.replace("_", " ")}</span>
-                          <span className={`badge badge-sm font-bold uppercase ${
-                            myRoleInfo.team === "green" ? "badge-success" :
-                            myRoleInfo.team === "red" ? "badge-error" : "badge-warning"
-                          }`}>
-                            Team {myRoleInfo.team}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Vision / Mask reveal tags */}
-                      {myRoleInfo.visiblePlayers && myRoleInfo.visiblePlayers.length > 0 && (
-                        <div className="card bg-base-100 p-3 rounded-lg border border-base-300 w-full md:w-auto">
-                          <span className="text-[10px] uppercase font-bold text-base-content/65">Vision / Secret Intelligence:</span>
-                          <div className="flex flex-wrap gap-1.5 mt-1">
-                            {myRoleInfo.visiblePlayers.map((vp: any, idx: number) => {
-                              const targetPlayer = players.find(p => p.userId === vp.userId);
-                              return (
-                                <span key={idx} className="badge badge-outline badge-secondary text-xs font-bold">
-                                  {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="uppercase font-bold ml-1">{vp.role.replace("_", " ")}</span>
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* PROPOSAL SELECTION FORM */}
-                  {currentPhase === "TEAM_PROPOSAL" && (
-                    <div className="flex-1 flex flex-col justify-center items-center py-6 gap-4">
-                      {isMyTurnToSelect ? (
-                        <>
-                          <h3 className="text-xl font-bold text-center">
-                            You are the Minister Board Leader. Select {sizeToSelect} players for the mission.
-                          </h3>
-                          <div className="flex flex-wrap justify-center gap-2 max-w-lg mt-2">
-                            {players.map((p) => {
-                              const isSelected = selectedPlayers.includes(p.userId);
-                              return (
-                                <button
-                                  key={p.userId}
-                                  onClick={() => {
-                                    if (isSelected) {
-                                      setSelectedPlayers(selectedPlayers.filter((id) => id !== p.userId));
-                                    } else {
-                                      if (selectedPlayers.length < sizeToSelect) {
-                                        setSelectedPlayers([...selectedPlayers, p.userId]);
-                                      }
-                                    }
-                                  }}
-                                  className={`btn btn-sm ${isSelected ? "btn-primary" : "btn-outline"}`}
-                                >
-                                  {p.userId === session.user.id ? "Me" : p.name}
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          <button
-                            onClick={handleProposeTeam}
-                            disabled={selectedPlayers.length !== sizeToSelect}
-                            className="btn btn-secondary mt-4 shadow-md"
-                          >
-                            Propose Minister Board
-                          </button>
-                        </>
-                      ) : (
-                        <div className="text-center py-8">
-                          <span className="loading loading-spinner loading-md text-primary mb-4"></span>
-                          <h3 className="text-lg font-bold">
-                            Leader ({players.find(p => p.userId === currentSelectorId)?.name || `Player ${currentSelectorId.slice(-4)}`}) is selecting {sizeToSelect} ministers...
-                          </h3>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* APPROVAL VOTING STATE PANEL */}
-                  {currentPhase === "TEAM_APPROVAL" && (
-                    <div className="flex-1 flex flex-col justify-center items-center py-6 gap-4 text-center">
-                      <h3 className="text-xl font-bold">Do you support this Proposed Minister Board?</h3>
-                      
-                      <div className="card bg-base-200 border border-base-300 px-6 py-4 rounded-xl max-w-md my-2">
-                        <span className="text-xs uppercase font-bold text-secondary">Proposed Ministers:</span>
-                        <div className="flex flex-wrap justify-center gap-2 mt-2">
-                          {proposedTeam.map((id) => (
-                            <span key={id} className="badge badge-accent py-2.5 font-bold text-sm">
-                              {players.find(p => p.userId === id)?.name || `Player ${id.slice(-4)}`}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      {!hasVotedApproval ? (
-                        <div className="flex gap-4 mt-2">
-                          <button
-                            onClick={() => handleVoteApproval("approve")}
-                            className="btn btn-success"
-                          >
-                            Approve Board
-                          </button>
-                          <button
-                            onClick={() => handleVoteApproval("reject")}
-                            className="btn btn-error"
-                          >
-                            Reject Board
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="alert alert-info max-w-xs font-bold">
-                          <span>Your vote has been cast. Waiting for others...</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* RESOLUTION SECRET VOTE RESOLUTION PANEL */}
-                  {currentPhase === "MISSION_VOTE" && (
-                    <div className="flex-1 flex flex-col justify-center items-center py-6 gap-4 text-center">
-                      <h3 className="text-xl font-bold">Minister Resolution Phase</h3>
-                      <p className="text-sm text-base-content/85 max-w-sm">
-                        The board has been approved. If you are a member of the board, cast your secret vote. Traitors (Red team) can vote RED to sabotage.
-                      </p>
-
-                      {proposedTeam.includes(session.user.id) ? (
-                        !hasVotedMission ? (
-                          <div className="flex gap-4 mt-2">
-                            <button
-                              onClick={() => handleVoteMission("green")}
-                              className="btn btn-success"
-                            >
-                              Vote GREEN (Loyalty)
-                            </button>
-                            <button
-                              onClick={() => handleVoteMission("red")}
-                              className="btn btn-error"
-                            >
-                              Vote RED (Sabotage)
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="alert alert-info max-w-xs font-bold">
-                            <span>Secret vote cast. Waiting for others...</span>
-                          </div>
-                        )
-                      ) : (
-                        <div className="alert alert-neutral max-w-xs font-bold">
-                          <span>You are not on the board. Ministers are voting...</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* CHARACTER SPECIFIC POWER TOGGLES */}
-                  <div className="border-t border-base-300 pt-4 mt-2">
-                    <h4 className="text-xs uppercase font-bold tracking-wider text-base-content/60 mb-2">Special Character Actions:</h4>
-                    
-                    {myRoleInfo?.role === "de_bussy" && !deBussyScanned && (
-                      <div className="card bg-base-200 border border-base-300 p-3 rounded-lg flex flex-col gap-2">
-                        <span className="text-sm font-semibold text-primary">De Bussy Scan (Once Per Game):</span>
-                        <div className="flex flex-wrap gap-2">
-                          {players
-                            .filter((p) => p.userId !== session.user.id)
-                            .map((p) => (
-                              <button
-                                key={p.userId}
-                                onClick={() => handleDeBussyScan(p.userId)}
-                                className="btn btn-xs btn-secondary"
-                              >
-                                Scan {p.name}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                    {deBussyScanned && (
-                      <div className="alert alert-success text-sm font-bold">
-                        <span>Scan Result: Player {players.find(p => p.userId === deBussyScanned.targetUserId)?.name || deBussyScanned.targetUserId.slice(-4)} role is: <span className="uppercase underline ml-1">{deBussyScanned.role?.replace("_", " ") ?? "Unknown"}</span></span>
-                      </div>
-                    )}
-
-                    {myRoleInfo?.role === "jean_law" && !jeanLawConfirmed && (
-                      <div className="card bg-base-200 border border-base-300 p-3 rounded-lg mt-2 flex flex-col gap-2">
-                        <span className="text-sm font-semibold text-primary">Jean Law Lock/Curse (Once Per Game):</span>
-                        <div className="flex flex-wrap gap-2">
-                          {players
-                            .filter((p) => p.userId !== session.user.id)
-                            .map((p) => (
-                              <button
-                                key={p.userId}
-                                onClick={() => handleJeanLawCurse(p.userId)}
-                                className="btn btn-xs btn-error"
-                              >
-                                Curse {p.name}
-                              </button>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                    {jeanLawConfirmed && (
-                      <div className="alert alert-warning text-sm font-bold mt-2">
-                        <span>Lock Confirmed: You locked onto {players.find(p => p.userId === jeanLawConfirmed)?.name || jeanLawConfirmed.slice(-4)}.</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* GAME END RESULT VIEW */}
-              {currentPhase === "ENDGAME" && (
-                <div className="text-center py-6 flex-1 flex flex-col justify-center items-center gap-4">
-                  <h3 className="text-3xl font-serif font-extrabold uppercase tracking-wide text-primary">
-                    Victory: {finalWinner} Team
-                  </h3>
-
-                  {mirJafarGuessActive && myRoleInfo?.role === "mir_jafar" && (
-                    <div className="card bg-base-200 border border-base-300 p-5 rounded-2xl max-w-lg shadow-md my-2">
-                      <h4 className="text-lg font-bold text-error">Mir Jafar Guess Phase</h4>
-                      <p className="text-xs text-base-content/85 mb-4">
-                        Green team won the rounds, but you get one guess. Identify Mir Madan to steal victory for Red!
-                      </p>
-                      <div className="flex flex-wrap justify-center gap-2">
-                        {players
-                          .filter((p) => p.userId !== session.user.id)
-                          .map((p) => (
-                            <button
-                              key={p.userId}
-                              onClick={() => handleMirJafarGuessSubmit(p.userId)}
-                              className="btn btn-sm btn-error"
-                            >
-                              {p.name} is Mir Madan
-                            </button>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {jagatSethGuessActive && myRoleInfo?.role === "jagat_seth" && (
-                    <div className="card bg-base-200 border border-base-300 p-5 rounded-2xl max-w-lg shadow-md my-2">
-                      <h4 className="text-lg font-bold text-warning">Jagat Seth Chaos Guess Phase</h4>
-                      <p className="text-xs text-base-content/85 mb-4">
-                        {jagatSethTargetTeam === "RED" 
-                          ? "Red team is currently winning. Find Rai Durlabh to win alone!" 
-                          : "Green team is currently winning. Find Mir Jafar to win alone!"}
-                      </p>
-                      <div className="flex flex-wrap justify-center gap-2">
-                        {players
-                          .filter((p) => p.userId !== session.user.id)
-                          .map((p) => (
-                            <button
-                              key={p.userId}
-                              onClick={() => handleJagatSethGuessSubmit(p.userId)}
-                              className="btn btn-sm btn-warning"
-                            >
-                              {p.name}
-                            </button>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Secretariat reveal lists */}
-                  <div className="w-full max-w-md bg-base-200 border border-base-300 rounded-xl p-4 shadow-sm text-left mt-2">
-                    <h4 className="font-serif font-bold text-sm uppercase text-primary mb-3 pb-1.5 border-b border-base-300">Secret Secretariat Reveals:</h4>
-                    <div className="space-y-2">
-                      {roleReveal.map((reveal) => {
-                        const isHumiliated = reveal.team === "humiliated" || excludedWinCredit.includes(reveal.userId);
-                        const playerInfo = players.find(p => p.userId === reveal.userId);
-                        return (
-                          <div key={reveal.userId} className="flex justify-between items-center text-sm">
-                            <span className="font-sans font-semibold">
-                              {playerInfo?.name || `Player ${reveal.userId.slice(-4)}`} {reveal.userId === session.user.id && "(Me)"}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="badge badge-neutral text-xs font-mono uppercase">
-                                {reveal.role.replace("_", " ")}
-                              </span>
-                              <span className={`badge badge-sm font-bold uppercase ${
-                                reveal.team === "green" ? "badge-success text-success-content" :
-                                reveal.team === "red" ? "badge-error text-error-content" :
-                                reveal.team === "gold" ? "badge-warning text-warning-content" : "badge-neutral"
-                              }`}>
-                                {reveal.team}
-                              </span>
-                              {isHumiliated && (
-                                <span className="badge badge-sm badge-accent animate-pulse font-bold">
-                                  Humiliated
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Historical Round log cards */}
-          {voteLogs.length > 0 && (
-            <div className="card bg-base-100 border border-base-300 shadow-md p-4 font-sans text-xs">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-secondary mb-2 pb-1 border-b border-base-200">Historical Chronology:</h4>
-              <div className="space-y-1">
-                {voteLogs.map((log, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-base-content/85">
-                    <span>
-                      Round {log.round} {log.type === "approval" ? "Minister Board selection" : "Resolution Resolution"}
-                    </span>
-                    <span className={`font-bold ${log.approved || log.winner === "GREEN" ? "text-success" : "text-error"}`}>
-                      {log.type === "approval" ? (log.approved ? "APPROVED" : "REJECTED") : `WINNER: ${log.winner}`}
-                    </span>
-                  </div>
-                ))}
+                </span>
               </div>
-            </div>
-          )}
+            );
+          })}
         </div>
+        <div className="text-right">
+          <span className="uppercase text-[9px] text-base-content/65 block font-bold">Consecutive Rejections Tracker:</span>
+          <span className="font-bold text-red-500 font-retro text-xl">
+            {voteLogs.filter(l => l.round === roundNumber && l.type === "approval" && !l.approved).length} / 3 REJECTS
+          </span>
+        </div>
+      </div>
 
-        {/* RIGHT COLUMN: Chat and Players List (4 Columns) */}
-        <div className="lg:col-span-4 flex flex-col gap-6 h-full lg:sticky lg:top-6">
-          
-          {/* Players in Room Card */}
-          <div className="card bg-base-100 border border-base-300 shadow-md p-4">
-            <h3 className="text-lg font-serif font-bold text-primary border-b pb-2 mb-3 border-base-300">Players ({players.length})</h3>
-            <div className="space-y-2">
-              {players.map((p) => {
-                const isOnline = onlinePlayers[p.userId] !== false; // Default to online
+      {/* Main Grid View */}
+      <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* COLUMN 1: Virtual Council Tent (Circular Game Table) */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] pixel-card">
+            
+            <h2 className="text-xl font-historical font-extrabold text-primary uppercase tracking-widest border-b-2 border-dashed pb-2 mb-4 w-full text-center border-base-content/20">
+              The Nawab's Secretariat Tent
+            </h2>
+
+            {/* Simulated 2D Oval Council Table */}
+            <div className="relative w-full aspect-[4/3] max-w-md md:max-w-xl mx-auto flex items-center justify-center min-h-[300px] border-4 border-dashed border-amber-900/20 bg-amber-950/5 p-4 rounded-none">
+              
+              {/* Inner Round Table Graphic */}
+              <div className="absolute w-[50%] h-[50%] border-4 border-double border-amber-800/40 rounded-full flex flex-col items-center justify-center text-center p-4 bg-amber-900/10">
+                <span className="text-[10px] font-pixel text-amber-700/60 uppercase">Secretariat</span>
+                <span className="text-[8px] font-pixel text-stone-500/70 uppercase mt-0.5">Plassey 1757</span>
+              </div>
+
+              {/* Render Players as seats around the council table */}
+              {players.map((p, idx) => {
+                const angle = getPlayerAngle(idx, players.length);
+                const rx = 135; // horizontal radius
+                const ry = 95;  // vertical radius
+                const tx = rx * Math.cos(angle);
+                const ty = ry * Math.sin(angle);
+
+                const isOnline = onlinePlayers[p.userId] !== false;
+                const isSelected = selectedPlayers.includes(p.userId);
+                const isLeader = currentSelectorId === p.userId;
+                const isOnProposedBoard = proposedTeam.includes(p.userId);
+                
                 return (
-                  <div key={p.userId} className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
-                      <span className={`font-sans font-semibold text-sm ${!isOnline && "opacity-50"}`}>
-                        {p.name} {p.userId === session.user.id && "(Me)"}
+                  <div 
+                    key={p.userId}
+                    style={{
+                      transform: `translate(${tx}px, ${ty}px)`
+                    }}
+                    className="absolute flex flex-col items-center z-20 group transition-all duration-300"
+                  >
+                    {/* Visual shield / portrait container */}
+                    <div 
+                      onClick={() => {
+                        if (currentPhase === "TEAM_PROPOSAL" && isMyTurnToSelect) {
+                          gameAudio.playClick();
+                          setSelectedPlayers((prev) =>
+                            prev.includes(p.userId)
+                              ? prev.filter((id) => id !== p.userId)
+                              : [...prev, p.userId]
+                          );
+                        }
+                      }}
+                      className={`w-14 h-14 border-4 flex flex-col items-center justify-center text-center bg-base-100 shadow-md relative rounded-none transition-all ${
+                        isSelected ? "border-primary scale-110 glow-primary" :
+                        isOnProposedBoard ? "border-accent scale-105" :
+                        isLeader ? "border-secondary scale-105 animate-pulse" :
+                        "border-base-content/20"
+                      }`}
+                    >
+                      <span className="text-xl">
+                        {p.isHost ? "👑" : "🛡️"}
                       </span>
-                      {!isOnline && (
-                        <span className="text-[9px] uppercase font-bold text-neutral-content bg-neutral/40 px-1 rounded">Offline</span>
-                      )}
-                    </div>
-                    <div className="flex gap-1">
-                      {p.isHost && (
-                        <span className="badge badge-sm badge-neutral font-bold uppercase text-[9px]">
-                          Host
+
+                      {/* Vote state badge */}
+                      {isOnProposedBoard && (
+                        <span className="absolute -top-3.5 bg-accent text-accent-content border border-base-300 text-[7px] font-pixel px-1 uppercase">
+                          BOARD
                         </span>
                       )}
-                      {currentSelectorId === p.userId && (
-                        <span className="badge badge-sm badge-secondary font-bold uppercase text-[9px] animate-pulse">
-                          Leader
+
+                      {isLeader && (
+                        <span className="absolute -top-3.5 bg-secondary text-secondary-content border border-base-300 text-[7px] font-pixel px-1 uppercase">
+                          LEADER
                         </span>
                       )}
+
+                      {/* Connection marker */}
+                      <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-base-100 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
                     </div>
+
+                    {/* Character Tag label */}
+                    <span className="bg-base-300 border border-base-content/10 px-1 py-0.5 mt-1 font-pixel text-[8px] max-w-[80px] truncate text-center uppercase text-base-content font-bold">
+                      {p.name}
+                    </span>
                   </div>
                 );
               })}
             </div>
-          </div>
-
-          {/* Chat Interface Card */}
-          <div className="card bg-base-100 border border-base-300 shadow-md p-4 flex flex-col h-[380px] justify-between">
-            <h3 className="text-lg font-serif font-bold text-primary border-b pb-2 mb-3 border-base-300">Secretariat Chat</h3>
             
-            {/* Scrollable messages */}
-            <div className="flex-1 overflow-y-auto space-y-2.5 pr-2 mb-3">
-              {messages.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center text-center opacity-50">
-                  <p className="text-xs font-sans">No messages yet. Send a warning message to the ministers...</p>
+            {/* Private Role HUD Card embedded inside table */}
+            {myRoleInfo && (
+              <div className="w-full bg-base-200 border-2 border-primary/20 p-3 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-pixel">
+                <div className="text-center sm:text-left">
+                  <span className="text-[8px] text-base-content/65 block uppercase tracking-wider">Your Secret Seal:</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-sm font-historical font-extrabold uppercase text-primary">{myRoleInfo.role.replace("_", " ")}</span>
+                    <span className={`badge badge-sm rounded-none border text-[8px] uppercase ${
+                      myRoleInfo.team === "green" ? "bg-emerald-950 text-emerald-200" :
+                      myRoleInfo.team === "red" ? "bg-rose-950 text-rose-200" : "bg-amber-950 text-amber-200"
+                    }`}>
+                      {myRoleInfo.team} Team
+                    </span>
+                  </div>
                 </div>
-              ) : (
-                messages.map((msg) => {
-                  const isOwn = msg.userId === session.user.id;
-                  return (
-                    <div key={msg.id} className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
-                      <span className="text-[10px] font-sans font-bold text-base-content/60 mb-0.5">{msg.username}</span>
-                      <div className={`px-3 py-1.5 rounded-lg text-xs break-words max-w-[85%] ${
-                        isOwn 
-                          ? "bg-primary text-primary-content rounded-tr-none" 
-                          : "bg-base-200 text-base-content rounded-tl-none border border-base-300"
-                      }`}>
-                        {msg.text}
-                      </div>
+
+                {myRoleInfo.visiblePlayers && myRoleInfo.visiblePlayers.length > 0 && (
+                  <div className="bg-base-100 p-2 border border-base-content/10">
+                    <span className="text-[7px] text-base-content/65 uppercase block">Intelligence Reveals:</span>
+                    <div className="flex flex-wrap gap-1 mt-0.5 justify-center">
+                      {myRoleInfo.visiblePlayers.map((vp: any, idx: number) => {
+                        const targetPlayer = players.find((pl) => pl.userId === vp.userId);
+                        return (
+                          <span key={idx} className="badge badge-outline rounded-none text-[8px] uppercase py-1 px-1.5">
+                            {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="text-amber-500 font-bold ml-1">{vp.role.replace("_", " ")}</span>
+                          </span>
+                        );
+                      })}
                     </div>
-                  );
-                })
-              )}
-              <div ref={messagesEndRef} />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* COLUMN 2: Phase Actions, Logs & Chat Sidebar (4 Columns) */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          
+          {/* Phase Control Box */}
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 pixel-card flex flex-col justify-between min-h-[220px]">
+            <div>
+              <h3 className="font-pixel text-[10px] text-secondary uppercase border-b-2 border-dashed pb-1.5 mb-2 border-base-content/20">Secretariat Directives</h3>
             </div>
 
-            {/* Input Form */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 pt-3 border-t border-base-300">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Write scroll..."
-                className="input input-bordered flex-1 text-xs font-sans bg-base-200"
-              />
-              <button
-                type="submit"
-                disabled={!inputText.trim()}
-                className="btn btn-primary text-xs"
+            <div className="flex-1 flex flex-col justify-center items-center">
+              {currentPhase === "LOBBY" && (
+                <div className="text-center p-2">
+                  <p className="text-xs font-sans mb-3 text-base-content/85">Waiting for conspirators. Current player count: {players.length} / 15</p>
+                  {isHost ? (
+                    <button
+                      onClick={handleStartGame}
+                      disabled={players.length < 6}
+                      className="btn btn-sm btn-success rounded-none border-2 font-pixel pixel-btn"
+                    >
+                      START ACTION
+                    </button>
+                  ) : (
+                    <div className="alert alert-info rounded-none border-2 py-1 px-3 text-[10px] font-pixel text-center">
+                      <span>Waiting for Host...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {currentPhase === "DISCUSSION" && (
+                <div className="text-center p-2 font-pixel">
+                  <span className="text-xl uppercase text-amber-500 animate-pulse block">DISCUSSION ACTIVE</span>
+                  <span className="text-[10px] text-base-content/65 font-sans mt-2 block">Observe the chat for loyalist signals.</span>
+                </div>
+              )}
+
+              {currentPhase === "TEAM_PROPOSAL" && (
+                <div className="text-center p-2">
+                  {isMyTurnToSelect ? (
+                    <div>
+                      <p className="text-[10px] font-pixel text-primary uppercase mb-2">PROPOSE {sizeToSelect} MEMBERS:</p>
+                      <div className="flex justify-center gap-1.5 flex-wrap max-h-24 overflow-y-auto mb-2">
+                        {players.map((p) => {
+                          const isSelected = selectedPlayers.includes(p.userId);
+                          return (
+                            <button
+                              key={p.userId}
+                              onClick={() => {
+                                gameAudio.playClick();
+                                setSelectedPlayers((prev) =>
+                                  prev.includes(p.userId)
+                                    ? prev.filter((id) => id !== p.userId)
+                                    : [...prev, p.userId]
+                                );
+                              }}
+                              className={`btn btn-xs rounded-none border ${isSelected ? "btn-primary" : "btn-outline"}`}
+                            >
+                              {p.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <button
+                        onClick={handleProposeTeam}
+                        disabled={selectedPlayers.length !== sizeToSelect}
+                        className="btn btn-xs btn-accent w-full rounded-none border-2 font-pixel pixel-btn"
+                      >
+                        SUBMIT COUNCIL
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="text-center font-pixel text-[10px]">
+                      <span className="loading loading-ring loading-md text-primary mb-1"></span>
+                      <p className="uppercase">Leader is proposing board...</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {currentPhase === "TEAM_APPROVAL" && (
+                <div className="text-center p-2">
+                  <p className="text-[9px] font-pixel text-amber-500 uppercase mb-2">PROPOSED COUNCIL BOARD:</p>
+                  <div className="flex justify-center gap-1 my-2 flex-wrap max-w-[200px]">
+                    {proposedTeam.map((id) => (
+                      <span key={id} className="badge badge-neutral rounded-none text-[8px] font-pixel uppercase border py-1">
+                        {players.find((pl) => pl.userId === id)?.name ?? "Player"}
+                      </span>
+                    ))}
+                  </div>
+                  {!hasVotedApproval ? (
+                    <div className="flex gap-2 w-full mt-3">
+                      <button
+                        onClick={() => handleVoteApproval("approve")}
+                        className="btn btn-xs btn-success flex-1 rounded-none border-2 font-pixel pixel-btn"
+                      >
+                        APPROVE 👍
+                      </button>
+                      <button
+                        onClick={() => handleVoteApproval("reject")}
+                        className="btn btn-xs btn-error flex-1 rounded-none border-2 font-pixel pixel-btn"
+                      >
+                        REJECT 👎
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="alert alert-info rounded-none border text-[8px] font-pixel p-1 text-center mt-2 w-full">
+                      <span>Submitted Secrets...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {currentPhase === "MISSION_VOTE" && (
+                <div className="text-center p-2">
+                  {proposedTeam.includes(session.user.id) ? (
+                    <div>
+                      <p className="text-[9px] font-pixel text-rose-500 uppercase mb-2">SECRET VOTE OF LOYALTY:</p>
+                      {!hasVotedMission ? (
+                        <div className="flex flex-col gap-2 w-full">
+                          <button
+                            onClick={() => handleVoteMission("green")}
+                            className="btn btn-xs btn-success rounded-none border-2 font-pixel pixel-btn"
+                          >
+                            LOYALTY (GREEN)
+                          </button>
+                          <button
+                            onClick={() => handleVoteMission("red")}
+                            className="btn btn-xs btn-error rounded-none border-2 font-pixel pixel-btn"
+                          >
+                            SABOTAGE (RED)
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="alert alert-info rounded-none border text-[8px] font-pixel p-1 text-center w-full">
+                          <span>Choice Registered...</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center font-pixel text-[10px]">
+                      <span className="loading loading-spinner loading-md text-secondary mb-1"></span>
+                      <p className="uppercase">Saboteurs Resolving Board...</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Tab Console (Chat vs Log Chronicle) */}
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 flex flex-col h-[320px] justify-between pixel-card">
+            
+            {/* Tab Bar */}
+            <div className="flex border-b-2 border-base-content/25 mb-3 font-pixel text-[10px]">
+              <button 
+                onClick={() => { gameAudio.playClick(); setRightSidebarTab("chat"); }}
+                className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "chat" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
               >
-                Send
+                Chat Scrolls
               </button>
-            </form>
+              <button 
+                onClick={() => { gameAudio.playClick(); setRightSidebarTab("chronicle"); }}
+                className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "chronicle" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
+              >
+                Chronicle
+              </button>
+            </div>
+
+            {/* Render Tab Contents */}
+            {rightSidebarTab === "chat" ? (
+              <div className="flex-1 flex flex-col justify-between overflow-hidden">
+                <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-2">
+                  {messages.length === 0 ? (
+                    <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-pixel">
+                      <span className="text-[9px]">No logs dispatched yet.</span>
+                    </div>
+                  ) : (
+                    messages.map((msg) => {
+                      const isOwn = msg.userId === session.user.id;
+                      return (
+                        <div key={msg.id} className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
+                          <span className="text-[8px] font-pixel font-bold text-base-content/60 mb-0.5">{msg.username}</span>
+                          <div className={`px-2.5 py-1 rounded-none text-xs break-words max-w-[85%] border font-mono ${
+                            isOwn 
+                              ? "bg-primary text-primary-content border-primary" 
+                              : "bg-base-200 text-base-content border-base-300"
+                          }`}>
+                            {msg.text}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                <form onSubmit={handleSendMessage} className="flex gap-2 pt-2 border-t border-dashed border-base-content/20">
+                  <input
+                    type="text"
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Dispatch scroll..."
+                    className="input input-bordered flex-1 text-xs font-pixel bg-base-200 rounded-none border border-base-content/20 p-1.5"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!inputText.trim()}
+                    className="btn btn-primary btn-xs rounded-none border font-pixel"
+                  >
+                    SEND
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto font-retro text-xs space-y-1.5 pr-1 leading-relaxed">
+                {voteLogs.length === 0 ? (
+                  <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-pixel">
+                    <span className="text-[9px]">No historical decisions recorded.</span>
+                  </div>
+                ) : (
+                  voteLogs.map((log, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-base-content/90 border-b border-base-content/5 pb-1">
+                      <span>
+                        📜 Round {log.round}: {log.type === "approval" ? "Board Propose" : "Resolution Complete"}
+                      </span>
+                      <span className={`font-bold uppercase ${log.approved || log.winner === "green" ? "text-emerald-500" : "text-rose-500"}`}>
+                        {log.type === "approval" ? (log.approved ? "APPROVED" : "REJECTED") : `WIN: ${log.winner}`}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
         </div>
       </div>
 
-      {/* ROLES INFO MODAL using DaisyUI */}
+      {/* Character codex modal */}
       {showInfoModal && (
-        <div className="modal modal-open z-50">
-          <div className="modal-box max-w-2xl max-h-[85vh] flex flex-col p-0 border border-base-300 shadow-2xl bg-base-100 rounded-2xl">
-            <div className="p-4 bg-primary text-primary-content flex justify-between items-center">
-              <h3 className="text-xl font-serif font-bold uppercase tracking-wide">Historical Character secret abilities</h3>
-              <button
-                onClick={() => setShowInfoModal(false)}
-                className="btn btn-ghost btn-sm text-xl font-bold"
-              >
-                x
-              </button>
-            </div>
-            
-            <div className="overflow-y-auto p-6 space-y-4">
-              <p className="text-sm text-base-content/85 font-sans mb-4">
-                The Battle of Plassey (1757) splits players into two factions: the **Green Team** (Nawab Siraj's loyalists) and the **Red Team** (British East India conspirators), with **Jagat Seth** acting as a Gold Team wildcard.
-              </p>
-
-              <div className="space-y-3">
-                {CHARACTER_ROLES.map((role) => (
-                  <div key={role.name} className="border-b border-base-300 pb-3 flex flex-col md:flex-row md:items-center gap-2">
-                    <div className="md:w-1/3 flex items-center gap-2">
-                      <span className="font-bold text-primary font-serif">{role.name}</span>
-                      <span className={`badge badge-sm font-bold uppercase ${
-                        role.team === "Green" ? "badge-success text-success-content" :
-                        role.team === "Red" ? "badge-error text-error-content" : "badge-warning text-warning-content"
-                      }`}>
-                        {role.team}
-                      </span>
-                    </div>
-                    <p className="md:w-2/3 text-xs text-base-content/80 font-sans">{role.power}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="p-4 bg-base-200 border-t border-base-300 flex justify-end">
-              <button
-                onClick={() => setShowInfoModal(false)}
-                className="btn btn-primary btn-sm"
-              >
-                Close Reference
-              </button>
-            </div>
-          </div>
-        </div>
+        <InfoModal
+          open={showInfoModal}
+          onClose={() => { gameAudio.playClick(); setShowInfoModal(false); }}
+          roles={activeRolesFilter.map((r) => ({ name: r.name, team: r.team, power: r.power }))}
+        />
       )}
     </main>
   );
