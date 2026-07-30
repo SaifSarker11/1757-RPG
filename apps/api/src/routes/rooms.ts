@@ -222,8 +222,14 @@ export async function registerRoomRoutes(app: FastifyInstance) {
 
   app.get("/rooms/code/:code", async (request, reply) => {
     const { code } = request.params as { code: string };
-    const room = await db.room.findUnique({
-      where: { code: code.toUpperCase() },
+    const room = await db.room.findFirst({
+      where: {
+        OR: [
+          { code: code.toUpperCase() },
+          { id: code.toLowerCase() },
+          { id: { startsWith: code.toLowerCase() } }
+        ]
+      },
     });
     if (!room) {
       return reply.status(404).send({ error: "Room not found", success: false });
@@ -231,17 +237,40 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     return { roomId: room.id };
   });
 
+  app.post("/users/update-profile", async (request, reply) => {
+    const { userId, name } = request.body as { userId: string; name: string };
+    if (!userId || !name) {
+      return reply.status(400).send({ error: "userId and name required", success: false });
+    }
+    await db.user.update({
+      where: { id: userId },
+      data: { name },
+    });
+    return { success: true };
+  });
+
   app.get("/rooms/:roomId", async (request, reply) => {
     const { roomId } = request.params as { roomId: string };
 
     const room = await db.room.findUnique({
       where: { id: roomId },
-      include: { players: true },
+      include: {
+        players: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     if (!room) {
       return reply.status(404).send({ error: "Room not found", success: false });
     }
+
+    const gameStarted = room.status === "IN_PROGRESS" || room.status === "FINISHED";
+    const rolesInPlay = gameStarted
+      ? room.players.map((p) => p.role).filter(Boolean)
+      : [];
 
     return {
       id: room.id,
@@ -251,8 +280,10 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       currentRound: room.currentRound,
       greenWins: room.greenWins,
       redWins: room.redWins,
+      rolesInPlay,
       players: room.players.map((p) => ({
         userId: p.userId,
+        name: p.user?.name ?? `Player ${p.userId.slice(-4)}`,
         team: p.team,
       })),
     };

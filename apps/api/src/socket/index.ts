@@ -22,6 +22,7 @@ interface ChatMessage {
 }
 
 const chatHistory: ChatMessage[] = [];
+const roomChatHistories = new Map<string, ChatMessage[]>();
 const MAX_HISTORY = 100;
 
 export function registerSocketHandlers(io: Server): void {
@@ -59,27 +60,53 @@ export function registerSocketHandlers(io: Server): void {
         if (chatHistory.length > MAX_HISTORY) {
           chatHistory.shift();
         }
+      } else {
+        if (!roomChatHistories.has(targetRoom)) {
+          roomChatHistories.set(targetRoom, []);
+        }
+        const history = roomChatHistories.get(targetRoom)!;
+        history.push(message);
+        if (history.length > MAX_HISTORY) {
+          history.shift();
+        }
       }
 
       io.to(targetRoom).emit("chat:message", message);
     });
 
     // Lobby / Room events
-    socket.on("room:join", ({ roomId, userId }: { roomId: string; userId: string }) => {
+    socket.on("room:join", async ({ roomId, userId }: { roomId: string; userId: string }) => {
       if (!roomId || !userId) {
         socket.emit("room:error", { message: "roomId and userId required" });
         return;
       }
       socket.leave("lobby");
       socket.join(roomId);
+      socket.data.roomId = roomId;
+      socket.data.userId = userId;
+
+      // Send the private room's chat history to the joining client
+      const history = roomChatHistories.get(roomId) || [];
+      socket.emit("chat:history", history);
+
       io.to(roomId).emit("game:join", { roomId, userId });
+
+      // Notify others this player is online
+      io.to(roomId).emit("player:status", { userId, online: true });
+
+      // Retrieve list of all current online player userIds in the room
+      const activeSockets = await io.in(roomId).fetchSockets();
+      const onlineUserIds = activeSockets.map((s) => s.data.userId).filter(Boolean);
+      socket.emit("room:online-list", onlineUserIds);
     });
 
     socket.on("room:leave", ({ roomId, userId }: { roomId: string; userId: string }) => {
       if (!roomId || !userId) return;
       socket.leave(roomId);
       socket.join("lobby");
+      socket.data.roomId = null;
       io.to(roomId).emit("game:leave", { roomId, userId });
+      io.to(roomId).emit("player:status", { userId, online: false });
     });
 
     // Game starting events
@@ -316,7 +343,11 @@ export function registerSocketHandlers(io: Server): void {
     );
 
     socket.on("disconnect", () => {
-      // Clean up if needed
+      const roomId = socket.data.roomId;
+      const userId = socket.data.userId;
+      if (roomId && userId) {
+        io.to(roomId).emit("player:status", { userId, online: false });
+      }
     });
   });
 }

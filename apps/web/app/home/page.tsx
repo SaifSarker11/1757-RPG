@@ -1,19 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
-interface ChatMessage {
-  id: string;
-  userId: string;
-  username: string;
-  text: string;
-  timestamp: string;
-}
-
-const SOCKET_URL = process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3001";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 // 32 core DaisyUI themes
@@ -28,13 +18,13 @@ const THEMES = [
 export default function HomePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputText, setInputText] = useState("");
-  const socketRef = useRef<Socket | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Theme selector state
   const [currentTheme, setCurrentTheme] = useState("retro");
+
+  // Profile Settings state
+  const [displayName, setDisplayName] = useState("");
+  const [profileMessage, setProfileMessage] = useState<string | null>(null);
 
   // Room creation and joining state
   const [joinCode, setJoinCode] = useState("");
@@ -49,6 +39,12 @@ export default function HomePage() {
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
+  useEffect(() => {
+    if (session?.user) {
+      setDisplayName(session.user.name);
+    }
+  }, [session]);
+
   const changeTheme = (themeName: string) => {
     setCurrentTheme(themeName);
     localStorage.setItem("daisyui-theme", themeName);
@@ -61,54 +57,39 @@ export default function HomePage() {
     }
   }, [isPending, session, router]);
 
-  useEffect(() => {
-    if (!session) return;
-
-    const socket = io(SOCKET_URL, {
-      withCredentials: true,
-      transports: ["websocket"],
-    });
-    socketRef.current = socket;
-
-    socket.emit("user:identify", { userId: session.user.id });
-
-    socket.on("chat:history", (history: ChatMessage[]) => {
-      setMessages(history);
-    });
-
-    socket.on("chat:message", (message: ChatMessage) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [session]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   async function handleSignOut() {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-    }
     await authClient.signOut();
     router.replace("/login");
     router.refresh();
   }
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim() || !socketRef.current || !session?.user) return;
+    if (!displayName.trim() || !session?.user) return;
+    setProfileMessage(null);
+    setActionLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/users/update-profile`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: session.user.id,
+          name: displayName.trim(),
+        }),
+      });
 
-    socketRef.current.emit("chat:send-message", {
-      roomId: "lobby",
-      userId: session.user.id,
-      username: session.user.name,
-      text: inputText,
-    });
-    setInputText("");
+      if (!res.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      // Revalidate better-auth session client cache to update names in all client views
+      await authClient.getSession({ fetchOptions: { cache: "no-store" } });
+      setProfileMessage("Profile updated successfully");
+    } catch (err) {
+      setProfileMessage(err instanceof Error ? err.message : "Error updating profile");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleCreateRoom = async () => {
@@ -185,17 +166,6 @@ export default function HomePage() {
       setError(err instanceof Error ? err.message : "Error joining room");
     } finally {
       setActionLoading(false);
-    }
-  };
-
-  const formatTime = (isoString: string) => {
-    try {
-      return new Date(isoString).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return "";
     }
   };
 
@@ -327,55 +297,40 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Global Chat (5 Columns) */}
+        {/* RIGHT COLUMN: Profile Settings (5 Columns) */}
         <div className="lg:col-span-5 flex flex-col">
-          <div className="card bg-base-100 border border-base-300 shadow-md p-4 flex flex-col h-[480px] lg:h-auto lg:flex-1 justify-between">
-            <h3 className="text-lg font-serif font-bold text-primary border-b pb-2 mb-3">Lobby Chat Scroll</h3>
-            
-            {/* Scrollable messages area */}
-            <div className="flex-1 overflow-y-auto space-y-2.5 pr-2 mb-3">
-              {messages.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center text-center opacity-50">
-                  <p className="text-xs font-sans">No messages scroll. Start typing to write to the grand council...</p>
-                </div>
-              ) : (
-                messages.map((msg) => {
-                  const isOwn = msg.userId === session.user.id;
-                  return (
-                    <div key={msg.id} className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
-                      <span className="text-[10px] font-sans font-bold text-base-content/60 mb-0.5">{msg.username}</span>
-                      <div className={`px-3 py-1.5 rounded-lg text-xs break-words max-w-[85%] ${
-                        isOwn 
-                          ? "bg-primary text-primary-content rounded-tr-none" 
-                          : "bg-base-200 text-base-content rounded-tl-none border border-base-300"
-                      }`}>
-                        {msg.text}
-                      </div>
-                      <span className="text-[9px] text-base-content/40 mt-0.5 px-0.5">
-                        {formatTime(msg.timestamp)}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-              <div ref={messagesEndRef} />
+          <div className="card bg-base-100 border border-base-300 shadow-md p-6 flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl font-serif font-bold text-primary border-b pb-2 mb-4">Player Profile Settings</h3>
+              <p className="text-xs text-base-content/70 mb-4">
+                Update your display name here. Anonymous guest profiles are fully supported, but setting a unique name will make you identifiable to other council members.
+              </p>
             </div>
 
-            {/* Input Form */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 border-t pt-3 border-base-300">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Write scroll..."
-                className="input input-bordered flex-1 text-xs font-sans bg-base-200"
-              />
+            {profileMessage && (
+              <div className="alert alert-info text-xs font-bold py-2 rounded-lg mb-4">
+                <span>{profileMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <div className="form-control">
+                <span className="label-text font-bold mb-1">Display Name</span>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="input input-bordered w-full font-sans bg-base-200"
+                  required
+                />
+              </div>
+
               <button
                 type="submit"
-                disabled={!inputText.trim()}
-                className="btn btn-primary text-xs"
+                disabled={actionLoading || !displayName.trim()}
+                className="btn btn-primary w-full"
               >
-                Send
+                {actionLoading ? "Updating..." : "Update Settings"}
               </button>
             </form>
           </div>

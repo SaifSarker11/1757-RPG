@@ -26,7 +26,6 @@ interface ChatMessage {
 const SOCKET_URL = process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3001";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-// 32 core DaisyUI themes
 const THEMES = [
   "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave",
   "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua",
@@ -98,6 +97,22 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const [finalWinner, setFinalWinner] = useState<string | null>(null);
   const [roleReveal, setRoleReveal] = useState<any[]>([]);
   const [excludedWinCredit, setExcludedWinCredit] = useState<string[]>([]);
+  const [rolesInPlay, setRolesInPlay] = useState<string[]>([]);
+
+  // Online status mapping
+  const [onlinePlayers, setOnlinePlayers] = useState<Record<string, boolean>>({});
+
+  // Refs for socket callbacks to avoid re-connecting the socket when variables change
+  const roundNumberRef = useRef(roundNumber);
+  const proposedTeamRef = useRef(proposedTeam);
+
+  useEffect(() => {
+    roundNumberRef.current = roundNumber;
+  }, [roundNumber]);
+
+  useEffect(() => {
+    proposedTeamRef.current = proposedTeam;
+  }, [proposedTeam]);
 
   // Special Lock statuses
   const [deBussyScanned, setDeBussyScanned] = useState<{ targetUserId: string; role: string | null } | null>(null);
@@ -128,40 +143,41 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     document.documentElement.setAttribute("data-theme", themeName);
   };
 
+  const fetchRoom = async () => {
+    try {
+      const res = await fetch(`${API_URL}/rooms/${roomId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setRoomData(data);
+        setRolesInPlay(data.rolesInPlay || []);
+        
+        const mappedPlayers = data.players.map((p: any) => {
+          return {
+            userId: p.userId,
+            name: p.name,
+            isHost: data.hostUserId === p.userId,
+            isSelector: false,
+          };
+        });
+        setPlayers(mappedPlayers);
+      }
+    } catch (err) {
+      console.error("Error fetching room details:", err);
+    }
+  };
+
   // Fetch initial room info
   useEffect(() => {
     if (!session && !isPending) {
       router.replace("/login");
       return;
     }
-
-    async function fetchRoom() {
-      try {
-        const res = await fetch(`${API_URL}/rooms/${roomId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setRoomData(data);
-          
-          const mappedPlayers = data.players.map((p: any) => {
-            return {
-              userId: p.userId,
-              name: `Player ${p.userId.slice(-4)}`,
-              isHost: data.hostUserId === p.userId,
-              isSelector: false,
-            };
-          });
-          setPlayers(mappedPlayers);
-        }
-      } catch (err) {
-        console.error("Error fetching room details:", err);
-      }
-    }
     if (session) {
       fetchRoom();
     }
-  }, [roomId, session, isPending, router]);
+  }, [roomId, session, isPending]);
 
-  // Socket Connections
+  // Socket Connections (Runs exactly once on mount, depends only on roomId and session)
   useEffect(() => {
     if (!session) return;
 
@@ -183,15 +199,24 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       setMessages((prev) => [...prev, message]);
     });
 
-    socket.on("game:join", ({ userId }) => {
-      setPlayers((prev) => {
-        if (prev.some((p) => p.userId === userId)) return prev;
-        return [...prev, { userId, name: `Player ${userId.slice(-4)}`, isHost: false }];
-      });
+    socket.on("game:join", () => {
+      fetchRoom();
     });
 
-    socket.on("game:leave", ({ userId }) => {
-      setPlayers((prev) => prev.filter((p) => p.userId !== userId));
+    socket.on("game:leave", () => {
+      fetchRoom();
+    });
+
+    socket.on("room:online-list", (userIds: string[]) => {
+      const initialOnline: Record<string, boolean> = {};
+      userIds.forEach((id) => {
+        initialOnline[id] = true;
+      });
+      setOnlinePlayers(initialOnline);
+    });
+
+    socket.on("player:status", ({ userId, online }: { userId: string; online: boolean }) => {
+      setOnlinePlayers((prev) => ({ ...prev, [userId]: online }));
     });
 
     socket.on("game:started", () => {
@@ -199,6 +224,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       setSelectedPlayers([]);
       setHasVotedApproval(false);
       setHasVotedMission(false);
+      fetchRoom();
     });
 
     socket.on("role:assigned", (info: any) => {
@@ -233,9 +259,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         ...prev,
         {
           type: "approval",
-          round: roundNumber,
+          round: roundNumberRef.current,
           approved: payload.approved,
-          members: proposedTeam,
+          members: proposedTeamRef.current,
         },
       ]);
       if (payload.approved) {
@@ -250,9 +276,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         ...prev,
         {
           type: "mission",
-          round: roundNumber,
+          round: roundNumberRef.current,
           winner: payload.winner,
-          members: proposedTeam,
+          members: proposedTeamRef.current,
         },
       ]);
       setHasVotedMission(false);
@@ -290,7 +316,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     return () => {
       socket.disconnect();
     };
-  }, [roomId, session, roundNumber, proposedTeam]);
+  }, [roomId, session]);
 
   // Discussion countdown timer
   useEffect(() => {
@@ -406,6 +432,23 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     setInputText("");
   };
 
+  const handleLeaveRoom = async () => {
+    if (!session?.user) return;
+    try {
+      await fetch(`${API_URL}/rooms/${roomId}/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user.id }),
+      });
+      if (socketRef.current) {
+        socketRef.current.emit("room:leave", { roomId, userId: session.user.id });
+      }
+      router.push("/home");
+    } catch (err) {
+      console.error("Error leaving room:", err);
+    }
+  };
+
   const isHost = roomData?.hostUserId === session?.user.id;
   const isMyTurnToSelect = currentSelectorId === session?.user.id || (roomData?.hostUserId === session?.user.id && currentSelectorId === "");
   const sizeToSelect = getTeamSizeForRound(roundNumber, players.length);
@@ -457,6 +500,13 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           >
             Role Abilities Reference
           </button>
+
+          <button
+            onClick={handleLeaveRoom}
+            className="btn btn-error btn-sm"
+          >
+            Leave Room
+          </button>
         </div>
       </div>
 
@@ -486,6 +536,18 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                 </div>
               )}
             </div>
+
+            {/* Roles in Play Reference list */}
+            {rolesInPlay.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-4 items-center bg-base-200 border border-base-300 p-2.5 rounded-xl">
+                <span className="text-[10px] font-bold uppercase text-secondary font-sans tracking-wide">Roles in Play:</span>
+                {rolesInPlay.map((role) => (
+                  <span key={role} className="badge badge-sm badge-neutral font-mono font-bold uppercase py-2">
+                    {role.replace("_", " ")}
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* Content view based on active phase */}
             <div className="flex-1 flex flex-col justify-between">
@@ -539,11 +601,14 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                         <div className="card bg-base-100 p-3 rounded-lg border border-base-300 w-full md:w-auto">
                           <span className="text-[10px] uppercase font-bold text-base-content/65">Vision / Secret Intelligence:</span>
                           <div className="flex flex-wrap gap-1.5 mt-1">
-                            {myRoleInfo.visiblePlayers.map((vp: any, idx: number) => (
-                              <span key={idx} className="badge badge-outline badge-secondary text-xs font-bold">
-                                {vp.userId === session.user.id ? "Me" : `Player ${vp.userId.slice(-4)}`}: <span className="uppercase font-bold ml-1">{vp.role.replace("_", " ")}</span>
-                              </span>
-                            ))}
+                            {myRoleInfo.visiblePlayers.map((vp: any, idx: number) => {
+                              const targetPlayer = players.find(p => p.userId === vp.userId);
+                              return (
+                                <span key={idx} className="badge badge-outline badge-secondary text-xs font-bold">
+                                  {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="uppercase font-bold ml-1">{vp.role.replace("_", " ")}</span>
+                                </span>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
@@ -575,7 +640,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                                   }}
                                   className={`btn btn-sm ${isSelected ? "btn-primary" : "btn-outline"}`}
                                 >
-                                  {p.userId === session.user.id ? "Me" : `Player ${p.userId.slice(-4)}`}
+                                  {p.userId === session.user.id ? "Me" : p.name}
                                 </button>
                               );
                             })}
@@ -593,7 +658,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                         <div className="text-center py-8">
                           <span className="loading loading-spinner loading-md text-primary mb-4"></span>
                           <h3 className="text-lg font-bold">
-                            Leader (Player {currentSelectorId.slice(-4)}) is selecting {sizeToSelect} ministers...
+                            Leader ({players.find(p => p.userId === currentSelectorId)?.name || `Player ${currentSelectorId.slice(-4)}`}) is selecting {sizeToSelect} ministers...
                           </h3>
                         </div>
                       )}
@@ -610,7 +675,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                         <div className="flex flex-wrap justify-center gap-2 mt-2">
                           {proposedTeam.map((id) => (
                             <span key={id} className="badge badge-accent py-2.5 font-bold text-sm">
-                              Player {id.slice(-4)}
+                              {players.find(p => p.userId === id)?.name || `Player ${id.slice(-4)}`}
                             </span>
                           ))}
                         </div>
@@ -692,7 +757,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                                 onClick={() => handleDeBussyScan(p.userId)}
                                 className="btn btn-xs btn-secondary"
                               >
-                                Scan Player {p.userId.slice(-4)}
+                                Scan {p.name}
                               </button>
                             ))}
                         </div>
@@ -700,7 +765,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                     )}
                     {deBussyScanned && (
                       <div className="alert alert-success text-sm font-bold">
-                        <span>Scan Result: Player {deBussyScanned.targetUserId.slice(-4)} role is: <span className="uppercase underline ml-1">{deBussyScanned.role?.replace("_", " ") ?? "Unknown"}</span></span>
+                        <span>Scan Result: Player {players.find(p => p.userId === deBussyScanned.targetUserId)?.name || deBussyScanned.targetUserId.slice(-4)} role is: <span className="uppercase underline ml-1">{deBussyScanned.role?.replace("_", " ") ?? "Unknown"}</span></span>
                       </div>
                     )}
 
@@ -716,7 +781,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                                 onClick={() => handleJeanLawCurse(p.userId)}
                                 className="btn btn-xs btn-error"
                               >
-                                Curse Player {p.userId.slice(-4)}
+                                Curse {p.name}
                               </button>
                             ))}
                         </div>
@@ -724,7 +789,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                     )}
                     {jeanLawConfirmed && (
                       <div className="alert alert-warning text-sm font-bold mt-2">
-                        <span>Lock Confirmed: You locked onto Player {jeanLawConfirmed.slice(-4)}.</span>
+                        <span>Lock Confirmed: You locked onto {players.find(p => p.userId === jeanLawConfirmed)?.name || jeanLawConfirmed.slice(-4)}.</span>
                       </div>
                     )}
                   </div>
@@ -753,7 +818,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                               onClick={() => handleMirJafarGuessSubmit(p.userId)}
                               className="btn btn-sm btn-error"
                             >
-                              Player {p.userId.slice(-4)} is Mir Madan
+                              {p.name} is Mir Madan
                             </button>
                           ))}
                       </div>
@@ -777,7 +842,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                               onClick={() => handleJagatSethGuessSubmit(p.userId)}
                               className="btn btn-sm btn-warning"
                             >
-                              Player {p.userId.slice(-4)}
+                              {p.name}
                             </button>
                           ))}
                       </div>
@@ -790,10 +855,11 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                     <div className="space-y-2">
                       {roleReveal.map((reveal) => {
                         const isHumiliated = reveal.team === "humiliated" || excludedWinCredit.includes(reveal.userId);
+                        const playerInfo = players.find(p => p.userId === reveal.userId);
                         return (
                           <div key={reveal.userId} className="flex justify-between items-center text-sm">
                             <span className="font-sans font-semibold">
-                              Player {reveal.userId.slice(-4)} {reveal.userId === session.user.id && "(Me)"}
+                              {playerInfo?.name || `Player ${reveal.userId.slice(-4)}`} {reveal.userId === session.user.id && "(Me)"}
                             </span>
                             <div className="flex items-center gap-2">
                               <span className="badge badge-neutral text-xs font-mono uppercase">
@@ -849,27 +915,34 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           <div className="card bg-base-100 border border-base-300 shadow-md p-4">
             <h3 className="text-lg font-serif font-bold text-primary border-b pb-2 mb-3 border-base-300">Players ({players.length})</h3>
             <div className="space-y-2">
-              {players.map((p) => (
-                <div key={p.userId} className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="font-sans font-semibold text-sm">
-                      Player {p.userId.slice(-4)} {p.userId === session.user.id && "(Me)"}
-                    </span>
-                  </div>
-                  <div className="flex gap-1">
-                    {p.isHost && (
-                      <span className="badge badge-sm badge-neutral font-bold uppercase text-[9px]">
-                        Host
+              {players.map((p) => {
+                const isOnline = onlinePlayers[p.userId] !== false; // Default to online
+                return (
+                  <div key={p.userId} className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
+                      <span className={`font-sans font-semibold text-sm ${!isOnline && "opacity-50"}`}>
+                        {p.name} {p.userId === session.user.id && "(Me)"}
                       </span>
-                    )}
-                    {currentSelectorId === p.userId && (
-                      <span className="badge badge-sm badge-secondary font-bold uppercase text-[9px] animate-pulse">
-                        Leader
-                      </span>
-                    )}
+                      {!isOnline && (
+                        <span className="text-[9px] uppercase font-bold text-neutral-content bg-neutral/40 px-1 rounded">Offline</span>
+                      )}
+                    </div>
+                    <div className="flex gap-1">
+                      {p.isHost && (
+                        <span className="badge badge-sm badge-neutral font-bold uppercase text-[9px]">
+                          Host
+                        </span>
+                      )}
+                      {currentSelectorId === p.userId && (
+                        <span className="badge badge-sm badge-secondary font-bold uppercase text-[9px] animate-pulse">
+                          Leader
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
