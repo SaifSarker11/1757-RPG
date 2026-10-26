@@ -15,12 +15,18 @@ model User {
   emailVerified Boolean   @default(false)
   image         String?
   isAnonymous   Boolean   @default(false)
+  /// 3-15 alphanumeric; enforced at signup. Optional until existing users pick one.
+  username      String?   @unique
+  avatarId      String?
+  xp            Int       @default(0)
+  level         Int       @default(1)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
   rooms         Room[]
   roomPlayers   RoomPlayer[]
+  matchPlayers  MatchPlayer[]
 
   @@unique([email])
   @@map("user")
@@ -102,6 +108,8 @@ enum PlayerRole {
   RAI_DURLABH
   JAGAT_SETH
   RAJA_RAMNARAIN
+  LOYALIST
+  EIC_SPY
 }
 
 model Room {
@@ -164,4 +172,96 @@ model RoundRecord {
 
   @@index([roomId, roundNumber])
   @@map("round_record")
+}
+
+// --- Finished matches (written once, at match end) ---------------------------
+
+enum MatchEndReason {
+  ROUNDS
+  MIR_JAFAR_GUESS
+  JAGAT_SETH_GUESS
+}
+
+enum RoundEndReason {
+  MISSION
+  DEADLOCK
+}
+
+enum BallotChoice {
+  APPROVE
+  REJECT
+}
+
+model Match {
+  id          String         @id @default(cuid())
+  roomCode    String
+  playerCount Int
+  startedAt   DateTime
+  endedAt     DateTime
+  winner      PlayerTeam
+  reason      MatchEndReason
+  roundsGreen Int
+  roundsRed   Int
+  /// Host settings the match was played with.
+  config      Json
+  createdAt   DateTime       @default(now())
+  players     MatchPlayer[]
+  rounds      MatchRound[]
+
+  @@index([roomCode])
+  @@index([endedAt])
+  @@map("match")
+}
+
+model MatchPlayer {
+  id                  String     @id @default(cuid())
+  matchId             String
+  match               Match      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  /// Null for guests.
+  userId              String?
+  user                User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestId             String?
+  seat                Int
+  role                PlayerRole
+  team                PlayerTeam
+  won                 Boolean
+  /// Jean Law locked this Green player (humiliation trophy).
+  jeanLawLocked       Boolean    @default(false)
+  disconnectedForfeit Boolean    @default(false)
+
+  @@unique([matchId, seat])
+  @@index([userId])
+  @@map("match_player")
+}
+
+model MatchRound {
+  id            String         @id @default(cuid())
+  matchId       String
+  match         Match          @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  number        Int
+  /// Leader of the approved nomination, or of the last attempt if deadlocked.
+  leaderSeat    Int
+  teamSeats     Int[]
+  approved      Boolean
+  successCount  Int
+  sabotageCount Int
+  result        PlayerTeam
+  reason        RoundEndReason
+  ballotVotes   BallotVote[]
+
+  @@unique([matchId, number])
+  @@map("match_round")
+}
+
+model BallotVote {
+  id      String       @id @default(cuid())
+  roundId String
+  round   MatchRound   @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  attempt Int
+  seat    Int
+  vote    BallotChoice
+  weight  Int
+
+  @@unique([roundId, attempt, seat])
+  @@map("ballot_vote")
 }
