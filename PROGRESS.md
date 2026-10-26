@@ -1,5 +1,19 @@
 # PROGRESS
 
+## 2026-10-27 — `feat/m11-deployment-prod` (stacked on `feat/m10-admin-telemetry`)
+- **Changed:** Full DevOps and production readiness overhaul. One-command local stack via Docker Compose and clean deploys to Render / Vercel.
+- **Dockerfile:** Multi-stage production build with layer-cached dependency install, Prisma client copy, non-root `appuser`, and built-in `HEALTHCHECK` on `/health`.
+- **Docker Compose:** Upgraded from Redis-only to a full `postgres + redis + api` stack with health-checked `service_healthy` dependencies, bridge networking, and `restart: unless-stopped`.
+- **Health Endpoint:** Deep `/health` probe with PostgreSQL `$queryRaw` connectivity check, Redis status, process uptime, and RSS/heap memory metrics. Returns `200` (ok) or `503` (degraded).
+- **Graceful Shutdown:** `SIGTERM` / `SIGINT` signal handlers that close Socket.io connections, drain in-flight HTTP via `app.close()`, then exit cleanly — critical for zero-downtime Render deploys.
+- **Render Blueprint:** `render.yaml` declares the `1757-api` Docker web service with auto-deploy, health check path, and `sync: false` env vars for dashboard configuration.
+- **CI Pipeline:** Added `pnpm test` step to the GitHub Actions workflow between typecheck and build. Added `test` task to `turbo.json` and root `package.json`.
+- **Environment:** `REDIS_URL` and `NODE_ENV` added to `turbo.json` `globalEnv`. `.env.example` updated with Render production checklist. `.env.docker` template for container development.
+- **README:** Rewritten from Turborepo template to project-specific documentation: architecture table, quick start (local + Docker), environment variables, scripts, deployment guides (Render + Vercel), CI/CD pipeline, cold-start behaviour.
+- **Docs:** Comprehensive `docs/deployment.md` covering Render, Vercel, Neon connection pooling, Redis configuration, graceful shutdown, rollback procedures, and GitHub secrets.
+- **Docker Ignore:** Expanded `.dockerignore` to exclude docs, IDE files, build artefacts, and agent directories for smaller build context.
+- **Next:** All v1 modules (M1–M11) complete. Ready for integration testing and production deployment.
+
 ## 2026-10-26 — `feat/m10-admin-telemetry` (stacked on `feat/m9-web-game-ui`)
 - **Changed:** Administrative reporting, match audit logs, and game balance telemetry. All endpoints enforce authentication via BetterAuth sessions (`requireUser`) with CORS authorization for the admin origin.
 - **Admin API Endpoints:** Added `GET /api/admin/overview` (aggregate telemetry covering registered vs guest users, active rooms, match counts, faction win rate balances, and average match size), `GET /api/admin/matches` (paginated match logs with final score tracking), `GET /api/admin/users` (user directory with account lookup), `GET /api/admin/rooms/active` (live lobbies and running games), and `PATCH /api/admin/users/:userId` (moderation endpoint for renaming users).
