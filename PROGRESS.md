@@ -1,5 +1,13 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m7-reconnect-timeouts` (stacked on `feat/m6-realtime`)
+- **Changed:** Resilient reconnection and disconnect tracking via `DisconnectTracker` with 30-second grace periods per player. Socket handlers dispatch `playerDisconnected` on socket disconnect and `playerReconnected` on `room:join` / `game:sync`. In-memory and Redis-backed state synchronization delivers current game views to rejoining users without round disruption.
+- **Grace-period Auto-Actions:** Automatic fallback when grace timer expires during an active turn or vote: automatically casts `REJECT` on pending ballot votes, auto-plays the first legal card on mission ballots, and auto-acts safely so room progress is never deadlocked by dropped players.
+- **Presence & State:** Added `player:status` presence events (`online`/`offline`) with room-wide broadcast, and added `offlineUsers()` query in `GameService`.
+- **Docs:** Documented complete client reconnection flow, presence updates, and timeout behavior in `docs/events.md`.
+- **Tests:** Unit tests for `DisconnectTracker` and `GameService` disconnect/autoAct handlers, plus end-to-end integration tests over the socket transport layer.
+- **Next:** M8 user authentication & profiles.
+
 ## 2026-10-26 — `feat/m6-realtime` (stacked on `feat/m5-rooms-lobby`)
 - **Changed:** sockets are authenticated from the BetterAuth session (cookie or `auth.token`) and join `user:<id>`; anonymous sockets can still chat but every room/game event refuses them. New zod-validated protocol: `room:join`, `room:leave`, `game:start`, `game:action`, `game:sync` with acks; `game:view` per player, `game:event` (public engine events) per room, and `game:error` to the sender only. `GameService` runs every match on the engine: serialized per room, Redis snapshot (`game:<roomId>`, 2 h TTL) after every transition, seeded RNG per step, timers at `endsAt`, restore on boot, the match saved to Postgres at POST_GAME and dropped 30 min later. Empty lobbies are deleted after 10 min. Rate limits: HTTP 100/min/IP; per socket, chat 5/5 s and actions 10/s. Redis comes from `REDIS_URL`, with a memory fallback plus warning when unreachable. The legacy `apps/api/src/game/*` engine is removed. Docs: `docs/events.md`.
 - **Fixes vs the old code:** client-supplied identity on every socket event; errors broadcast to the whole room; no server timers; heavy Postgres writes during play; `console.error` in handlers.
