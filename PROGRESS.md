@@ -1,5 +1,13 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m6-realtime` (stacked on `feat/m5-rooms-lobby`)
+- **Changed:** sockets are authenticated from the BetterAuth session (cookie or `auth.token`) and join `user:<id>`; anonymous sockets can still chat but every room/game event refuses them. New zod-validated protocol: `room:join`, `room:leave`, `game:start`, `game:action`, `game:sync` with acks; `game:view` per player, `game:event` (public engine events) per room, and `game:error` to the sender only. `GameService` runs every match on the engine: serialized per room, Redis snapshot (`game:<roomId>`, 2 h TTL) after every transition, seeded RNG per step, timers at `endsAt`, restore on boot, the match saved to Postgres at POST_GAME and dropped 30 min later. Empty lobbies are deleted after 10 min. Rate limits: HTTP 100/min/IP; per socket, chat 5/5 s and actions 10/s. Redis comes from `REDIS_URL`, with a memory fallback plus warning when unreachable. The legacy `apps/api/src/game/*` engine is removed. Docs: `docs/events.md`.
+- **Fixes vs the old code:** client-supplied identity on every socket event; errors broadcast to the whole room; no server timers; heavy Postgres writes during play; `console.error` in handlers.
+- **Tests:** API 119 passing, including real Socket.IO client/server tests; engine 237 passing.
+- **Heads-up for M9:** the web room page still uses the old event names, so in-game UI won't work until it moves to `game:view` / `game:action` (see `docs/events.md`). Lobby, chat and presence events are unchanged.
+- **Action needed:** add `REDIS_URL` to `turbo.json` `globalEnv` and the Render env (M11); `pnpm db:push` on a dev DB.
+- **Next:** M7 reconnection & timeouts (teammate).
+
 ## 2026-10-26 — `feat/m5-rooms-lobby` (stacked on `feat/m4-endgame-persistence`)
 - **Changed:** every room write now takes the caller from the BetterAuth session (`requireUser` in `apps/api/src/lib/session.ts`; M8 can extend it), and body user ids are ignored. Room codes are 6 characters from A–Z0–9, and the code lookup matches the exact code only. New: host settings (max players, discussion time, role toggles, public/private) with live `room:settings`; a public lobby list and Quick Join pushed as `lobby:list`; host kick with a lobby ban; host migration to the longest-present player; `inviteUrl`, `code` and `playerCount` in room responses. The old REST start route was removed (start belongs to M6), and leaving mid-game is refused (disconnects are M7). Docs: `docs/rooms-api.md`.
 - **Fixes vs the old code:** a spoofable `userId` on every route; hex-only codes; the id-prefix room lookup; the room response leaking each player's team; `rolesInPlay` listed in player order, which mapped roles to players; the web client listening for a `room:update` that was never sent.
