@@ -9,7 +9,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --target es2022 --out-dir dist",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "@repo/auth": "workspace:*",
     "@repo/config": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/game-engine": "workspace:*",
     "better-auth": "latest",
     "fastify": "latest",
     "ioredis": "^5.11.0",
@@ -31,6 +33,7 @@
     "@types/node": "^22.15.3",
     "tsup": "^8.5.1",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "3.2.4"
   }
 }
