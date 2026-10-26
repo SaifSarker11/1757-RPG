@@ -80,6 +80,15 @@ export const TIMEOUT_DEFAULTS = {
  */
 export const GOLD_SLOT_FALLBACK_TEAM = "GREEN" as const;
 
+/** [DEFAULT] Mir Madan sees the Reds only during Round 1's Discussion (§4.2). */
+export const MIR_MADAN_VISION: { round: number; phases: readonly Phase[] } = {
+  round: 1,
+  phases: ["DISCUSSION"],
+};
+
+/** [DEFAULT] What de Bussy is shown when he reveals Rai Durlabh. */
+export const RAI_DURLABH_DISGUISE = "LOYALIST" as const;
+
 export const ALL_NAMED_ROLES: readonly NamedRoleId[] = [
   "NAWAB_SIRAJ",
   "LUTFUNNESA",
