@@ -2,6 +2,7 @@ import { deBussyReveal } from "./abilities/deBussy.js";
 import { jeanLawLock } from "./abilities/jeanLaw.js";
 import { castVote, ballotTimedOut } from "./phases/ballot.js";
 import { enterPhase, type Step } from "./phases/common.js";
+import { endgameTimedOut, guess } from "./phases/endgame.js";
 import { playCard, resolutionTimedOut } from "./phases/mission.js";
 import { nominate, selectionTimedOut } from "./phases/nomination.js";
 import { finishRound } from "./phases/round.js";
@@ -44,6 +45,8 @@ function applyPlayerAction(
       return deBussyReveal(step, action.playerId, action.targetId);
     case "JEANLAW_LOCK":
       return jeanLawLock(step, action.playerId, action.targetId);
+    case "GUESS":
+      return guess(step, action.playerId, action.targetId);
   }
 }
 
@@ -72,6 +75,8 @@ function tick(step: Step, rng: Rng): void {
       finishRound(step);
       return;
     case "ENDGAME":
+      endgameTimedOut(step);
+      return;
     case "POST_GAME":
       return;
   }

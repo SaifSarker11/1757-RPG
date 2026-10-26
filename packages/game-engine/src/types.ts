@@ -77,9 +77,33 @@ export interface RoundResult {
   sabotageCount: number;
 }
 
+export type EndgameStep = "MIR_JAFAR_GUESS" | "JAGAT_SETH_GUESS";
+
+export interface GuessRecord {
+  guesserId: string;
+  /** Null when the guess timed out. */
+  targetId: string | null;
+  correct: boolean;
+}
+
+export interface EndgameState {
+  /** The guess being waited on; null once both guesses are done. */
+  step: EndgameStep | null;
+  roundWinner: RoundWinner;
+  /** W in §4.6: the round winner, possibly flipped by Mir Jafar. */
+  provisionalWinner: RoundWinner;
+  mirJafarGuess: GuessRecord | null;
+  jagatSethGuess: GuessRecord | null;
+}
+
+export type OutcomeReason = "ROUNDS" | "MIR_JAFAR_GUESS" | "JAGAT_SETH_GUESS";
+
 export interface GameOutcome {
   winner: Team;
-  reason: "ROUNDS";
+  reason: OutcomeReason;
+  roundWinner: RoundWinner;
+  mirJafarGuess: GuessRecord | null;
+  jagatSethGuess: GuessRecord | null;
 }
 
 /** Once-per-game abilities. Null until used. */
@@ -105,6 +129,7 @@ export interface GameState {
   roundResults: RoundResult[];
   nominations: NominationRecord[];
   abilities: AbilityState;
+  endgame: EndgameState | null;
   outcome: GameOutcome | null;
 }
 
@@ -114,7 +139,8 @@ export type Action =
   | { type: "CAST_VOTE"; playerId: string; vote: Vote }
   | { type: "PLAY_CARD"; playerId: string; card: Card }
   | { type: "DEBUSSY_REVEAL"; playerId: string; targetId: string }
-  | { type: "JEANLAW_LOCK"; playerId: string; targetId: string };
+  | { type: "JEANLAW_LOCK"; playerId: string; targetId: string }
+  | { type: "GUESS"; playerId: string; targetId: string };
 
 export type ErrorCode =
   | "WRONG_PHASE"
@@ -129,7 +155,8 @@ export type ErrorCode =
   | "CARD_NOT_ALLOWED"
   | "NOT_YOUR_ABILITY"
   | "ABILITY_ALREADY_USED"
-  | "INVALID_TARGET";
+  | "INVALID_TARGET"
+  | "NOT_YOUR_GUESS";
 
 export type GameEvent =
   | {
@@ -161,6 +188,14 @@ export type GameEvent =
       winner: RoundWinner;
     }
   | { type: "ROUND_DEADLOCKED"; round: number }
+  | { type: "GUESS_REQUESTED"; step: EndgameStep; provisionalWinner: RoundWinner }
+  | {
+      type: "GUESS_RESOLVED";
+      step: EndgameStep;
+      targetId: string | null;
+      correct: boolean;
+      provisionalWinner: RoundWinner;
+    }
   | { type: "GAME_ENDED"; outcome: GameOutcome }
   /**
    * Private state changed for these players only. The server re-sends

@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { MAX_PLAYERS, MIN_PLAYERS } from "../src/config/gameConfig.js";
 import { roundWins } from "../src/phases/round.js";
+import type { RoleId } from "../src/types.js";
 import { Harness, eventsOfType } from "./helpers.js";
+
+/** No Mir Jafar and no Jagat Seth, so the match ends on rounds alone. */
+const NO_GUESSERS: RoleId[] = ["NAWAB_SIRAJ", "LUTFUNNESA", "LOYALIST", "LOYALIST", "EIC_SPY", "EIC_SPY"];
 
 describe("round flow", () => {
   it("ROUND_RESULT → next round's Discussion with a fresh attempt", () => {
@@ -26,12 +30,18 @@ describe("round flow", () => {
 });
 
 describe("match end", () => {
-  it("Green wins 3-0 on rounds and the match goes to POST_GAME", () => {
-    const h = new Harness();
+  it("Green wins 3-0 on rounds and, with no guessers, goes straight to POST_GAME", () => {
+    const h = new Harness(6, 1, 30, NO_GUESSERS);
     for (let i = 0; i < 3; i++) h.playRound("SUCCESS");
     expect(h.state.phase).toBe("POST_GAME");
     expect(h.state.endsAt).toBeNull();
-    expect(h.state.outcome).toEqual({ winner: "GREEN", reason: "ROUNDS" });
+    expect(h.state.outcome).toEqual({
+      winner: "GREEN",
+      reason: "ROUNDS",
+      roundWinner: "GREEN",
+      mirJafarGuess: null,
+      jagatSethGuess: null,
+    });
     expect(eventsOfType(h.log, "GAME_ENDED")).toHaveLength(1);
   });
 
@@ -61,6 +71,7 @@ describe("match end", () => {
   it("rejects every action after the match ends", () => {
     const h = new Harness();
     for (let i = 0; i < 3; i++) h.playRound("SUCCESS");
+    h.advanceTo("POST_GAME"); // any endgame guesses time out
     const events = h.dispatch({ type: "CAST_VOTE", playerId: "p0", vote: "APPROVE" });
     expect(eventsOfType(events, "ACTION_REJECTED")[0]?.code).toBe("WRONG_PHASE");
     expect(h.dispatch({ type: "TICK" })).toEqual([]);
@@ -79,8 +90,10 @@ describe("full matches at every player count", () => {
           h.timeout();
         }
       }
-      // Timeouts approve every ballot and play Success, so Green sweeps.
+      // Timeouts approve every ballot and play Success, so Green sweeps;
+      // endgame guesses also time out and fail.
       expect(h.state.outcome?.winner).toBe("GREEN");
+      expect(h.state.outcome?.reason).toBe("ROUNDS");
       expect(h.state.roundResults).toHaveLength(3);
     });
   }
