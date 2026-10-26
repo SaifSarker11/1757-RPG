@@ -1,15 +1,22 @@
-import { TIMEOUT_DEFAULTS, getSabotagesToFail } from "../config/gameConfig.js";
+import { ALLOWED_CARDS, TIMEOUT_DEFAULTS, getSabotagesToFail } from "../config/gameConfig.js";
 import { type Rng, shuffle } from "../rng.js";
-import type { Card, ErrorCode } from "../types.js";
+import type { Card, ErrorCode, PlayerState } from "../types.js";
 import { findPlayer, type Step } from "./common.js";
 import { recordRoundResult } from "./round.js";
 
+/** Cards this player may play. Mission cards are never weighted. */
+export function allowedCardsFor(player: PlayerState): readonly Card[] {
+  return ALLOWED_CARDS[player.team];
+}
+
 export function playCard(step: Step, rng: Rng, playerId: string, card: Card): ErrorCode | null {
   const { state } = step;
-  if (!findPlayer(state, playerId)) return "NOT_IN_GAME";
+  const player = findPlayer(state, playerId);
+  if (!player) return "NOT_IN_GAME";
   if (state.phase !== "RESOLUTION") return "WRONG_PHASE";
   if (!state.ministerIds.includes(playerId)) return "NOT_A_MINISTER";
   if (state.cards[playerId] !== undefined) return "ALREADY_PLAYED";
+  if (!allowedCardsFor(player).includes(card)) return "CARD_NOT_ALLOWED";
 
   state.cards[playerId] = card;
   step.events.push({ type: "CARD_PLAYED", playerId });
