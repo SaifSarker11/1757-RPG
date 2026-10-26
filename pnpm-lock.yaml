@@ -90,6 +90,9 @@ importers:
       socket.io:
         specifier: latest
         version: 4.8.3
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       '@types/ioredis':
         specifier: ^5.0.0

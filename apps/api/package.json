@@ -25,7 +25,8 @@
     "better-auth": "latest",
     "fastify": "latest",
     "ioredis": "^5.11.0",
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
