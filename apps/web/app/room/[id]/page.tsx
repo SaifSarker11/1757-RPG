@@ -505,6 +505,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     try {
       await fetch(`${API_URL}/rooms/${roomId}/leave`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: session.user.id }),
       });

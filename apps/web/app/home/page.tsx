@@ -104,6 +104,7 @@ export default function HomePage() {
     try {
       const res = await fetch(`${API_URL}/rooms`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           hostUserId: session.user.id,
@@ -153,6 +154,7 @@ export default function HomePage() {
       
       const joinRes = await fetch(`${API_URL}/rooms/${roomId}/join`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: session.user.id }),
       });
