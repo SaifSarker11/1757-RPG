@@ -14,6 +14,7 @@ import {
   type NamedRoleId,
 } from "@repo/game-engine";
 import type { PlayerIdentity } from "../persistence/matchRecord.js";
+import type { DisconnectTracker } from "./disconnectTracker.js";
 import type { GameRoomRepository } from "./roomRepository.js";
 import type { Scheduler } from "./scheduler.js";
 import { realtimeError, toEngineAction, type ClientAction, type RealtimeError } from "./schemas.js";
@@ -28,6 +29,8 @@ export interface GameServiceDeps {
   scheduler: Scheduler;
   repo: GameRoomRepository;
   transport: GameTransport;
+  /** M7: tracks which players are currently offline. */
+  disconnects?: DisconnectTracker;
   now?: () => number;
   randomSeed?: () => number;
   logError?: (error: unknown, message: string) => void;
@@ -145,6 +148,24 @@ export class GameService {
     });
   }
 
+  /**
+   * M7: Called when a player's socket disconnects during a live game.
+   * Registers them as offline so the disconnect tracker can start their
+   * grace-period timer.
+   */
+  playerDisconnected(roomId: string, userId: string): void {
+    if (!this.games.has(roomId)) return;
+    this.deps.disconnects?.playerLeft(roomId, userId);
+  }
+
+  /**
+   * M7: Called when a player reconnects (their socket fires `room:join` or
+   * `game:sync`). Cancels any pending grace-period timer.
+   */
+  playerReconnected(roomId: string, userId: string): void {
+    this.deps.disconnects?.playerReturned(roomId, userId);
+  }
+
   /** Resumes every snapshotted match after a restart. */
   async restore(): Promise<number> {
     const snapshots = await this.deps.store.list();
@@ -224,6 +245,8 @@ export class GameService {
 
     if (state.phase === "POST_GAME") {
       this.deps.scheduler.cancel(tickKey(next.roomId));
+      // M7: game is over — stop tracking disconnects for this room.
+      this.deps.disconnects?.clearRoom(next.roomId);
       await this.finish(next);
     } else {
       this.scheduleTick(next);
@@ -283,7 +306,50 @@ export class GameService {
     return this.background(roomId, async () => {
       this.games.delete(roomId);
       this.deps.scheduler.cancel(tickKey(roomId));
+      this.deps.disconnects?.clearRoom(roomId);
       await this.deps.store.delete(roomId);
+    });
+  }
+
+  /**
+   * M7: Submit a safe default action for a disconnected player.
+   *
+   * Rules (spec §M7):
+   * - BALLOT     → REJECT  (never approve on someone's behalf)
+   * - RESOLUTION → first allowed card (Greens can only SUCCESS)
+   * - SELECTION  → skip (the phase timer will advance via TICK)
+   * - ENDGAME    → skip (the phase timer will advance via TICK)
+   * - All other phases → no-op
+   */
+  autoAct(roomId: string, userId: string): Promise<void> {
+    return this.background(roomId, async () => {
+      const game = this.games.get(roomId);
+      if (!game) return;
+      if (!game.state.players.some((p) => p.id === userId)) return;
+
+      const view = viewFor(game.state, userId);
+      const { pending } = view;
+
+      let action: Action | null = null;
+
+      if (pending.vote) {
+        // Always reject on behalf of a disconnected player.
+        action = { type: "CAST_VOTE", playerId: userId, vote: "REJECT" };
+      } else if (pending.playCard && pending.allowedCards.length > 0) {
+        // Play the first card the engine allows (Greens → SUCCESS only).
+        action = { type: "PLAY_CARD", playerId: userId, card: pending.allowedCards[0]! };
+      }
+      // SELECTION / ENDGAME / DISCUSSION: let the phase timer handle it.
+
+      if (!action) return;
+
+      const { state, events } = this.reduceStep(game, action);
+      const rejected = events.find((e) => e.type === "ACTION_REJECTED");
+      if (rejected) {
+        // Action already taken or wrong phase — safe to ignore.
+        return;
+      }
+      await this.commit(game, state, events);
     });
   }
 }
