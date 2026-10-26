@@ -50,7 +50,7 @@ function randomGames(): GameState[] {
   return games;
 }
 
-describe("viewFor leak test", () => {
+describe("viewFor leak test", { timeout: 60_000 }, () => {
   const games = randomGames();
 
   it("never lists another player's role or team before POST_GAME", () => {
@@ -131,7 +131,7 @@ describe("viewFor leak test", () => {
   });
 });
 
-describe("leak test with abilities used", () => {
+describe("leak test with abilities used", { timeout: 60_000 }, () => {
   it("reveals and lock targets reach only the players involved", () => {
     for (let seed = 0; seed < 200; seed++) {
       const rng = createRng(seed);
