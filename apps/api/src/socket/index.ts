@@ -150,6 +150,9 @@ export function registerSocketHandlers(io: Server, deps: SocketDeps): void {
       io.to(roomId).emit("player:status", { userId: user.id, online: true });
       socket.emit("room:online-list", await onlineUserIds(roomId));
 
+      // M7: cancel any pending disconnect grace timer on reconnect.
+      deps.games.playerReconnected(roomId, user.id);
+
       // Rejoining a running match: send this player their view straight away.
       if (deps.games.hasGame(roomId)) await deps.games.sync(roomId, user.id);
       return null;
@@ -180,13 +183,19 @@ export function registerSocketHandlers(io: Server, deps: SocketDeps): void {
       deps.games.act(roomId, user.id, action)
     );
 
-    handle("game:sync", roomRefPayload, "action", (user, { roomId }) => deps.games.sync(roomId, user.id));
+    handle("game:sync", roomRefPayload, "action", async (user, { roomId }) => {
+      // M7: treat an explicit sync as a reconnect signal.
+      deps.games.playerReconnected(roomId, user.id);
+      return deps.games.sync(roomId, user.id);
+    });
 
     socket.on("disconnect", () => {
       const roomId = stateOf(socket).roomId;
       const user = socketUser(socket);
       if (roomId && user) {
         io.to(roomId).emit("player:status", { userId: user.id, online: false });
+        // M7: start the grace-period timer for auto-action.
+        deps.games.playerDisconnected(roomId, user.id);
       }
       if (roomId) {
         deps.cleanup.roomMaybeEmpty(roomId).catch((error: unknown) => {
