@@ -27,4 +27,11 @@ export const db = globalForPrisma.prisma ?? createPrismaClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
 
 export type { Prisma } from "./generated/index.js";
-export { RoomStatus, PlayerTeam, PlayerRole } from "./generated/index.js";
+export {
+  RoomStatus,
+  PlayerTeam,
+  PlayerRole,
+  MatchEndReason,
+  RoundEndReason,
+  BallotChoice,
+} from "./generated/index.js";
