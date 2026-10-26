@@ -20,8 +20,26 @@ let { state, events } = createGame({ playerIds, settings, now: Date.now(), rng }
 ```
 
 - `reduce` never mutates its input. An invalid action returns the **same** state plus one `ACTION_REJECTED { playerId, code }` event.
-- `GameState` holds every player's role. **Never send it to clients**; project it per player (see the roles & visions module).
+- `GameState` holds every player's role. **Never send it to clients.** Send `viewFor(state, playerId)` to each player's private room and `publicView(state)` to the game room.
+- `PRIVATE_VIEW_CHANGED { playerIds }` means only those players' views changed: re-send `viewFor` to them and tell nobody else.
 - Each TICK applies at most one timeout. Schedule the next one from the new `endsAt`.
+
+## Visions and abilities (§4.2)
+
+| Viewer | Sees |
+|---|---|
+| Nawab Siraj | Lutfunnesa and Tara Bai, both labelled "Lutfunnesa" |
+| Lutfunnesa | Siraj and Tara Bai, both labelled "Nawab" |
+| Raja Ramnarain | Siraj |
+| Mir Madan | Every Red except Rai Durlabh (Red badge), only in Round 1 Discussion |
+| Mohon Lal | Mir Madan and Ghasheti Begum as two unlabelled suspects |
+| Reds | Other Reds (Red badge), except Umichad and Rai Durlabh |
+| Umichad, Jagat Seth, the rest | Nobody |
+
+Vision entries are sorted by seat, so their order reveals nothing. Rai Durlabh and Jagat Seth never appear in anyone's vision.
+
+- `DEBUSSY_REVEAL { playerId, targetId }`: de Bussy, any Discussion, once per game. He and the target learn each other's exact role; Rai Durlabh appears as a Loyalist.
+- `JEANLAW_LOCK { playerId, targetId }`: Jean Law, any Discussion, once per game. Silent. `isJeanLawFlipped(state, id)` is true only for a Green target.
 
 ## Phases
 
@@ -45,7 +63,6 @@ Every tunable value lives in `src/config/gameConfig.ts`.
 ## Not here yet
 
 - Vote weights, the results card, Greens-can't-sabotage (voting & missions module)
-- Visions, `viewFor`, de Bussy / Jean Law (roles & visions module)
 - Mir Jafar / Jagat Seth guesses and win credit (endgame module). For now the round winner is final.
 - Disconnect defaults (reconnection module)
 
