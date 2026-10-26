@@ -7,7 +7,13 @@ export { assignRoles, pickRoles } from "./roles/assignRoles.js";
 export { resolveSettings } from "./settings.js";
 export { createGame, type CreateGameInput } from "./createGame.js";
 export { reduce } from "./reduce.js";
-export { tallyBallot, type BallotTally } from "./phases/ballot.js";
+export { tallyBallot, voteWeightOf, type BallotTally } from "./phases/ballot.js";
+export { allowedCardsFor } from "./phases/mission.js";
+export {
+  ballotResultsCard,
+  lastBallotResultsCard,
+  type BallotResultsCard,
+} from "./phases/resultsCard.js";
 export { roundWins } from "./phases/round.js";
 export * from "./vision/types.js";
 export { viewFor, publicView } from "./vision/viewFor.js";
