@@ -9,3 +9,7 @@ export { createGame, type CreateGameInput } from "./createGame.js";
 export { reduce } from "./reduce.js";
 export { tallyBallot, type BallotTally } from "./phases/ballot.js";
 export { roundWins } from "./phases/round.js";
+export * from "./vision/types.js";
+export { viewFor, publicView } from "./vision/viewFor.js";
+export { computeVision, computeReveals, isMirMadanVisionActive } from "./vision/visionRules.js";
+export { isJeanLawFlipped } from "./abilities/jeanLaw.js";
