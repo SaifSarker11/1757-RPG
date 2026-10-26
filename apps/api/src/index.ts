@@ -6,6 +6,9 @@ import { Server } from "socket.io";
 import { registerAuthRoutes } from "./auth-routes.js";
 import { registerRoomRoutes } from "./routes/rooms.js";
 import { registerSocketHandlers } from "./socket/index.js";
+import { resolveAuthSession } from "./lib/authSession.js";
+import { createSocketNotifier } from "./lobby/notifier.js";
+import { listPublicRooms, loadRoomDetail } from "./lobby/roomQueries.js";
 
 const app = Fastify({ logger: true });
 
@@ -40,7 +43,7 @@ await app.register(cors, {
     callback(null, false);
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 });
 
@@ -58,7 +61,13 @@ const io = new Server(app.server, {
 });
 
 registerSocketHandlers(io);
-registerRoomRoutes(app);
+
+const lobbyNotifier = createSocketNotifier(io, {
+  listPublicRooms,
+  loadRoom: loadRoomDetail,
+  onError: (error) => app.log.error(error, "Lobby notification failed"),
+});
+await registerRoomRoutes(app, { resolveSession: resolveAuthSession, notifier: lobbyNotifier });
 
 app.get("/health", async () => {
   return { status: "ok", timestamp: new Date().toISOString() };
