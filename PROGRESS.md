@@ -1,5 +1,14 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m8-users-profiles` (stacked on `feat/m7-reconnect-timeouts`)
+- **Changed:** User profile and career statistics architecture. All profile updates and stats retrieval routes enforce authentication via BetterAuth sessions (`requireUser`), rejecting body-supplied identities.
+- **Routes:** Added `GET /api/users/me` (full profile with dynamically verified level), `PATCH /api/users/me` (handles username and name updates with validation for 3-15 alphanumeric/underscore handle uniqueness and length limits), `GET /api/users/me/stats` (career matches played, won, win rate, forfeits, and Jean Law locks), `GET /api/users/me/history` (paginated match records), and `GET /api/users/:userId/stats` (public stats lookup).
+- **Progression & XP:** Implemented XP rules in `apps/api/src/users/xp.ts` (50 XP match completion, 100 XP victory, 25 XP Jean Law lock, 0 XP for forfeits) with linear level-up curves. Wired atomic XP awarding into `saveMatch` at game conclusion (`POST_GAME`).
+- **Web UI:** Upgraded `/home` dashboard with a live career statistics panel (Level, Total XP, Matches, Win Rate) and a username/handle input synced with `PATCH /api/users/me`.
+- **Docs:** Full documentation in `docs/users-api.md`.
+- **Tests:** Unit tests for XP calculation rules and route integration tests covering authentication, username conflict guards, profile updates, and career stat aggregations.
+- **Next:** M9 web client game interface modernization.
+
 ## 2026-10-26 — `feat/m7-reconnect-timeouts` (stacked on `feat/m6-realtime`)
 - **Changed:** Resilient reconnection and disconnect tracking via `DisconnectTracker` with 30-second grace periods per player. Socket handlers dispatch `playerDisconnected` on socket disconnect and `playerReconnected` on `room:join` / `game:sync`. In-memory and Redis-backed state synchronization delivers current game views to rejoining users without round disruption.
 - **Grace-period Auto-Actions:** Automatic fallback when grace timer expires during an active turn or vote: automatically casts `REJECT` on pending ballot votes, auto-plays the first legal card on mission ballots, and auto-acts safely so room progress is never deadlocked by dropped players.
