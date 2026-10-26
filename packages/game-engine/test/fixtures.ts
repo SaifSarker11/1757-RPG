@@ -2,7 +2,7 @@ import { createGame } from "../src/createGame.js";
 import { createRng } from "../src/rng.js";
 import { teamOf } from "../src/roles/catalog.js";
 import type { GameState, Phase, PlayerState, RoleId } from "../src/types.js";
-import { T0, playerIds } from "./helpers.js";
+import { Harness, T0, playerIds } from "./helpers.js";
 
 /**
  * A game where seat i has roles[i]. Lets tests pick an exact cast,
@@ -57,3 +57,19 @@ export const FULL_CAST: RoleId[] = [
   "RAI_DURLABH",
   "JAGAT_SETH",
 ];
+
+// 9 players: 5 Green, 3 Red, 1 Gold.
+// p2 Mir Madan, p5 Mir Jafar, p6 Rai Durlabh, p8 Jagat Seth.
+export const WITH_SETH: RoleId[] = [
+  "NAWAB_SIRAJ", "LUTFUNNESA", "MIR_MADAN", "LOYALIST", "SAINT_FRASY",
+  "MIR_JAFAR", "RAI_DURLABH", "JEAN_LAW", "JAGAT_SETH",
+];
+// 6 players, no Gold: p2 Mir Madan, p4 Mir Jafar.
+export const NO_SETH: RoleId[] = ["NAWAB_SIRAJ", "LUTFUNNESA", "MIR_MADAN", "LOYALIST", "MIR_JAFAR", "EIC_SPY"];
+
+export function toEndgame(roles: RoleId[], roundWinner: "GREEN" | "RED"): Harness {
+  const h = new Harness(roles.length, 1, 30, roles);
+  const card = roundWinner === "GREEN" ? "SUCCESS" : "SABOTAGE";
+  for (let i = 0; i < 3; i++) h.playRound(card);
+  return h;
+}
