@@ -24,6 +24,7 @@ import {
 import { createSocketTransport } from "./realtime/transport.js";
 import { createDisconnectTracker } from "./realtime/disconnectTracker.js";
 import { registerUserRoutes } from "./users/routes.js";
+import { registerAdminRoutes } from "./admin/routes.js";
 
 const app = Fastify({ logger: true });
 
@@ -86,6 +87,7 @@ const lobbyNotifier = createSocketNotifier(io, {
 });
 await registerRoomRoutes(app, { resolveSession: resolveAuthSession, notifier: lobbyNotifier });
 await registerUserRoutes(app, { resolveSession: resolveAuthSession });
+await registerAdminRoutes(app, { resolveSession: resolveAuthSession });
 
 // Live games snapshot to Redis. Without Redis (local dev without Docker) they
 // fall back to memory and won't survive a restart.
