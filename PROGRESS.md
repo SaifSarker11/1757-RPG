@@ -1,5 +1,13 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m4-endgame-persistence` (stacked on `feat/m3-voting-missions`)
+- **Engine:** ENDGAME now runs Mir Jafar's guess (Green round win) and then Jagat Seth's (target set by W), each with a 60 s timeout. `outcome` records the reason and both guesses. `playerResults` gives win credit, including Jean Law's flipped Green target and the humiliation flag. `matchSummary` is a server-only report. Views show `pending.guess`, the endgame progress (guesser ids hidden until POST_GAME) and the per-player results in POST_GAME.
+- **DB (additive only):** `Match`, `MatchPlayer`, `MatchRound`, `BallotVote`; enums `MatchEndReason`, `RoundEndReason`, `BallotChoice`; `PlayerRole` + `LOYALIST`, `EIC_SPY`; `User.username?` (unique), `avatarId?`, `xp`, `level`. The plan's `Round` is named `MatchRound` to avoid confusion with the existing `RoundRecord`.
+- **API:** `apps/api/src/persistence/` has `buildMatchCreateInput` (pure) and `saveMatch` (one nested create, atomic). Not called yet; M6 calls it at POST_GAME.
+- **Tests:** engine 237 passing + 3 todo; API 8 passing (`pnpm --filter api test`, no DB needed).
+- **Action needed:** run `pnpm db:push` against a dev/branch database. Not run here, to avoid touching the shared Neon DB.
+- **Next:** M5 rooms & lobby.
+
 ## 2026-10-26 — `feat/m3-voting-missions` (stacked on `feat/m2-roles-visions`)
 - **Changed:** Saint Frais and Yar Lutuf weigh 2 on the ballot only (`BALLOT_WEIGHTS`). `BALLOT_RESOLVED` now carries the raw `headcount`, never the weighted totals. Added results cards (`ballotResultsCard`, `publicView().lastBallot`) with seat-ordered votes. Greens can only play Success (`CARD_NOT_ALLOWED`); Red, Gold and fillers may play either (`ALLOWED_CARDS`). `viewFor` shows the player's own `myVoteWeight` and `pending.allowedCards`.
 - **Fixes vs the old API code:** mission cards are no longer double-weighted; Greens can no longer sabotage.
