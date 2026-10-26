@@ -49,7 +49,7 @@ export interface PlayerState {
 export interface GameSettings {
   discussionSeconds: number;
   /** Named roles the host allows. Nawab Siraj is always included. */
-  enabledRoles: NamedRoleId[];
+  enabledRoles: readonly NamedRoleId[];
 }
 
 export interface NominationRecord {
