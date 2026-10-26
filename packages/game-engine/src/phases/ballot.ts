@@ -1,23 +1,44 @@
-import { TIMEOUT_DEFAULTS } from "../config/gameConfig.js";
-import type { ErrorCode, Vote } from "../types.js";
+import { TIMEOUT_DEFAULTS, ballotWeight } from "../config/gameConfig.js";
+import type { ErrorCode, GameState, Headcount, Vote } from "../types.js";
 import { enterPhase, findPlayer, type Step } from "./common.js";
 import { closeNomination, continueAfterRejection } from "./nomination.js";
 
 export interface BallotTally {
+  /** Weighted totals. Internal only; never put these in an event. */
   approve: number;
   reject: number;
+  /** One per voter, regardless of weight. */
+  headcount: Headcount;
   approved: boolean;
 }
 
-/** Ties are rejected [DEFAULT]. */
-export function tallyBallot(votes: Readonly<Record<string, Vote>>): BallotTally {
+/**
+ * Weighted Approve vs Reject (§1, §4.4). Ties are rejected [DEFAULT].
+ * `weightOf` defaults to 1 per voter.
+ */
+export function tallyBallot(
+  votes: Readonly<Record<string, Vote>>,
+  weightOf: (playerId: string) => number = () => 1
+): BallotTally {
+  const headcount: Headcount = { approve: 0, reject: 0 };
   let approve = 0;
   let reject = 0;
-  for (const vote of Object.values(votes)) {
-    if (vote === "APPROVE") approve += 1;
-    else reject += 1;
+  for (const [playerId, vote] of Object.entries(votes)) {
+    const weight = weightOf(playerId);
+    if (vote === "APPROVE") {
+      approve += weight;
+      headcount.approve += 1;
+    } else {
+      reject += weight;
+      headcount.reject += 1;
+    }
   }
-  return { approve, reject, approved: approve > reject };
+  return { approve, reject, headcount, approved: approve > reject };
+}
+
+export function voteWeightOf(state: GameState, playerId: string): number {
+  const player = findPlayer(state, playerId);
+  return player ? ballotWeight(player.role) : 0;
 }
 
 export function castVote(step: Step, playerId: string, vote: Vote): ErrorCode | null {
@@ -46,11 +67,17 @@ export function ballotTimedOut(step: Step): void {
 
 function resolveBallot(step: Step): void {
   const { state } = step;
-  const { approved } = tallyBallot(state.votes);
+  const { approved, headcount } = tallyBallot(state.votes, (id) => voteWeightOf(state, id));
   const votes = { ...state.votes };
 
   closeNomination(step, approved);
-  step.events.push({ type: "BALLOT_RESOLVED", approved, votes, failTrack: state.failTrack });
+  step.events.push({
+    type: "BALLOT_RESOLVED",
+    approved,
+    votes,
+    headcount,
+    failTrack: state.failTrack,
+  });
 
   if (approved) {
     enterPhase(step, "RESOLUTION");

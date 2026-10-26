@@ -36,6 +36,11 @@ export type Phase =
   | "POST_GAME";
 
 export type Vote = "APPROVE" | "REJECT";
+
+export interface Headcount {
+  approve: number;
+  reject: number;
+}
 export type Card = "SUCCESS" | "SABOTAGE";
 
 export interface PlayerState {
@@ -140,6 +145,8 @@ export type GameEvent =
       type: "BALLOT_RESOLVED";
       approved: boolean;
       votes: Record<string, Vote>;
+      /** Raw votes per side. Weighted totals are never published (§4.4). */
+      headcount: Headcount;
       failTrack: number;
     }
   | { type: "CARD_PLAYED"; playerId: string }

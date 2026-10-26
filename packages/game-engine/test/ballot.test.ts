@@ -11,6 +11,7 @@ describe("tallyBallot", () => {
     expect(tallyBallot({ a: "APPROVE", b: "APPROVE", c: "REJECT" })).toEqual({
       approve: 2,
       reject: 1,
+      headcount: { approve: 2, reject: 1 },
       approved: true,
     });
   });
