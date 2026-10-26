@@ -338,6 +338,7 @@ describe("restore after restart", () => {
   });
 });
 
+
 describe("sync", () => {
   it("re-sends only the asking player's view", async () => {
     const ctx = setup();
@@ -346,5 +347,79 @@ describe("sync", () => {
     await ctx.service.sync("room-1", "u2");
     expect(ctx.transport.viewCounts.get("u2")).toBe((counts.get("u2") ?? 0) + 1);
     expect(ctx.transport.viewCounts.get("u3")).toBe(counts.get("u3"));
+  });
+});
+
+// ────────────────────────────────────────────────────────────────
+// M7: disconnect tracking & auto-actions
+// ────────────────────────────────────────────────────────────────
+
+describe("autoAct – BALLOT", () => {
+  async function reachBallot(ctx: ReturnType<typeof setup>) {
+    await ctx.service.start("room-1", "u1");
+    await ctx.timeout(); // ROLE_REVEAL → DISCUSSION
+    await ctx.timeout(); // DISCUSSION   → SELECTION
+    // Find the leader and have them nominate.
+    const leader = USERS.find((id) => {
+      const views = ctx.transport.views;
+      return views.get(id)?.pending.nominate != null;
+    });
+    if (!leader) throw new Error("no leader");
+    const teamSize = ctx.transport.views.get(leader)!.pending.nominate!.teamSize;
+    await ctx.service.act("room-1", leader, {
+      type: "NOMINATE",
+      ministerIds: USERS.slice(0, teamSize),
+    });
+    // Now in BALLOT phase.
+    return leader;
+  }
+
+  it("auto-casts REJECT for a disconnected player in BALLOT", async () => {
+    const ctx = setup();
+    await reachBallot(ctx);
+
+    const voter = USERS.find((id) => ctx.transport.views.get(id)?.pending.vote) ?? "u2";
+    expect(ctx.transport.views.get(voter)?.pending.vote).toBe(true);
+
+    await ctx.service.autoAct("room-1", voter);
+    await new Promise((r) => setTimeout(r, 0)); // let queues settle
+
+    // Vote was cast: the player's view no longer shows pending.vote.
+    expect(ctx.transport.views.get(voter)?.pending.vote).toBe(false);
+  });
+
+  it("is a no-op for a player with nothing pending", async () => {
+    const ctx = setup();
+    await ctx.service.start("room-1", "u1");
+    // ROLE_REVEAL: no player has a pending action.
+    const countsBefore = new Map(ctx.transport.viewCounts);
+    await ctx.service.autoAct("room-1", "u2");
+    await new Promise((r) => setTimeout(r, 0));
+    expect(ctx.transport.viewCounts.get("u2")).toBe(countsBefore.get("u2"));
+  });
+
+  it("is a no-op when there is no game", async () => {
+    const ctx = setup();
+    // No game started — should not throw.
+    await expect(ctx.service.autoAct("room-1", "u1")).resolves.toBeUndefined();
+  });
+
+  it("is a no-op for a player not in the game", async () => {
+    const ctx = setup();
+    await ctx.service.start("room-1", "u1");
+    await expect(ctx.service.autoAct("room-1", "stranger")).resolves.toBeUndefined();
+  });
+});
+
+describe("playerDisconnected / playerReconnected", () => {
+  it("playerDisconnected is a no-op when no game is running", () => {
+    const ctx = setup();
+    // Should not throw even without a tracker.
+    expect(() => ctx.service.playerDisconnected("room-1", "u1")).not.toThrow();
+  });
+
+  it("playerReconnected is a no-op without a tracker", () => {
+    const ctx = setup();
+    expect(() => ctx.service.playerReconnected("room-1", "u1")).not.toThrow();
   });
 });
