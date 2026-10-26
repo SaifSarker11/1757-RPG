@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { tallyBallot } from "../src/phases/ballot.js";
+import type { RoleId } from "../src/types.js";
 import { Harness, eventsOfType } from "./helpers.js";
+
+/** Six players with no double voters, so raw and weighted counts match. */
+const PLAIN_SIX: RoleId[] = ["NAWAB_SIRAJ", "LUTFUNNESA", "LOYALIST", "LOYALIST", "EIC_SPY", "EIC_SPY"];
 
 describe("tallyBallot", () => {
   it("approves on a majority", () => {
@@ -78,7 +82,7 @@ describe("ballot outcomes", () => {
   });
 
   it("a 3-3 tie is rejected", () => {
-    const h = new Harness();
+    const h = new Harness(6, 1, 30, PLAIN_SIX);
     h.nominateFirst();
     h.state.players.forEach((p, i) => {
       h.dispatch({ type: "CAST_VOTE", playerId: p.id, vote: i < 3 ? "APPROVE" : "REJECT" });
@@ -112,7 +116,7 @@ describe("ballot outcomes", () => {
 
 describe("BALLOT timeout", () => {
   it("counts missing votes as Approve", () => {
-    const h = new Harness();
+    const h = new Harness(6, 1, 30, PLAIN_SIX);
     h.nominateFirst();
     h.dispatch({ type: "CAST_VOTE", playerId: "p0", vote: "REJECT" });
     h.dispatch({ type: "CAST_VOTE", playerId: "p1", vote: "REJECT" });

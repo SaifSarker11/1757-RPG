@@ -42,10 +42,14 @@ describe("mission resolution", () => {
   });
 
   it("one Sabotage fails a normal round", () => {
-    const h = toResolution();
-    const [first, second] = h.state.ministerIds;
-    h.dispatch({ type: "PLAY_CARD", playerId: first ?? "", card: "SABOTAGE" });
-    h.dispatch({ type: "PLAY_CARD", playerId: second ?? "", card: "SUCCESS" });
+    const h = new Harness();
+    h.nominate(h.ministersFor("SABOTAGE"));
+    h.voteAll("APPROVE");
+    const saboteur = h.saboteurId();
+    h.dispatch({ type: "PLAY_CARD", playerId: saboteur, card: "SABOTAGE" });
+    for (const id of h.state.ministerIds.filter((m) => m !== saboteur)) {
+      h.dispatch({ type: "PLAY_CARD", playerId: id, card: "SUCCESS" });
+    }
     expect(eventsOfType(h.log, "MISSION_RESOLVED")[0]).toMatchObject({
       sabotageCount: 1,
       winner: "RED",
@@ -68,11 +72,13 @@ describe("mission resolution", () => {
     }
     if (h.state.phase === "POST_GAME") throw new Error("match ended early");
     expect(h.state.round).toBe(4);
-    h.nominateFirst();
+    h.nominate(h.ministersFor("SABOTAGE"));
     h.voteAll("APPROVE");
-    const [first, ...rest] = h.state.ministerIds;
-    h.dispatch({ type: "PLAY_CARD", playerId: first ?? "", card: "SABOTAGE" });
-    for (const id of rest) h.dispatch({ type: "PLAY_CARD", playerId: id, card: "SUCCESS" });
+    const saboteur = h.saboteurId();
+    h.dispatch({ type: "PLAY_CARD", playerId: saboteur, card: "SABOTAGE" });
+    for (const id of h.state.ministerIds.filter((m) => m !== saboteur)) {
+      h.dispatch({ type: "PLAY_CARD", playerId: id, card: "SUCCESS" });
+    }
     expect(eventsOfType(h.log, "MISSION_RESOLVED").at(-1)).toMatchObject({
       round: 4,
       sabotageCount: 1,
@@ -83,9 +89,10 @@ describe("mission resolution", () => {
 
 describe("RESOLUTION timeout", () => {
   it("counts missing cards as Success", () => {
-    const h = toResolution();
-    const [first] = h.state.ministerIds;
-    h.dispatch({ type: "PLAY_CARD", playerId: first ?? "", card: "SABOTAGE" });
+    const h = new Harness();
+    h.nominate(h.ministersFor("SABOTAGE"));
+    h.voteAll("APPROVE");
+    h.dispatch({ type: "PLAY_CARD", playerId: h.saboteurId(), card: "SABOTAGE" });
     h.timeout();
     expect(eventsOfType(h.log, "MISSION_RESOLVED")[0]).toMatchObject({
       successCount: 1,

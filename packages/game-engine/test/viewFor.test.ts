@@ -91,14 +91,14 @@ describe("pending actions", () => {
 
   it("asks only ministers for a card", () => {
     const h = new Harness();
-    h.nominateFirst();
+    h.nominate(h.ministersFor("SABOTAGE"));
     h.voteAll("APPROVE");
-    const [minister] = h.state.ministerIds;
+    const minister = h.saboteurId();
     const outsider = h.state.players.find((p) => !h.state.ministerIds.includes(p.id))?.id ?? "";
-    expect(viewFor(h.state, minister ?? "").pending.playCard).toBe(true);
+    expect(viewFor(h.state, minister).pending.playCard).toBe(true);
     expect(viewFor(h.state, outsider).pending.playCard).toBe(false);
-    h.dispatch({ type: "PLAY_CARD", playerId: minister ?? "", card: "SABOTAGE" });
-    expect(viewFor(h.state, minister ?? "").myCard).toBe("SABOTAGE");
+    h.dispatch({ type: "PLAY_CARD", playerId: minister, card: "SABOTAGE" });
+    expect(viewFor(h.state, minister).myCard).toBe("SABOTAGE");
   });
 });
 
@@ -125,10 +125,10 @@ describe("publicView", () => {
 
   it("shows who played a card but not which", () => {
     const h = new Harness();
-    h.nominateFirst();
+    h.nominate(h.ministersFor("SABOTAGE"));
     h.voteAll("APPROVE");
-    const [minister] = h.state.ministerIds;
-    h.dispatch({ type: "PLAY_CARD", playerId: minister ?? "", card: "SABOTAGE" });
+    const minister = h.saboteurId();
+    h.dispatch({ type: "PLAY_CARD", playerId: minister, card: "SABOTAGE" });
     const view = publicView(h.state);
     expect(view.playedIds).toEqual([minister]);
     expect(JSON.stringify(view)).not.toContain("SABOTAGE");

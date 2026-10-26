@@ -2,7 +2,8 @@ import { createGame } from "../src/createGame.js";
 import { getTeamSize } from "../src/config/gameConfig.js";
 import { reduce } from "../src/reduce.js";
 import { createRng, type Rng } from "../src/rng.js";
-import type { Action, Card, GameEvent, GameState, Phase, Vote } from "../src/types.js";
+import { teamOf } from "../src/roles/catalog.js";
+import type { Action, Card, GameEvent, GameState, Phase, RoleId, Vote } from "../src/types.js";
 
 export const T0 = 1_000_000;
 
@@ -17,7 +18,8 @@ export class Harness {
   readonly rng: Rng;
   log: GameEvent[] = [];
 
-  constructor(players = 6, seed = 1, discussionSeconds = 30) {
+  /** `roles`, when given, replaces the dealt roles seat by seat. */
+  constructor(players = 6, seed = 1, discussionSeconds = 30, roles?: RoleId[]) {
     this.rng = createRng(seed);
     this.now = T0;
     const { state, events } = createGame({
@@ -26,6 +28,13 @@ export class Harness {
       now: this.now,
       rng: this.rng,
     });
+    if (roles) {
+      if (roles.length !== players) throw new Error("roles must match the player count");
+      state.players = state.players.map((p, seat) => {
+        const role = roles[seat] as RoleId;
+        return { ...p, role, team: teamOf(role) };
+      });
+    }
     this.state = state;
     this.log.push(...events);
   }
@@ -62,11 +71,33 @@ export class Harness {
     return getTeamSize(this.state.players.length, this.state.round);
   }
 
+  /** Leader nominates exactly these ministers. */
+  nominate(ministerIds: string[]): void {
+    this.advanceTo("SELECTION");
+    this.dispatch({ type: "NOMINATE", playerId: this.leaderId, ministerIds });
+  }
+
   /** Leader nominates the first N players by seat. */
   nominateFirst(): void {
-    this.advanceTo("SELECTION");
-    const ministers = this.state.players.slice(0, this.teamSize()).map((p) => p.id);
-    this.dispatch({ type: "NOMINATE", playerId: this.leaderId, ministerIds: ministers });
+    this.nominate(this.state.players.slice(0, this.teamSize()).map((p) => p.id));
+  }
+
+  /** A team that can produce `card`: for Sabotage, non-Greens go first. */
+  ministersFor(card: Card): string[] {
+    const players = [...this.state.players];
+    if (card === "SABOTAGE") {
+      players.sort((a, b) => Number(a.team === "GREEN") - Number(b.team === "GREEN"));
+    }
+    return players.slice(0, this.teamSize()).map((p) => p.id);
+  }
+
+  /** First non-Green among the current ministers. */
+  saboteurId(): string {
+    const id = this.state.ministerIds.find(
+      (m) => this.state.players.find((p) => p.id === m)?.team !== "GREEN"
+    );
+    if (!id) throw new Error("No minister can sabotage");
+    return id;
   }
 
   voteAll(vote: Vote): void {
@@ -75,15 +106,17 @@ export class Harness {
     }
   }
 
+  /** Every minister plays `card`; Greens fall back to Success since they can't sabotage. */
   playAll(card: Card): void {
     for (const id of [...this.state.ministerIds]) {
-      this.dispatch({ type: "PLAY_CARD", playerId: id, card });
+      const green = this.state.players.find((p) => p.id === id)?.team === "GREEN";
+      this.dispatch({ type: "PLAY_CARD", playerId: id, card: green ? "SUCCESS" : card });
     }
   }
 
-  /** Plays one full approved round where every minister plays `card`. */
+  /** Plays one full approved round whose result is decided by `card`. */
   playRound(card: Card): void {
-    this.nominateFirst();
+    this.nominate(this.ministersFor(card));
     this.voteAll("APPROVE");
     this.playAll(card);
     this.timeout(); // leave ROUND_RESULT
