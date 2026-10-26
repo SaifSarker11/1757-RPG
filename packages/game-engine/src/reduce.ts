@@ -1,3 +1,5 @@
+import { deBussyReveal } from "./abilities/deBussy.js";
+import { jeanLawLock } from "./abilities/jeanLaw.js";
 import { castVote, ballotTimedOut } from "./phases/ballot.js";
 import { enterPhase, type Step } from "./phases/common.js";
 import { playCard, resolutionTimedOut } from "./phases/mission.js";
@@ -38,6 +40,10 @@ function applyPlayerAction(
       return castVote(step, action.playerId, action.vote);
     case "PLAY_CARD":
       return playCard(step, rng, action.playerId, action.card);
+    case "DEBUSSY_REVEAL":
+      return deBussyReveal(step, action.playerId, action.targetId);
+    case "JEANLAW_LOCK":
+      return jeanLawLock(step, action.playerId, action.targetId);
   }
 }
 

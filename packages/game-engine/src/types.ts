@@ -77,6 +77,12 @@ export interface GameOutcome {
   reason: "ROUNDS";
 }
 
+/** Once-per-game abilities. Null until used. */
+export interface AbilityState {
+  deBussy: { targetId: string; round: number } | null;
+  jeanLaw: { targetId: string; round: number } | null;
+}
+
 export interface GameState {
   players: PlayerState[];
   settings: GameSettings;
@@ -93,6 +99,7 @@ export interface GameState {
   cards: Record<string, Card>;
   roundResults: RoundResult[];
   nominations: NominationRecord[];
+  abilities: AbilityState;
   outcome: GameOutcome | null;
 }
 
@@ -100,7 +107,9 @@ export type Action =
   | { type: "TICK" }
   | { type: "NOMINATE"; playerId: string; ministerIds: string[] }
   | { type: "CAST_VOTE"; playerId: string; vote: Vote }
-  | { type: "PLAY_CARD"; playerId: string; card: Card };
+  | { type: "PLAY_CARD"; playerId: string; card: Card }
+  | { type: "DEBUSSY_REVEAL"; playerId: string; targetId: string }
+  | { type: "JEANLAW_LOCK"; playerId: string; targetId: string };
 
 export type ErrorCode =
   | "WRONG_PHASE"
@@ -111,7 +120,10 @@ export type ErrorCode =
   | "DUPLICATE_PLAYER"
   | "ALREADY_VOTED"
   | "NOT_A_MINISTER"
-  | "ALREADY_PLAYED";
+  | "ALREADY_PLAYED"
+  | "NOT_YOUR_ABILITY"
+  | "ABILITY_ALREADY_USED"
+  | "INVALID_TARGET";
 
 export type GameEvent =
   | {
@@ -142,6 +154,11 @@ export type GameEvent =
     }
   | { type: "ROUND_DEADLOCKED"; round: number }
   | { type: "GAME_ENDED"; outcome: GameOutcome }
+  /**
+   * Private state changed for these players only. The server re-sends
+   * `viewFor` to each of them; nothing else about it is public.
+   */
+  | { type: "PRIVATE_VIEW_CHANGED"; playerIds: string[] }
   | { type: "ACTION_REJECTED"; playerId: string; code: ErrorCode };
 
 export interface ReduceResult {

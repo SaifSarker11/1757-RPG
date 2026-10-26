@@ -31,6 +31,7 @@ export function createGame(input: CreateGameInput): ReduceResult {
     cards: {},
     roundResults: [],
     nominations: [],
+    abilities: { deBussy: null, jeanLaw: null },
     outcome: null,
   };
 
