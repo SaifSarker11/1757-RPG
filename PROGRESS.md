@@ -1,5 +1,18 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m9-web-game-ui` (stacked on `feat/m8-users-profiles`)
+- **Changed:** Full modernization of the web client game interface in `apps/web/app/room/[id]/page.tsx` to align with the authoritative M6/M7 realtime engine protocol. The client now renders exclusively from the server-dispatched `game:view` (`PlayerView`), eliminating legacy split-state bugs and unauthenticated socket payloads.
+- **Protocol & Sockets:** Migrated client emissions to `game:start`, `game:sync` and `game:action` (`NOMINATE`, `CAST_VOTE`, `PLAY_CARD`, `DEBUSSY_REVEAL`, `JEANLAW_LOCK`, `GUESS`) with acknowledgment validation, session cookie authentication (`withCredentials: true`), and toast alerts for `game:error`.
+- **Modular Components:**
+  - `CountdownTimer`: Server-synchronized countdown anchored directly to `view.game.endsAt` timestamp (epoch ms) with urgent warning pulses.
+  - `RoleCard`: Secret role badge, team color coding, ballot weight indicator, and live vision/reveal intelligence.
+  - `RoundTracker`: Visual 5-round progression chips and fail-track rejection indicators.
+  - `ActionPanel`: Authoritative action controls dynamically rendered according to `view.pending` state.
+  - `NominationHistoryCard`: Detailed vote breakdown (`APPROVE`/`REJECT` with weights) across nomination attempts in the Chronicle tab.
+  - `PostGameSummary`: End-of-game overlay revealing all secret player identities, teams, and XP win credits.
+- **Docs:** Full documentation in `docs/web-game-ui.md`.
+- **Next:** M10 administration dashboard & telemetry.
+
 ## 2026-10-26 — `feat/m8-users-profiles` (stacked on `feat/m7-reconnect-timeouts`)
 - **Changed:** User profile and career statistics architecture. All profile updates and stats retrieval routes enforce authentication via BetterAuth sessions (`requireUser`), rejecting body-supplied identities.
 - **Routes:** Added `GET /api/users/me` (full profile with dynamically verified level), `PATCH /api/users/me` (handles username and name updates with validation for 3-15 alphanumeric/underscore handle uniqueness and length limits), `GET /api/users/me/stats` (career matches played, won, win rate, forfeits, and Jean Law locks), `GET /api/users/me/history` (paginated match records), and `GET /api/users/:userId/stats` (public stats lookup).
