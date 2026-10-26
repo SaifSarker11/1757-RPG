@@ -60,9 +60,15 @@ ROLE_REVEAL → DISCUSSION → SELECTION → BALLOT ─approved→ RESOLUTION �
 
 Every tunable value lives in `src/config/gameConfig.ts`.
 
+## Ballot and missions
+
+- **Weights** (`BALLOT_WEIGHTS`): Saint Frais and Yar Lutuf weigh 2 on the Approve/Reject ballot. Mission cards always count 1.
+- **Ties reject**; missing votes on timeout count as a (weighted) Approve.
+- `BALLOT_RESOLVED` and the results card (`ballotResultsCard`, `publicView().lastBallot`) carry every vote in seat order plus the **raw headcount**. Weighted totals never leave the engine.
+- **Cards** (`ALLOWED_CARDS`): Greens can only play Success (`CARD_NOT_ALLOWED` otherwise); Red, Gold and fillers may play either. `viewFor().pending.allowedCards` lists what the player may play.
+
 ## Not here yet
 
-- Vote weights, the results card, Greens-can't-sabotage (voting & missions module)
 - Mir Jafar / Jagat Seth guesses and win credit (endgame module). For now the round winner is final.
 - Disconnect defaults (reconnection module)
 
