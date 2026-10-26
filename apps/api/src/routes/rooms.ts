@@ -1,80 +1,254 @@
-import { FastifyInstance } from "fastify";
-import { randomBytes } from "crypto";
-import { assignRoles } from "../game/roles.js";
-import { db, RoomStatus, PlayerRole, PlayerTeam } from "@repo/db";
+import type { FastifyInstance, FastifyReply } from "fastify";
+import { db, type PlayerRole } from "@repo/db";
+import { createRequireUser, currentUser, type SessionResolver } from "../lib/session.js";
+import type { LobbyNotifier } from "../lobby/notifier.js";
+import { generateUniqueRoomCode, normalizeRoomCode } from "../lobby/roomCode.js";
+import {
+  isRoomCodeTaken,
+  listPublicRooms,
+  listQuickJoinCandidates,
+  loadRoomRow,
+} from "../lobby/roomQueries.js";
+import {
+  LOBBY_ERRORS,
+  joinError,
+  kickError,
+  leaveError,
+  pickNewHost,
+  pickQuickJoin,
+  settingsError,
+  type LobbyError,
+} from "../lobby/rules.js";
+import {
+  DEFAULT_ROOM_SETTINGS,
+  codeParams,
+  createRoomBody,
+  kickBody,
+  parse,
+  roomIdParams,
+  updateSettingsBody,
+} from "../lobby/schemas.js";
+import { toRoomDetail } from "../lobby/views.js";
 
-function generateRoomCode(): string {
-  const bytes = randomBytes(4);
-  const code = bytes
-    .toString("hex")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .padEnd(6, "A");
-  return code.slice(0, 6);
+export interface RoomRouteDeps {
+  resolveSession: SessionResolver;
+  notifier: LobbyNotifier;
 }
 
-async function generateUniqueRoomCode(): Promise<string> {
-  let code: string;
-  let exists: boolean;
-  do {
-    code = generateRoomCode();
-    exists = await db.room.findUnique({ where: { code } }) !== null;
-  } while (exists);
-  return code;
+function sendLobbyError(reply: FastifyReply, code: LobbyError) {
+  const { status, message } = LOBBY_ERRORS[code];
+  return reply.status(status).send({ error: message, code, success: false });
+}
+
+function sendInvalid(reply: FastifyReply, message: string) {
+  return reply.status(400).send({ error: message, code: "INVALID_INPUT", success: false });
 }
 
 function generateId(): string {
   return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-type CreateRoomBody = {
-  hostUserId: string;
-  maxPlayers: number;
-};
+/**
+ * Room and lobby routes (M5). Every write takes the caller from the session;
+ * user ids in request bodies are ignored.
+ */
+export async function registerRoomRoutes(app: FastifyInstance, deps: RoomRouteDeps) {
+  const requireUser = createRequireUser(deps.resolveSession);
+  const { notifier } = deps;
 
-type JoinRoomBody = {
-  userId: string;
-};
+  type JoinResult = { ok: true; playerCount: number } | { ok: false; error: LobbyError };
 
-type LeaveRoomBody = {
-  userId: string;
-};
+  /** Checks and inserts in one transaction so two joins can't both take the last seat. */
+  async function joinRoom(roomId: string, userId: string): Promise<JoinResult> {
+    return db.$transaction(async (tx): Promise<JoinResult> => {
+      const room = await tx.room.findUnique({
+        where: { id: roomId },
+        include: { players: { select: { userId: true, createdAt: true } } },
+      });
+      if (!room) return { ok: false, error: "ROOM_NOT_FOUND" };
+      const error = joinError(room, userId);
+      if (error) return { ok: false, error };
+      await tx.roomPlayer.create({ data: { roomId, userId } });
+      return { ok: true, playerCount: room.players.length + 1 };
+    });
+  }
 
-type StartRoomBody = {
-  userId: string;
-};
+  // --- Lobby -----------------------------------------------------------------
 
-type CreateRoomResponse = {
-  roomId: string;
-  status: RoomStatus;
-  maxPlayers: number;
-  hostUserId: string;
-};
+  app.get("/rooms", async () => ({ rooms: await listPublicRooms() }));
 
-type JoinRoomResponse = {
-  roomId: string;
-  userId: string;
-  playerCount: number;
-};
+  app.post("/rooms", { preHandler: requireUser }, async (request, reply) => {
+    const body = parse(createRoomBody, request.body);
+    if (!body.ok) return sendInvalid(reply, body.message);
 
-type LeaveRoomResponse = {
-  roomId: string;
-  userId: string;
-  newHostUserId: string | null;
-};
+    const user = currentUser(request);
+    const settings = { ...DEFAULT_ROOM_SETTINGS, ...body.data };
+    const code = await generateUniqueRoomCode(isRoomCodeTaken);
 
-type GetRoomResponse = {
-  id: string;
-  hostUserId: string;
-  status: RoomStatus;
-  maxPlayers: number;
-  currentRound: number;
-  greenWins: number;
-  redWins: number;
-  players: { userId: string; team: string | null }[];
-};
+    const room = await db.room.create({
+      data: {
+        code,
+        hostUserId: user.id,
+        status: "WAITING",
+        currentRound: 0,
+        maxPlayers: settings.maxPlayers,
+        discussionSeconds: settings.discussionSeconds,
+        enabledRoles: settings.enabledRoles as PlayerRole[],
+        isPublic: settings.isPublic,
+        players: { create: { userId: user.id } },
+      },
+    });
 
-export async function registerRoomRoutes(app: FastifyInstance) {
+    notifier.lobbyChanged();
+    return reply.status(201).send({
+      roomId: room.id,
+      code: room.code,
+      status: room.status,
+      maxPlayers: room.maxPlayers,
+      hostUserId: room.hostUserId,
+    });
+  });
+
+  app.post("/rooms/quick-join", { preHandler: requireUser }, async (request, reply) => {
+    const user = currentUser(request);
+    const target = pickQuickJoin(await listQuickJoinCandidates(), user.id);
+    if (!target) return sendLobbyError(reply, "NO_OPEN_ROOM");
+
+    const result = await joinRoom(target.id, user.id);
+    if (!result.ok) return sendLobbyError(reply, result.error);
+
+    notifier.roomChanged(target.id);
+    notifier.lobbyChanged();
+    return { roomId: target.id, userId: user.id, playerCount: result.playerCount };
+  });
+
+  app.get("/rooms/code/:code", async (request, reply) => {
+    const params = parse(codeParams, request.params);
+    const code = params.ok ? normalizeRoomCode(params.data.code) : null;
+    if (!code) return sendInvalid(reply, "Room codes are 6 letters or digits");
+
+    const room = await db.room.findUnique({ where: { code }, select: { id: true, code: true } });
+    if (!room) return sendLobbyError(reply, "ROOM_NOT_FOUND");
+    return { roomId: room.id, code: room.code };
+  });
+
+  // --- One room ----------------------------------------------------------------
+
+  app.get("/rooms/:roomId", async (request, reply) => {
+    const params = parse(roomIdParams, request.params);
+    if (!params.ok) return sendInvalid(reply, params.message);
+    const room = await loadRoomRow(params.data.roomId);
+    if (!room) return sendLobbyError(reply, "ROOM_NOT_FOUND");
+    return toRoomDetail(room);
+  });
+
+  app.post("/rooms/:roomId/join", { preHandler: requireUser }, async (request, reply) => {
+    const params = parse(roomIdParams, request.params);
+    if (!params.ok) return sendInvalid(reply, params.message);
+
+    const user = currentUser(request);
+    const result = await joinRoom(params.data.roomId, user.id);
+    if (!result.ok) return sendLobbyError(reply, result.error);
+
+    notifier.roomChanged(params.data.roomId);
+    notifier.lobbyChanged();
+    return { roomId: params.data.roomId, userId: user.id, playerCount: result.playerCount };
+  });
+
+  app.post("/rooms/:roomId/leave", { preHandler: requireUser }, async (request, reply) => {
+    const params = parse(roomIdParams, request.params);
+    if (!params.ok) return sendInvalid(reply, params.message);
+
+    const user = currentUser(request);
+    const { roomId } = params.data;
+    const room = await db.room.findUnique({
+      where: { id: roomId },
+      include: { players: { select: { userId: true, createdAt: true } } },
+    });
+    if (!room) return sendLobbyError(reply, "ROOM_NOT_FOUND");
+    const error = leaveError(room, user.id);
+    if (error) return sendLobbyError(reply, error);
+
+    const newHostUserId = room.hostUserId === user.id ? pickNewHost(room, user.id) : null;
+    const emptied = room.players.length === 1;
+
+    await db.$transaction(async (tx) => {
+      if (emptied) {
+        await tx.room.delete({ where: { id: roomId } });
+        return;
+      }
+      await tx.roomPlayer.delete({ where: { roomId_userId: { roomId, userId: user.id } } });
+      if (newHostUserId) {
+        await tx.room.update({ where: { id: roomId }, data: { hostUserId: newHostUserId } });
+      }
+    });
+
+    if (!emptied) notifier.roomChanged(roomId);
+    notifier.lobbyChanged();
+    return { roomId, userId: user.id, newHostUserId };
+  });
+
+  app.patch("/rooms/:roomId/settings", { preHandler: requireUser }, async (request, reply) => {
+    const params = parse(roomIdParams, request.params);
+    if (!params.ok) return sendInvalid(reply, params.message);
+    const body = parse(updateSettingsBody, request.body);
+    if (!body.ok) return sendInvalid(reply, body.message);
+
+    const user = currentUser(request);
+    const { roomId } = params.data;
+    const room = await db.room.findUnique({
+      where: { id: roomId },
+      include: { players: { select: { userId: true, createdAt: true } } },
+    });
+    if (!room) return sendLobbyError(reply, "ROOM_NOT_FOUND");
+    const error = settingsError(room, user.id, body.data);
+    if (error) return sendLobbyError(reply, error);
+
+    const { enabledRoles, ...rest } = body.data;
+    await db.room.update({
+      where: { id: roomId },
+      data: { ...rest, ...(enabledRoles ? { enabledRoles: enabledRoles as PlayerRole[] } : {}) },
+    });
+
+    notifier.roomChanged(roomId);
+    notifier.lobbyChanged();
+    const updated = await loadRoomRow(roomId);
+    return updated ? toRoomDetail(updated) : sendLobbyError(reply, "ROOM_NOT_FOUND");
+  });
+
+  app.post("/rooms/:roomId/kick", { preHandler: requireUser }, async (request, reply) => {
+    const params = parse(roomIdParams, request.params);
+    if (!params.ok) return sendInvalid(reply, params.message);
+    const body = parse(kickBody, request.body);
+    if (!body.ok) return sendInvalid(reply, body.message);
+
+    const user = currentUser(request);
+    const { roomId } = params.data;
+    const targetId = body.data.userId;
+    const room = await db.room.findUnique({
+      where: { id: roomId },
+      include: { players: { select: { userId: true, createdAt: true } } },
+    });
+    if (!room) return sendLobbyError(reply, "ROOM_NOT_FOUND");
+    const error = kickError(room, user.id, targetId);
+    if (error) return sendLobbyError(reply, error);
+
+    await db.$transaction([
+      db.roomPlayer.delete({ where: { roomId_userId: { roomId, userId: targetId } } }),
+      db.room.update({ where: { id: roomId }, data: { bannedUserIds: { push: targetId } } }),
+    ]);
+
+    notifier.playerKicked(roomId, targetId);
+    notifier.roomChanged(roomId);
+    notifier.lobbyChanged();
+    return { roomId, userId: targetId };
+  });
+
+  // Game start lives in the realtime layer (socket `game:start`); the old
+  // REST start path that skipped Redis setup was removed.
+
+  // --- Owned by the auth module (M8); unchanged here ---------------------------
+
   if (process.env.NODE_ENV !== "production") {
     app.post("/rooms/dev/create-user", async (request, reply) => {
       const { name } = request.body as { name?: string };
@@ -87,156 +261,6 @@ export async function registerRoomRoutes(app: FastifyInstance) {
     });
   }
 
-  app.post("/rooms", async (request, reply) => {
-    const body = request.body as CreateRoomBody;
-
-    if (!body.hostUserId || typeof body.hostUserId !== "string") {
-      return reply.status(400).send({ error: "hostUserId required", success: false });
-    }
-
-    if (!Number.isInteger(body.maxPlayers) || body.maxPlayers < 6 || body.maxPlayers > 15) {
-      return reply.status(400).send({ error: "maxPlayers must be an integer between 6 and 15", success: false });
-    }
-
-    const user = await db.user.findUnique({ where: { id: body.hostUserId } });
-    if (!user) {
-      return reply.status(400).send({ error: "User not found", success: false });
-    }
-
-    const code = await generateUniqueRoomCode();
-
-    const room = await db.room.create({
-      data: {
-        code,
-        hostUserId: body.hostUserId,
-        maxPlayers: body.maxPlayers,
-        status: "WAITING",
-        currentRound: 0,
-        players: {
-          create: {
-            userId: body.hostUserId,
-          },
-        },
-      },
-    });
-
-    return {
-      roomId: room.id,
-      status: room.status,
-      maxPlayers: room.maxPlayers,
-      hostUserId: room.hostUserId,
-    };
-  });
-
-  app.post("/rooms/:roomId/join", async (request, reply) => {
-    const { roomId } = request.params as { roomId: string };
-    const body = request.body as JoinRoomBody;
-
-    if (!body.userId || typeof body.userId !== "string") {
-      return reply.status(400).send({ error: "userId required", success: false });
-    }
-
-    const room = await db.room.findUnique({
-      where: { id: roomId },
-      include: { players: true, _count: { select: { players: true } } },
-    });
-
-    if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false });
-    }
-
-    if (room.status !== RoomStatus.WAITING) {
-      return reply.status(400).send({ error: "Game already started", success: false });
-    }
-
-    const playerCount = room._count.players;
-    if (playerCount >= room.maxPlayers) {
-      return reply.status(400).send({ error: "Room is full", success: false });
-    }
-
-    const existingPlayer = room.players.find((p) => p.userId === body.userId);
-    if (existingPlayer) {
-      return reply.status(400).send({ error: "User already in room", success: false });
-    }
-
-    await db.roomPlayer.create({
-      data: {
-        roomId,
-        userId: body.userId,
-      },
-    });
-
-    return {
-      roomId,
-      userId: body.userId,
-      playerCount: playerCount + 1,
-    };
-  });
-
-  app.post("/rooms/:roomId/leave", async (request, reply) => {
-    const { roomId } = request.params as { roomId: string };
-    const body = request.body as LeaveRoomBody;
-
-    if (!body.userId || typeof body.userId !== "string") {
-      return reply.status(400).send({ error: "userId required", success: false });
-    }
-
-    const room = await db.room.findUnique({
-      where: { id: roomId },
-      include: { players: { orderBy: { createdAt: "asc" } } },
-    });
-
-    if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false });
-    }
-
-    const player = room.players.find((p) => p.userId === body.userId);
-    if (!player) {
-      return reply.status(404).send({ error: "Player not in room", success: false });
-    }
-
-    const wasHost = room.hostUserId === body.userId;
-    await db.roomPlayer.delete({ where: { id: player.id } });
-
-    let newHostUserId: string | null = null;
-
-    if (wasHost) {
-      const remainingPlayers = room.players.filter((p) => p.userId !== body.userId);
-      if (remainingPlayers.length > 0) {
-        newHostUserId = remainingPlayers[0].userId;
-        await db.room.update({
-          where: { id: roomId },
-          data: { hostUserId: newHostUserId },
-        });
-      } else {
-        await db.room.delete({ where: { id: roomId } });
-      }
-    }
-
-    return {
-      roomId,
-      userId: body.userId,
-      newHostUserId,
-    };
-  });
-
-  app.get("/rooms/code/:code", async (request, reply) => {
-    const { code } = request.params as { code: string };
-    const room = await db.room.findFirst({
-      where: {
-        OR: [
-          { code: code.toUpperCase() },
-          { id: code.toLowerCase() },
-          { id: { startsWith: code.toLowerCase() } }
-        ]
-      },
-    });
-    if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false });
-    }
-    return { roomId: room.id };
-  });
-
   app.post("/users/update-profile", async (request, reply) => {
     const { userId, name } = request.body as { userId: string; name: string };
     if (!userId || !name) {
@@ -247,120 +271,5 @@ export async function registerRoomRoutes(app: FastifyInstance) {
       data: { name },
     });
     return { success: true };
-  });
-
-  app.get("/rooms/:roomId", async (request, reply) => {
-    const { roomId } = request.params as { roomId: string };
-
-    const room = await db.room.findUnique({
-      where: { id: roomId },
-      include: {
-        players: {
-          include: {
-            user: true,
-          },
-        },
-      },
-    });
-
-    if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false });
-    }
-
-    const gameStarted = room.status === "IN_PROGRESS" || room.status === "FINISHED";
-    const rolesInPlay = gameStarted
-      ? room.players.map((p) => p.role).filter(Boolean)
-      : [];
-
-    return {
-      id: room.id,
-      hostUserId: room.hostUserId,
-      status: room.status,
-      maxPlayers: room.maxPlayers,
-      currentRound: room.currentRound,
-      greenWins: room.greenWins,
-      redWins: room.redWins,
-      rolesInPlay,
-      players: room.players.map((p) => ({
-        userId: p.userId,
-        name: p.user?.name ?? `Player ${p.userId.slice(-4)}`,
-        team: p.team,
-      })),
-    };
-  });
-
-  app.post("/rooms/:roomId/start", async (request, reply) => {
-    const { roomId } = request.params as { roomId: string };
-    const body = request.body as StartRoomBody;
-    const userId = body.userId;
-
-    if (!userId) {
-      return reply.status(400).send({ error: "userId required", success: false });
-    }
-
-    const room = await db.room.findUnique({
-      where: { id: roomId },
-      include: { players: true },
-    });
-
-    if (!room) {
-      return reply.status(404).send({ error: "Room not found", success: false });
-    }
-
-    if (room.hostUserId !== userId) {
-      return reply.status(403).send({ error: "Only host can start game", success: false });
-    }
-
-    if (room.players.length < 6 || room.players.length > 15) {
-      return reply.status(400).send({ error: "Player count must be between 6 and 15", success: false });
-    }
-
-    await db.$transaction(async (tx) => {
-      const userIds = room.players.map((p) => p.userId);
-      const roles = assignRoles(userIds, room.players.length);
-
-      for (let i = 0; i < room.players.length; i++) {
-        const player = room.players[i];
-        const assignment = roles.find((r) => r.userId === player.userId);
-        if (assignment) {
-          await tx.roomPlayer.update({
-            where: { id: player.id },
-            data: {
-              role: PlayerRole[assignment.role.toUpperCase() as keyof typeof PlayerRole],
-              team: PlayerTeam[assignment.team.toUpperCase() as keyof typeof PlayerTeam],
-            },
-          });
-        }
-      }
-
-      const randomIndex = Math.floor(Math.random() * room.players.length);
-      const selectorId = room.players[randomIndex].id;
-      await tx.roomPlayer.update({
-        where: { id: selectorId },
-        data: { isSelector: true },
-      });
-
-      await tx.room.update({
-        where: { id: roomId },
-        data: { status: RoomStatus.IN_PROGRESS },
-      });
-
-      await tx.roundRecord.create({
-        data: {
-          roomId,
-          roundNumber: 1,
-          phase: "DISCUSSION",
-          selectorId,
-          rejectionCount: 0,
-        },
-      });
-    });
-
-    const updatedRoom = await db.room.findUnique({
-      where: { id: roomId },
-      include: { players: true, rounds: { orderBy: { roundNumber: "desc" } } },
-    });
-
-    return reply.send({ data: updatedRoom, success: true });
   });
 }
