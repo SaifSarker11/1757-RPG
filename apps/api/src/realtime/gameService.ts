@@ -166,6 +166,15 @@ export class GameService {
     this.deps.disconnects?.playerReturned(roomId, userId);
   }
 
+  /**
+   * M7: Returns the set of player ids that are currently offline in a live
+   * game room. Empty if the room has no running game or no tracker.
+   */
+  offlineUsers(roomId: string): ReadonlySet<string> {
+    if (!this.games.has(roomId)) return new Set();
+    return this.deps.disconnects?.offlineUsers(roomId) ?? new Set();
+  }
+
   /** Resumes every snapshotted match after a restart. */
   async restore(): Promise<number> {
     const snapshots = await this.deps.store.list();
