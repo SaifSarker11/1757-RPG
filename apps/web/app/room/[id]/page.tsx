@@ -7,6 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { authClient } from "@/lib/auth-client";
 import { gameAudio } from "@/lib/audio";
+import type { PlayerView } from "@/lib/game-types";
+import { CountdownTimer } from "@/components/CountdownTimer";
+import { RoleCard } from "@/components/RoleCard";
+import { RoundTracker } from "@/components/RoundTracker";
+import { ActionPanel } from "@/components/ActionPanel";
+import { PostGameSummary } from "@/components/PostGameSummary";
 
 interface PlayerInfo {
   userId: string;
@@ -83,11 +89,14 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   // Theme selector state
   const [currentTheme, setCurrentTheme] = useState("retro");
 
-  // Game States
+  // Game States (Authoritative Server View)
+  const [playerView, setPlayerView] = useState<PlayerView | null>(null);
+  const [gameError, setGameError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [roomData, setRoomData] = useState<any>(null);
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [myRoleInfo, setMyRoleInfo] = useState<any>(null);
-  const [currentPhase, setCurrentPhase] = useState<string>("LOBBY"); // LOBBY, DISCUSSION, TEAM_PROPOSAL, TEAM_APPROVAL, MISSION_VOTE, ENDGAME
+  const [currentPhase, setCurrentPhase] = useState<string>("LOBBY");
   const [roundNumber, setRoundNumber] = useState<number>(1);
   const [discussionTimer, setDiscussionTimer] = useState<number>(120);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
@@ -218,15 +227,41 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
     const socket = io(SOCKET_URL, {
       transports: ["websocket"],
+      withCredentials: true,
       query: { roomId, userId: session.user.id },
     });
 
     socketRef.current = socket;
 
-    socket.emit("room:join", {
-      roomId,
-      userId: session.user.id,
-      name: session.user.name,
+    socket.emit("room:join", { roomId });
+
+    // Sync game view on connect/reconnect
+    socket.emit("game:sync", { roomId });
+
+    socket.on("game:view", (payload: { roomId: string; view: PlayerView }) => {
+      if (payload.roomId === roomId && payload.view) {
+        setPlayerView(payload.view);
+        setCurrentPhase(payload.view.game.phase);
+        setRoundNumber(payload.view.game.round);
+      }
+    });
+
+    socket.on("game:error", (err: { code: string; message: string }) => {
+      setGameError(err.message || err.code);
+      setTimeout(() => setGameError(null), 4000);
+    });
+
+    socket.on("game:event", (payload: { roomId: string; events: any[] }) => {
+      if (payload.roomId === roomId) {
+        for (const evt of payload.events) {
+          if (evt.type === "MISSION_RESOLVED") {
+            if (evt.winner === "GREEN") gameAudio.playSuccess();
+            else gameAudio.playFailure();
+          } else if (evt.type === "GAME_ENDED") {
+            gameAudio.playVictory();
+          }
+        }
+      }
     });
 
     socket.on("room:chat-history", (history: ChatMessage[]) => {
@@ -266,10 +301,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     });
 
     socket.on("game:started", () => {
-      setCurrentPhase("DISCUSSION");
-      setSelectedPlayers([]);
-      setHasVotedApproval(false);
-      setHasVotedMission(false);
+      socket.emit("game:sync", { roomId });
       fetchRoom();
     });
 
@@ -397,94 +429,59 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const emitGameAction = (action: any) => {
+    gameAudio.playClick();
+    if (!socketRef.current) return;
+    setActionLoading(true);
+    socketRef.current.emit(
+      "game:action",
+      { roomId, action },
+      (ack: { ok: boolean; error?: { message: string } }) => {
+        setActionLoading(false);
+        if (!ack?.ok && ack?.error) {
+          setGameError(ack.error.message);
+          setTimeout(() => setGameError(null), 4000);
+        }
+      }
+    );
+  };
+
   const handleStartGame = () => {
     gameAudio.playClick();
     if (socketRef.current) {
-      socketRef.current.emit("game:start", { roomId, hostUserId: session?.user.id });
-    }
-  };
-
-  const handleProposeTeam = () => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("round:proposeTeam", {
-        roomId,
-        selectorId: session?.user.id,
-        playerIds: selectedPlayers,
+      setActionLoading(true);
+      socketRef.current.emit("game:start", { roomId }, (ack: { ok: boolean; error?: { message: string } }) => {
+        setActionLoading(false);
+        if (!ack?.ok && ack?.error) {
+          setGameError(ack.error.message);
+          setTimeout(() => setGameError(null), 4000);
+        }
       });
     }
   };
 
-  const handleVoteApproval = (vote: "approve" | "reject") => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("round:approvalVote", {
-        roomId,
-        userId: session?.user.id,
-        vote,
-      });
-      setHasVotedApproval(true);
-    }
+  const handleNominate = (ministerIds: string[]) => {
+    emitGameAction({ type: "NOMINATE", ministerIds });
   };
 
-  const handleVoteMission = (vote: "green" | "red") => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("round:missionVote", {
-        roomId,
-        userId: session?.user.id,
-        vote,
-      });
-      setHasVotedMission(true);
-    }
+  const handleCastVote = (vote: "APPROVE" | "REJECT") => {
+    emitGameAction({ type: "CAST_VOTE", vote });
   };
 
-  const handleMirJafarGuessSubmit = (targetUserId: string) => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("endgame:guess", {
-        roomId,
-        userId: session?.user.id,
-        targetUserId,
-        guessType: "role",
-      });
-      setMirJafarGuessActive(false);
-    }
+  const handlePlayCard = (card: "SUCCESS" | "SABOTAGE") => {
+    emitGameAction({ type: "PLAY_CARD", card });
   };
 
-  const handleJagatSethGuessSubmit = (targetUserId: string) => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("endgame:guess", {
-        roomId,
-        userId: session?.user.id,
-        targetUserId,
-        guessType: "role",
-      });
-      setJagatSethGuessActive(false);
-    }
+  const handleDeBussyReveal = (targetId: string) => {
+    emitGameAction({ type: "DEBUSSY_REVEAL", targetId });
   };
 
-  const handleDeBussyLockOn = (targetUserId: string) => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("debussy:lockOn", {
-        roomId,
-        userId: session?.user.id,
-        targetUserId,
-      });
-    }
+  const handleJeanLawLock = (targetId: string) => {
+    emitGameAction({ type: "JEANLAW_LOCK", targetId });
   };
 
-  const handleJeanLawCurse = (targetUserId: string) => {
-    gameAudio.playClick();
-    if (socketRef.current) {
-      socketRef.current.emit("jeanlaw:lock", {
-        roomId,
-        userId: session?.user.id,
-        targetUserId,
-      });
-    }
+  const handleGuess = (targetId: string) => {
+    emitGameAction({ type: "GUESS", targetId });
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -570,6 +567,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
           </button>
 
+          {playerView?.game.endsAt && (
+            <CountdownTimer endsAt={playerView.game.endsAt} />
+          )}
+
           <span className="bg-neutral text-neutral-content px-3 py-1.5 border border-base-300 text-xs font-pixel">
             Code: {roomData?.code ?? roomId.slice(0, 6)}
           </span>
@@ -606,39 +607,25 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         </div>
       </div>
 
-      {/* Round & Sabotage Progress Tracker Banner */}
-      <div className="bg-base-100 border-4 border-primary p-3 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mb-6 pixel-card font-pixel text-xs gap-4">
-        <span className="text-secondary font-bold uppercase tracking-wider">ROUND MAP PROGRESS:</span>
-        <div className="flex gap-3 flex-1 justify-center max-w-2xl w-full">
-          {[1, 2, 3, 4, 5].map((r) => {
-            const missionLog = voteLogs.find((l) => l.round === r && l.type === "mission");
-            const isCurrent = roundNumber === r && currentPhase !== "LOBBY" && currentPhase !== "ENDGAME";
-            return (
-              <div 
-                key={r} 
-                className={`flex-1 border-2 py-2 text-center flex flex-col items-center justify-center relative rounded-none ${
-                  isCurrent ? "border-amber-500 bg-amber-500/10 animate-pulse font-bold" : "border-base-content/20"
-                }`}
-              >
-                <span>RD {r}</span>
-                <span className="text-[9px] mt-1 font-bold">
-                  {missionLog ? (
-                    missionLog.winner === "green" ? "🟢 GREEN" : "🔴 RED"
-                  ) : (
-                    isCurrent ? "⚔️ ACTIVE" : "⏳ LOCKED"
-                  )}
-                </span>
-              </div>
-            );
-          })}
+      {gameError && (
+        <div className="alert alert-error text-xs font-pixel py-2 rounded-none border-2 border-error w-full max-w-7xl mb-4">
+          <span>{gameError}</span>
         </div>
-        <div className="text-right">
-          <span className="uppercase text-[9px] text-base-content/65 block font-bold">Consecutive Rejections Tracker:</span>
-          <span className="font-bold text-red-500 font-retro text-xl">
-            {voteLogs.filter(l => l.round === roundNumber && l.type === "approval" && !l.approved).length} / 3 REJECTS
+      )}
+
+      {/* Round & Sabotage Progress Tracker Banner */}
+      {playerView ? (
+        <div className="w-full max-w-7xl mb-6">
+          <RoundTracker view={playerView} />
+        </div>
+      ) : (
+        <div className="bg-base-100 border-4 border-primary p-3 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mb-6 pixel-card font-pixel text-xs gap-4">
+          <span className="text-secondary font-bold uppercase tracking-wider">CHAMBER STATUS:</span>
+          <span className="text-base-content/80 font-sans">
+            Council convening. Awaiting start of round by host.
           </span>
         </div>
-      </div>
+      )}
 
       {/* Main Grid View */}
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -769,151 +756,63 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         {/* COLUMN 2: Phase Actions, Logs & Chat Sidebar (4 Columns) */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           
-          {/* Phase Control Box */}
-          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 pixel-card flex flex-col justify-between min-h-[220px]">
-            <div>
-              <h3 className="font-pixel text-[10px] text-secondary uppercase border-b-2 border-dashed pb-1.5 mb-2 border-base-content/20">Secretariat Directives</h3>
-            </div>
-
-            <div className="flex-1 flex flex-col justify-center items-center">
-              {currentPhase === "LOBBY" && (
-                <div className="text-center p-2">
-                  <p className="text-xs font-sans mb-3 text-base-content/85">Waiting for conspirators. Current player count: {players.length} / 15</p>
-                  {isHost ? (
-                    <button
-                      onClick={handleStartGame}
-                      disabled={players.length < 6}
-                      className="btn btn-sm btn-success rounded-none border-2 font-pixel pixel-btn"
-                    >
-                      START ACTION
-                    </button>
-                  ) : (
-                    <div className="alert alert-info rounded-none border-2 py-1 px-3 text-[10px] font-pixel text-center">
-                      <span>Waiting for Host...</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {currentPhase === "DISCUSSION" && (
-                <div className="text-center p-2 font-pixel">
-                  <span className="text-xl uppercase text-amber-500 animate-pulse block">DISCUSSION ACTIVE</span>
-                  <span className="text-[10px] text-base-content/65 font-sans mt-2 block">Observe the chat for loyalist signals.</span>
-                </div>
-              )}
-
-              {currentPhase === "TEAM_PROPOSAL" && (
-                <div className="text-center p-2">
-                  {isMyTurnToSelect ? (
-                    <div>
-                      <p className="text-[10px] font-pixel text-primary uppercase mb-2">PROPOSE {sizeToSelect} MEMBERS:</p>
-                      <div className="flex justify-center gap-1.5 flex-wrap max-h-24 overflow-y-auto mb-2">
-                        {players.map((p) => {
-                          const isSelected = selectedPlayers.includes(p.userId);
-                          return (
-                            <button
-                              key={p.userId}
-                              onClick={() => {
-                                gameAudio.playClick();
-                                setSelectedPlayers((prev) =>
-                                  prev.includes(p.userId)
-                                    ? prev.filter((id) => id !== p.userId)
-                                    : [...prev, p.userId]
-                                );
-                              }}
-                              className={`btn btn-xs rounded-none border ${isSelected ? "btn-primary" : "btn-outline"}`}
-                            >
-                              {p.name}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <button
-                        onClick={handleProposeTeam}
-                        disabled={selectedPlayers.length !== sizeToSelect}
-                        className="btn btn-xs btn-accent w-full rounded-none border-2 font-pixel pixel-btn"
-                      >
-                        SUBMIT COUNCIL
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center font-pixel text-[10px]">
-                      <span className="loading loading-ring loading-md text-primary mb-1"></span>
-                      <p className="uppercase">Leader is proposing board...</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {currentPhase === "TEAM_APPROVAL" && (
-                <div className="text-center p-2">
-                  <p className="text-[9px] font-pixel text-amber-500 uppercase mb-2">PROPOSED COUNCIL BOARD:</p>
-                  <div className="flex justify-center gap-1 my-2 flex-wrap max-w-[200px]">
-                    {proposedTeam.map((id) => (
-                      <span key={id} className="badge badge-neutral rounded-none text-[8px] font-pixel uppercase border py-1">
-                        {players.find((pl) => pl.userId === id)?.name ?? "Player"}
-                      </span>
-                    ))}
+          {/* Authoritative Action Panel & Directives */}
+          {playerView?.game.phase === "POST_GAME" ? (
+            <PostGameSummary
+              game={playerView.game}
+              playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
+              onReturnToLobby={() => {
+                gameAudio.playClick();
+                setPlayerView(null);
+                setCurrentPhase("LOBBY");
+                fetchRoom();
+              }}
+            />
+          ) : playerView ? (
+            <>
+              <RoleCard
+                view={playerView}
+                playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
+              />
+              <ActionPanel
+                view={playerView}
+                playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
+                onNominate={handleNominate}
+                onCastVote={handleCastVote}
+                onPlayCard={handlePlayCard}
+                onDeBussyReveal={handleDeBussyReveal}
+                onJeanLawLock={handleJeanLawLock}
+                onGuess={handleGuess}
+                loading={actionLoading}
+              />
+            </>
+          ) : (
+            <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 pixel-card flex flex-col justify-between min-h-[200px]">
+              <div>
+                <h3 className="font-pixel text-[10px] text-secondary uppercase border-b-2 border-dashed pb-1.5 mb-2 border-base-content/20">
+                  Secretariat Directives
+                </h3>
+              </div>
+              <div className="flex-1 flex flex-col justify-center items-center text-center p-2">
+                <p className="text-xs font-sans mb-3 text-base-content/85">
+                  Waiting for conspirators. Current player count: {players.length} / 15
+                </p>
+                {isHost ? (
+                  <button
+                    onClick={handleStartGame}
+                    disabled={players.length < 6 || actionLoading}
+                    className="btn btn-sm btn-success rounded-none border-2 font-pixel pixel-btn"
+                  >
+                    {actionLoading ? "STARTING..." : "START MATCH"}
+                  </button>
+                ) : (
+                  <div className="alert alert-info rounded-none border-2 py-1 px-3 text-[10px] font-pixel text-center">
+                    <span>Waiting for Host to begin...</span>
                   </div>
-                  {!hasVotedApproval ? (
-                    <div className="flex gap-2 w-full mt-3">
-                      <button
-                        onClick={() => handleVoteApproval("approve")}
-                        className="btn btn-xs btn-success flex-1 rounded-none border-2 font-pixel pixel-btn"
-                      >
-                        APPROVE 👍
-                      </button>
-                      <button
-                        onClick={() => handleVoteApproval("reject")}
-                        className="btn btn-xs btn-error flex-1 rounded-none border-2 font-pixel pixel-btn"
-                      >
-                        REJECT 👎
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="alert alert-info rounded-none border text-[8px] font-pixel p-1 text-center mt-2 w-full">
-                      <span>Submitted Secrets...</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {currentPhase === "MISSION_VOTE" && (
-                <div className="text-center p-2">
-                  {proposedTeam.includes(session.user.id) ? (
-                    <div>
-                      <p className="text-[9px] font-pixel text-rose-500 uppercase mb-2">SECRET VOTE OF LOYALTY:</p>
-                      {!hasVotedMission ? (
-                        <div className="flex flex-col gap-2 w-full">
-                          <button
-                            onClick={() => handleVoteMission("green")}
-                            className="btn btn-xs btn-success rounded-none border-2 font-pixel pixel-btn"
-                          >
-                            LOYALTY (GREEN)
-                          </button>
-                          <button
-                            onClick={() => handleVoteMission("red")}
-                            className="btn btn-xs btn-error rounded-none border-2 font-pixel pixel-btn"
-                          >
-                            SABOTAGE (RED)
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="alert alert-info rounded-none border text-[8px] font-pixel p-1 text-center w-full">
-                          <span>Choice Registered...</span>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center font-pixel text-[10px]">
-                      <span className="loading loading-spinner loading-md text-secondary mb-1"></span>
-                      <p className="uppercase">Saboteurs Resolving Board...</p>
-                    </div>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Right Tab Console (Chat vs Log Chronicle) */}
           <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 flex flex-col h-[320px] justify-between pixel-card">
