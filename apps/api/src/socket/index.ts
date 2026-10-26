@@ -1,17 +1,17 @@
-import { Server, Socket } from "socket.io";
-import { db, PlayerRole, PlayerTeam } from "@repo/db";
-import { assignRoles, buildPrivateRoleInfo } from "../game/roles.js";
-import { RoleName, TeamName, IRoleAssignment } from "@repo/types";
+import type { Server, Socket } from "socket.io";
+import type { z } from "zod";
+import type { SessionResolver, SessionUser } from "../lib/session.js";
+import type { GameService } from "../realtime/gameService.js";
+import type { LobbyCleanup } from "../realtime/lobbyCleanup.js";
+import { createSocketLimiter, type SocketLimitKind } from "../realtime/rateLimit.js";
+import type { GameRoomRepository } from "../realtime/roomRepository.js";
 import {
-  initGameState,
-  startDiscussionPhase,
-  handleTeamProposal,
-  handleApprovalVote,
-  handleMissionVote,
-  handleEndgameGuess,
-  handleDebussyLockOn,
-  handleJeanLawLock,
-} from "../game/engine.js";
+  gameActionPayload,
+  realtimeError,
+  roomRefPayload,
+  type RealtimeError,
+} from "../realtime/schemas.js";
+import { createSocketAuth, socketUser } from "../realtime/socketAuth.js";
 
 interface ChatMessage {
   id: string;
@@ -25,22 +25,82 @@ const chatHistory: ChatMessage[] = [];
 const roomChatHistories = new Map<string, ChatMessage[]>();
 const MAX_HISTORY = 100;
 
-export function registerSocketHandlers(io: Server): void {
+export interface SocketDeps {
+  resolveSession: SessionResolver;
+  games: GameService;
+  repo: Pick<GameRoomRepository, "isMember">;
+  cleanup: LobbyCleanup;
+  /** A room left the lobby (e.g. so the public list can refresh). */
+  onGameStarted?: (roomId: string) => void;
+  logError?: (error: unknown, message: string) => void;
+}
+
+interface SocketState {
+  roomId?: string | null;
+}
+
+const stateOf = (socket: Socket) => socket.data as SocketState;
+
+type Ack = (result: { ok: true } | { ok: false; error: RealtimeError }) => void;
+
+export function registerSocketHandlers(io: Server, deps: SocketDeps): void {
+  io.use(createSocketAuth(deps.resolveSession));
+
   io.on("connection", (socket: Socket) => {
+    const allow = createSocketLimiter();
+
     // Auto join lobby room for global chat scoping
     socket.join("lobby");
 
     // Send chat history upon connection
     socket.emit("chat:history", chatHistory);
 
-    // Identify user to link socket connection to a specific user ID
-    socket.on("user:identify", (data: { userId: string }) => {
-      if (!data || !data.userId) return;
-      socket.data.userId = data.userId;
-    });
+    /**
+     * Registers a room/game handler: rate-limited, signed-in only, payload
+     * validated. Errors go to this socket only, as `game:error` and the ack.
+     */
+    function handle<T>(
+      event: string,
+      schema: z.ZodType<T>,
+      kind: SocketLimitKind,
+      run: (user: SessionUser, data: T) => Promise<RealtimeError | null>
+    ) {
+      socket.on(event, async (raw: unknown, ack?: unknown) => {
+        const reply = (error: RealtimeError | null) => {
+          if (error) socket.emit("game:error", error);
+          if (typeof ack === "function") (ack as Ack)(error ? { ok: false, error } : { ok: true });
+        };
 
-    // Chat events
+        if (!allow(kind)) return reply(realtimeError("RATE_LIMITED"));
+        const user = socketUser(socket);
+        if (!user) return reply(realtimeError("UNAUTHORIZED"));
+        const parsed = schema.safeParse(raw);
+        if (!parsed.success) return reply(realtimeError("INVALID_PAYLOAD"));
+
+        try {
+          reply(await run(user, parsed.data));
+        } catch (error) {
+          deps.logError?.(error, `Socket handler ${event} failed`);
+          reply(realtimeError("INTERNAL"));
+        }
+      });
+    }
+
+    async function onlineUserIds(roomId: string): Promise<string[]> {
+      const sockets = await io.in(roomId).fetchSockets();
+      return sockets.flatMap((s) => {
+        const id = socketUser(s)?.id;
+        return id ? [id] : [];
+      });
+    }
+
+    // --- Chat (owned by the auth & chat module; behaviour unchanged) ----------
+
     socket.on("chat:send-message", (data: { roomId?: string; userId: string; username: string; text: string }) => {
+      if (!allow("chat")) {
+        socket.emit("game:error", realtimeError("RATE_LIMITED"));
+        return;
+      }
       if (!data || typeof data.text !== "string" || !data.username || !data.userId) {
         return;
       }
@@ -74,279 +134,64 @@ export function registerSocketHandlers(io: Server): void {
       io.to(targetRoom).emit("chat:message", message);
     });
 
-    // Lobby / Room events
-    socket.on("room:join", async ({ roomId, userId }: { roomId: string; userId: string }) => {
-      if (!roomId || !userId) {
-        socket.emit("room:error", { message: "roomId and userId required" });
-        return;
-      }
+    // --- Room channel ------------------------------------------------------------
+
+    handle("room:join", roomRefPayload, "action", async (user, { roomId }) => {
+      const member = deps.games.isPlayer(roomId, user.id) || (await deps.repo.isMember(roomId, user.id));
+      if (!member) return realtimeError("NOT_IN_ROOM");
+
       socket.leave("lobby");
-      socket.join(roomId);
-      socket.data.roomId = roomId;
-      socket.data.userId = userId;
+      await socket.join(roomId);
+      stateOf(socket).roomId = roomId;
+      deps.cleanup.roomOccupied(roomId);
 
-      // Send the private room's chat history to the joining client
-      const history = roomChatHistories.get(roomId) || [];
-      socket.emit("chat:history", history);
+      socket.emit("chat:history", roomChatHistories.get(roomId) ?? []);
+      io.to(roomId).emit("game:join", { roomId, userId: user.id });
+      io.to(roomId).emit("player:status", { userId: user.id, online: true });
+      socket.emit("room:online-list", await onlineUserIds(roomId));
 
-      io.to(roomId).emit("game:join", { roomId, userId });
-
-      // Notify others this player is online
-      io.to(roomId).emit("player:status", { userId, online: true });
-
-      // Retrieve list of all current online player userIds in the room
-      const activeSockets = await io.in(roomId).fetchSockets();
-      const onlineUserIds = activeSockets.map((s) => s.data.userId).filter(Boolean);
-      socket.emit("room:online-list", onlineUserIds);
+      // Rejoining a running match: send this player their view straight away.
+      if (deps.games.hasGame(roomId)) await deps.games.sync(roomId, user.id);
+      return null;
     });
 
-    socket.on("room:leave", ({ roomId, userId }: { roomId: string; userId: string }) => {
-      if (!roomId || !userId) return;
-      socket.leave(roomId);
-      socket.join("lobby");
-      socket.data.roomId = null;
-      io.to(roomId).emit("game:leave", { roomId, userId });
-      io.to(roomId).emit("player:status", { userId, online: false });
+    handle("room:leave", roomRefPayload, "action", async (user, { roomId }) => {
+      await socket.leave(roomId);
+      await socket.join("lobby");
+      if (stateOf(socket).roomId === roomId) stateOf(socket).roomId = null;
+      io.to(roomId).emit("game:leave", { roomId, userId: user.id });
+      io.to(roomId).emit("player:status", { userId: user.id, online: false });
+      await deps.cleanup.roomMaybeEmpty(roomId);
+      return null;
     });
 
-    // Game starting events
-    socket.on("game:start", async (data: { roomId: string; hostUserId: string }) => {
-      try {
-        if (!data || !data.roomId || !data.hostUserId) {
-          socket.emit("error", { message: "Invalid payload" });
-          return;
-        }
+    // --- Game ----------------------------------------------------------------------
 
-        const room = await db.room.findUnique({
-          where: { id: data.roomId },
-          include: { players: true },
-        });
-
-        if (!room) {
-          socket.emit("error", { message: "Room not found" });
-          return;
-        }
-
-        if (room.hostUserId !== data.hostUserId) {
-          socket.emit("error", { message: "Only the host can start the game" });
-          return;
-        }
-        if (room.status !== "WAITING") {
-          socket.emit("error", { message: "Room is not waiting to start" });
-          return;
-        }
-
-        const playerCount = room.players.length;
-        if (playerCount < 6 || playerCount > 15) {
-          socket.emit("error", { message: "Player count must be between 6 and 15" });
-          return;
-        }
-
-        const userIds = room.players.map((p) => p.userId);
-        const assignments: IRoleAssignment[] = assignRoles(userIds, playerCount);
-
-        // Update database with role/team assignments
-        await db.$transaction(
-          assignments.map((assignment) =>
-            db.roomPlayer.updateMany({
-              where: {
-                roomId: room.id,
-                userId: assignment.userId,
-              },
-              data: {
-                role: PlayerRole[assignment.role.toUpperCase() as keyof typeof PlayerRole],
-                team: PlayerTeam[assignment.team.toUpperCase() as keyof typeof PlayerTeam],
-              },
-            })
-          )
-        );
-
-        const updatedRoom = await db.room.findUnique({
-          where: { id: room.id },
-          include: { players: true },
-        });
-
-        if (!updatedRoom) {
-          socket.emit("error", { message: "Failed to fetch updated room" });
-          return;
-        }
-
-        // Send customized role assigned information to each individual player socket
-        for (const player of updatedRoom.players) {
-          let targetSocket: Socket | null = null;
-          for (const [, s] of io.sockets.sockets) {
-            if ((s as Socket).data?.userId === player.userId) {
-              targetSocket = s;
-              break;
-            }
-          }
-
-          if (targetSocket) {
-            const roleKey = Object.keys(PlayerRole).find(
-              (k) => PlayerRole[k as keyof typeof PlayerRole] === player.role
-            );
-            const teamKey = Object.keys(PlayerTeam).find(
-              (k) => PlayerTeam[k as keyof typeof PlayerTeam] === player.team
-            );
-            const roleString = (roleKey?.toLowerCase() ?? "") as RoleName;
-            const teamString = (teamKey?.toLowerCase() ?? "") as TeamName;
-
-            const privateInfo = buildPrivateRoleInfo(
-              {
-                userId: player.userId,
-                role: roleString,
-                team: teamString,
-              },
-              assignments
-            );
-
-            targetSocket.emit("role:assigned", privateInfo);
-          }
-        }
-
-        await db.room.update({
-          where: { id: room.id },
-          data: { status: "IN_PROGRESS" },
-        });
-
-        io.to(room.id).emit("game:started");
-
-        // First selector chosen randomly, subsequent leaders will proceed clockwise
-        const firstSelectorId = userIds[Math.floor(Math.random() * userIds.length)];
-        
-        // Update first selector state in database
-        await db.roomPlayer.updateMany({
-          where: { roomId: room.id, userId: firstSelectorId },
-          data: { isSelector: true },
-        });
-
-        await initGameState(room.id, userIds, firstSelectorId);
-        await startDiscussionPhase(room.id, io);
-
-        socket.emit("game:started");
-      } catch (error) {
-        console.error("Error in game:start handler:", error);
-        socket.emit("error", { message: "Internal server error" });
+    handle("game:start", roomRefPayload, "action", async (user, { roomId }) => {
+      const error = await deps.games.start(roomId, user.id);
+      if (!error) {
+        io.to(roomId).emit("game:started", { roomId });
+        deps.onGameStarted?.(roomId);
       }
+      return error;
     });
 
-    // Propose team for current round
-    socket.on(
-      "round:proposeTeam",
-      async (data: { roomId: string; selectorId: string; playerIds: string[] }) => {
-        try {
-          if (!data || !data.roomId || !data.selectorId || !Array.isArray(data.playerIds)) {
-            socket.emit("error", { message: "Invalid team proposal payload" });
-            return;
-          }
-          await handleTeamProposal(data.roomId, data.selectorId, data.playerIds, io);
-        } catch (error) {
-          console.error("Error in round:proposeTeam handler:", error);
-          socket.emit("error", { message: "Internal server error" });
-        }
-      }
+    handle("game:action", gameActionPayload, "action", (user, { roomId, action }) =>
+      deps.games.act(roomId, user.id, action)
     );
 
-    // Vote on board approval
-    socket.on(
-      "round:approvalVote",
-      async (data: { roomId: string; userId: string; vote: "approve" | "reject" }) => {
-        try {
-          if (!data || !data.roomId || !data.userId || !data.vote) {
-            socket.emit("error", { message: "Invalid approval vote payload" });
-            return;
-          }
-          const userId = socket.data.userId ?? data.userId;
-          await handleApprovalVote(data.roomId, userId, data.vote, io);
-        } catch (error) {
-          console.error("Error in round:approvalVote handler:", error);
-          socket.emit("error", { message: "Internal server error" });
-        }
-      }
-    );
-
-    // Vote on secret mission resolution (GREEN or RED)
-    socket.on(
-      "round:missionVote",
-      async (data: { roomId: string; userId: string; vote: "green" | "red" }) => {
-        try {
-          if (!data || !data.roomId || !data.userId || !data.vote) {
-            socket.emit("error", { message: "Invalid mission vote payload" });
-            return;
-          }
-          const userId = socket.data.userId ?? data.userId;
-          await handleMissionVote(data.roomId, userId, data.vote, io);
-        } catch (error) {
-          console.error("Error in round:missionVote handler:", error);
-          socket.emit("error", { message: "Internal server error" });
-        }
-      }
-    );
-
-    // Endgame target guesses (Mir Jafar or Jagat Seth guesses)
-    socket.on(
-      "endgame:guess",
-      async (data: {
-        roomId: string;
-        userId: string;
-        targetUserId: string;
-        guessType: "team" | "role";
-      }) => {
-        try {
-          if (!data || !data.roomId || !data.userId || !data.targetUserId || !data.guessType) {
-            socket.emit("error", { message: "Invalid endgame guess payload" });
-            return;
-          }
-          const userId = socket.data.userId ?? data.userId;
-          await handleEndgameGuess(data.roomId, userId, data.targetUserId, data.guessType, io);
-        } catch (error) {
-          console.error("Error in endgame:guess handler:", error);
-          socket.emit("error", { message: "Internal server error" });
-        }
-      }
-    );
-
-    // Special Lock Powers: De Bussy
-    socket.on(
-      "debussy:lockOn",
-      async (data: { roomId: string; userId: string; targetUserId: string }) => {
-        try {
-          if (!data || !data.roomId || !data.userId || !data.targetUserId) {
-            socket.emit("error", { message: "Invalid debussy lock payload" });
-            return;
-          }
-          const userId = socket.data.userId ?? data.userId;
-          await handleDebussyLockOn(data.roomId, userId, data.targetUserId, io);
-        } catch (error) {
-          console.error("Error in debussy:lockOn handler:", error);
-          socket.emit("error", { message: "Internal server error" });
-        }
-      }
-    );
-
-    // Special Lock Powers: Jean Law
-    socket.on(
-      "jeanlaw:lock",
-      async (data: { roomId: string; userId: string; targetUserId: string }) => {
-        try {
-          if (!data || !data.roomId || !data.userId || !data.targetUserId) {
-            socket.emit("error", { message: "Invalid jean law lock payload" });
-            return;
-          }
-          const userId = socket.data.userId ?? data.userId;
-          await handleJeanLawLock(data.roomId, userId, data.targetUserId, io);
-        } catch (error) {
-          console.error("Error in jeanlaw:lock handler:", error);
-          socket.emit("error", { message: "Internal server error" });
-        }
-      }
-    );
+    handle("game:sync", roomRefPayload, "action", (user, { roomId }) => deps.games.sync(roomId, user.id));
 
     socket.on("disconnect", () => {
-      const roomId = socket.data.roomId;
-      const userId = socket.data.userId;
-      if (roomId && userId) {
-        io.to(roomId).emit("player:status", { userId, online: false });
+      const roomId = stateOf(socket).roomId;
+      const user = socketUser(socket);
+      if (roomId && user) {
+        io.to(roomId).emit("player:status", { userId: user.id, online: false });
+      }
+      if (roomId) {
+        deps.cleanup.roomMaybeEmpty(roomId).catch((error: unknown) => {
+          deps.logError?.(error, `Lobby cleanup check for ${roomId} failed`);
+        });
       }
     });
   });
