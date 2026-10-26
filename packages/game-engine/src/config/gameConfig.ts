@@ -1,4 +1,4 @@
-import type { GameSettings, NamedRoleId, Phase } from "../types.js";
+import type { Card, GameSettings, NamedRoleId, Phase, RoleId, Team } from "../types.js";
 
 // Every tunable game rule lives here. Values marked [DEFAULT] are guesses
 // from plan §1/§4 and are expected to change after playtests.
@@ -79,6 +79,29 @@ export const TIMEOUT_DEFAULTS = {
  * dependencies don't fit), the Gold slot becomes a Green Loyalist.
  */
 export const GOLD_SLOT_FALLBACK_TEAM = "GREEN" as const;
+
+/**
+ * Ballot vote weights (§1). They apply only to the Approve/Reject ballot on
+ * the nominated ministers, never to mission cards. Every other role weighs 1.
+ */
+export const BALLOT_WEIGHTS: Readonly<Partial<Record<RoleId, number>>> = {
+  SAINT_FRASY: 2,
+  YAR_LUTUF: 2,
+};
+
+export function ballotWeight(role: RoleId): number {
+  return BALLOT_WEIGHTS[role] ?? 1;
+}
+
+/**
+ * Cards each team may play on a mission (§4.4). Greens can only play Success.
+ * [DEFAULT] Jagat Seth (Gold) may play either.
+ */
+export const ALLOWED_CARDS: Readonly<Record<Team, readonly Card[]>> = {
+  GREEN: ["SUCCESS"],
+  RED: ["SUCCESS", "SABOTAGE"],
+  GOLD: ["SUCCESS", "SABOTAGE"],
+};
 
 /** [DEFAULT] Mir Madan sees the Reds only during Round 1's Discussion (§4.2). */
 export const MIR_MADAN_VISION: { round: number; phases: readonly Phase[] } = {
