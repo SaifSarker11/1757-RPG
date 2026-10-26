@@ -1,8 +1,15 @@
 import { ballotWeight, getTeamSize } from "../config/gameConfig.js";
 import { allowedCardsFor } from "../phases/mission.js";
 import { lastBallotResultsCard } from "../phases/resultsCard.js";
-import type { GameState, PlayerState } from "../types.js";
-import type { PendingActions, PlayerView, PublicView } from "./types.js";
+import { playerResults } from "../scoring.js";
+import type { EndgameStep, GameState, GuessRecord, PlayerState, RoleId } from "../types.js";
+import type {
+  PendingActions,
+  PlayerView,
+  PublicEndgame,
+  PublicGuess,
+  PublicView,
+} from "./types.js";
 import { computeReveals, computeVision } from "./visionRules.js";
 
 /** The part of the game every player may see. Roles appear only in POST_GAME. */
@@ -25,8 +32,36 @@ export function publicView(state: GameState): PublicView {
     nominations: structuredClone(state.nominations),
     lastBallot: lastBallotResultsCard(state),
     roundResults: structuredClone(state.roundResults),
-    outcome: state.outcome ? { ...state.outcome } : null,
+    endgame: publicEndgame(state),
+    outcome: state.outcome ? structuredClone(state.outcome) : null,
+    results: revealRoles && state.outcome ? playerResults(state) : null,
   };
+}
+
+function publicGuess(guess: GuessRecord | null): PublicGuess | null {
+  return guess ? { targetId: guess.targetId, correct: guess.correct } : null;
+}
+
+function publicEndgame(state: GameState): PublicEndgame | null {
+  const endgame = state.endgame;
+  if (!endgame) return null;
+  return {
+    step: endgame.step,
+    roundWinner: endgame.roundWinner,
+    provisionalWinner: endgame.provisionalWinner,
+    mirJafarGuess: publicGuess(endgame.mirJafarGuess),
+    jagatSethGuess: publicGuess(endgame.jagatSethGuess),
+  };
+}
+
+const GUESSER_ROLE: Readonly<Record<EndgameStep, RoleId>> = {
+  MIR_JAFAR_GUESS: "MIR_JAFAR",
+  JAGAT_SETH_GUESS: "JAGAT_SETH",
+};
+
+function pendingGuess(state: GameState, me: PlayerState): EndgameStep | null {
+  const step = state.phase === "ENDGAME" ? state.endgame?.step : null;
+  return step && GUESSER_ROLE[step] === me.role ? step : null;
 }
 
 function pendingActions(state: GameState, me: PlayerState): PendingActions {
@@ -45,6 +80,7 @@ function pendingActions(state: GameState, me: PlayerState): PendingActions {
     allowedCards: playCard ? [...allowedCardsFor(me)] : [],
     deBussyReveal: inDiscussion && me.role === "DE_BUSSY" && state.abilities.deBussy === null,
     jeanLawLock: inDiscussion && me.role === "JEAN_LAW" && state.abilities.jeanLaw === null,
+    guess: pendingGuess(state, me),
   };
 }
 

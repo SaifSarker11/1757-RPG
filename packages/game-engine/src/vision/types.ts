@@ -1,6 +1,9 @@
 import type { BallotResultsCard } from "../phases/resultsCard.js";
+import type { PlayerResult } from "../scoring.js";
 import type {
   Card,
+  EndgameStep,
+  RoundWinner,
   GameOutcome,
   NominationRecord,
   Phase,
@@ -61,7 +64,27 @@ export interface PublicView {
   /** Results card for the most recent nomination attempt. */
   lastBallot: BallotResultsCard | null;
   roundResults: RoundResult[];
+  endgame: PublicEndgame | null;
   outcome: GameOutcome | null;
+  /** Per-player win credit; only in POST_GAME. */
+  results: PlayerResult[] | null;
+}
+
+export interface PublicGuess {
+  targetId: string | null;
+  correct: boolean;
+}
+
+/**
+ * Endgame progress without the guessers' ids: Jagat Seth may have to find
+ * Mir Jafar, so who guessed first must stay hidden until POST_GAME.
+ */
+export interface PublicEndgame {
+  step: EndgameStep | null;
+  roundWinner: RoundWinner;
+  provisionalWinner: RoundWinner;
+  mirJafarGuess: PublicGuess | null;
+  jagatSethGuess: PublicGuess | null;
 }
 
 export interface PendingActions {
@@ -72,6 +95,8 @@ export interface PendingActions {
   allowedCards: Card[];
   deBussyReveal: boolean;
   jeanLawLock: boolean;
+  /** The endgame guess this player must make now, if any. */
+  guess: EndgameStep | null;
 }
 
 export interface PlayerView {
