@@ -19,3 +19,11 @@ export * from "./vision/types.js";
 export { viewFor, publicView } from "./vision/viewFor.js";
 export { computeVision, computeReveals, isMirMadanVisionActive } from "./vision/visionRules.js";
 export { isJeanLawFlipped } from "./abilities/jeanLaw.js";
+export {
+  playerResults,
+  matchSummary,
+  type PlayerResult,
+  type MatchSummary,
+  type SummaryNomination,
+  type SummaryBallotVote,
+} from "./scoring.js";
