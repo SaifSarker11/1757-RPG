@@ -22,6 +22,7 @@ import {
   type SnapshotStore,
 } from "./realtime/snapshotStore.js";
 import { createSocketTransport } from "./realtime/transport.js";
+import { createDisconnectTracker } from "./realtime/disconnectTracker.js";
 
 const app = Fastify({ logger: true });
 
@@ -99,11 +100,18 @@ async function createSnapshotStore(): Promise<SnapshotStore> {
 }
 
 const scheduler = createTimerScheduler();
+
 const games = new GameService({
   store: await createSnapshotStore(),
   scheduler,
   repo: prismaRoomRepository,
   transport: createSocketTransport(io),
+  disconnects: createDisconnectTracker({
+    scheduler,
+    onGraceExpired: (roomId, userId) => {
+      void games.autoAct(roomId, userId);
+    },
+  }),
   logError,
 });
 
