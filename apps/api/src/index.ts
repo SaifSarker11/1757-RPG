@@ -172,3 +172,22 @@ try {
   app.log.error(err);
   process.exit(1);
 }
+
+// ---------------------------------------------------------------------------
+// Graceful shutdown — close sockets, then HTTP, then DB
+// ---------------------------------------------------------------------------
+async function shutdown(signal: string) {
+  app.log.info(`Received ${signal}, shutting down gracefully…`);
+
+  // Stop accepting new socket connections; disconnect existing ones
+  io.close();
+
+  // Close the Fastify HTTP server (finishes in-flight requests)
+  await app.close();
+
+  app.log.info("Shutdown complete");
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));
