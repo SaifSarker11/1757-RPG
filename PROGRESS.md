@@ -1,5 +1,16 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m10-admin-telemetry` (stacked on `feat/m9-web-game-ui`)
+- **Changed:** Administrative reporting, match audit logs, and game balance telemetry. All endpoints enforce authentication via BetterAuth sessions (`requireUser`) with CORS authorization for the admin origin.
+- **Admin API Endpoints:** Added `GET /api/admin/overview` (aggregate telemetry covering registered vs guest users, active rooms, match counts, faction win rate balances, and average match size), `GET /api/admin/matches` (paginated match logs with final score tracking), `GET /api/admin/users` (user directory with account lookup), `GET /api/admin/rooms/active` (live lobbies and running games), and `PATCH /api/admin/users/:userId` (moderation endpoint for renaming users).
+- **Admin Dashboard UI:** Rebuilt `apps/admin/app/home/page.tsx` into a tabbed console:
+  - `TelemetryGrid`: Visual cards showing user totals, live matches, and faction win rate balances.
+  - `MatchesTable`: Completed match logs, room codes, participant counts, and win causes.
+  - `UsersTable`: User account management with moderation renaming hooks.
+- **Docs:** Full documentation in `docs/admin-telemetry.md`.
+- **Tests:** Unit tests verifying authentication guards, telemetry aggregation arithmetic, and user moderation.
+- **Next:** M11 deployment, production readiness & environment hardening.
+
 ## 2026-10-26 — `feat/m9-web-game-ui` (stacked on `feat/m8-users-profiles`)
 - **Changed:** Full modernization of the web client game interface in `apps/web/app/room/[id]/page.tsx` to align with the authoritative M6/M7 realtime engine protocol. The client now renders exclusively from the server-dispatched `game:view` (`PlayerView`), eliminating legacy split-state bugs and unauthenticated socket payloads.
 - **Protocol & Sockets:** Migrated client emissions to `game:start`, `game:sync` and `game:action` (`NOMINATE`, `CAST_VOTE`, `PLAY_CARD`, `DEBUSSY_REVEAL`, `JEANLAW_LOCK`, `GUESS`) with acknowledgment validation, session cookie authentication (`withCredentials: true`), and toast alerts for `game:error`.
