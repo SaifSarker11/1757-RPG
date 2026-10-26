@@ -1,5 +1,14 @@
 # PROGRESS
 
+## 2026-10-26 — `feat/m5-rooms-lobby` (stacked on `feat/m4-endgame-persistence`)
+- **Changed:** every room write now takes the caller from the BetterAuth session (`requireUser` in `apps/api/src/lib/session.ts`; M8 can extend it), and body user ids are ignored. Room codes are 6 characters from A–Z0–9, and the code lookup matches the exact code only. New: host settings (max players, discussion time, role toggles, public/private) with live `room:settings`; a public lobby list and Quick Join pushed as `lobby:list`; host kick with a lobby ban; host migration to the longest-present player; `inviteUrl`, `code` and `playerCount` in room responses. The old REST start route was removed (start belongs to M6), and leaving mid-game is refused (disconnects are M7). Docs: `docs/rooms-api.md`.
+- **Fixes vs the old code:** a spoofable `userId` on every route; hex-only codes; the id-prefix room lookup; the room response leaking each player's team; `rolesInPlay` listed in player order, which mapped roles to players; the web client listening for a `room:update` that was never sent.
+- **DB (additive):** `Room.isPublic`, `discussionSeconds`, `enabledRoles`, `bannedUserIds`.
+- **Web:** room create/join/leave fetches now send `credentials: "include"`. Nothing else in the web app changed.
+- **Tests:** API 68 passing (`pnpm --filter api test`, no DB needed). New dependency: `zod` 4.4.3 (named in plan §5).
+- **Action needed:** `pnpm db:push` on a dev/branch DB (not run here).
+- **Next:** M6 realtime layer.
+
 ## 2026-10-26 — `feat/m4-endgame-persistence` (stacked on `feat/m3-voting-missions`)
 - **Engine:** ENDGAME now runs Mir Jafar's guess (Green round win) and then Jagat Seth's (target set by W), each with a 60 s timeout. `outcome` records the reason and both guesses. `playerResults` gives win credit, including Jean Law's flipped Green target and the humiliation flag. `matchSummary` is a server-only report. Views show `pending.guess`, the endgame progress (guesser ids hidden until POST_GAME) and the per-player results in POST_GAME.
 - **DB (additive only):** `Match`, `MatchPlayer`, `MatchRound`, `BallotVote`; enums `MatchEndReason`, `RoundEndReason`, `BallotChoice`; `PlayerRole` + `LOYALIST`, `EIC_SPY`; `User.username?` (unique), `avatarId?`, `xp`, `level`. The plan's `Round` is named `MatchRound` to avoid confusion with the existing `RoundRecord`.
