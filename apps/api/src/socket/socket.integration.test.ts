@@ -203,3 +203,56 @@ describe("game over sockets", () => {
     expect(views.get("u5")).toHaveLength(1);
   });
 });
+
+describe("M7 reconnect & disconnect", () => {
+  it("emits player:status false when a player disconnects", async () => {
+    const { sockets } = await seatEveryone();
+    const statusEvents: unknown[] = [];
+    sockets[1]?.on("player:status", (e) => statusEvents.push(e));
+
+    // u1 disconnects.
+    sockets[0]?.disconnect();
+    await until(() => statusEvents.some((e) => (e as { online: boolean }).online === false));
+    expect(statusEvents).toContainEqual({ userId: "u1", online: false });
+  });
+
+  it("emits player:status true when a player reconnects (room:join)", async () => {
+    const { sockets } = await seatEveryone();
+    const statusEvents: unknown[] = [];
+    sockets[1]?.on("player:status", (e) => statusEvents.push(e));
+
+    sockets[0]?.disconnect();
+    await until(() => statusEvents.some((e) => (e as { online: boolean }).online === false));
+
+    // u1 reconnects with a fresh socket.
+    const reconnected = await client("u1");
+    clients.push(reconnected);
+    await send(reconnected, "room:join", { roomId: "room-1" });
+
+    await until(() => statusEvents.some((e) => (e as { online: boolean }).online === true));
+    expect(statusEvents).toContainEqual({ userId: "u1", online: true });
+  });
+
+  it("game:sync on reconnect re-sends the player's view", async () => {
+    const { sockets, views } = await seatEveryone();
+    await send(sockets[0] as ClientSocket, "game:start", { roomId: "room-1" });
+    await until(() => (views.get("u2")?.length ?? 0) >= 1);
+
+    const before = views.get("u2")?.length ?? 0;
+
+    // u2 disconnects and reconnects.
+    sockets[1]?.disconnect();
+    const reconnected = await client("u2");
+    clients.push(reconnected);
+    const newViews: unknown[] = [];
+    reconnected.on("game:view", (v) => newViews.push(v));
+
+    await send(reconnected, "room:join", { roomId: "room-1" });
+    await until(() => newViews.length > 0);
+
+    // View was re-delivered to the reconnected socket.
+    expect(newViews.length).toBeGreaterThanOrEqual(1);
+    // Other players' view counts did not change.
+    expect(views.get("u2")?.length).toBe(before); // old socket got nothing extra
+  });
+});
