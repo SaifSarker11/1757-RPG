@@ -67,9 +67,21 @@ Every tunable value lives in `src/config/gameConfig.ts`.
 - `BALLOT_RESOLVED` and the results card (`ballotResultsCard`, `publicView().lastBallot`) carry every vote in seat order plus the **raw headcount**. Weighted totals never leave the engine.
 - **Cards** (`ALLOWED_CARDS`): Greens can only play Success (`CARD_NOT_ALLOWED` otherwise); Red, Gold and fillers may play either. `viewFor().pending.allowedCards` lists what the player may play.
 
+## Endgame and win credit (§4.6)
+
+When a faction reaches 3 round wins, the match enters ENDGAME:
+
+1. **Green won on rounds and Mir Jafar is in:** `MIR_JAFAR_GUESS`. Picking Mir Madan makes the provisional winner W Red.
+2. **Jagat Seth is in:** `JAGAT_SETH_GUESS`. He must find Rai Durlabh if W is Red, or Mir Jafar if W is Green. Correct → Gold is the sole winner.
+3. POST_GAME with `outcome { winner, reason, roundWinner, mirJafarGuess, jagatSethGuess }`.
+
+- `GUESS { playerId, targetId }`; each guess has its own 60 s, and a timeout fails it. `viewFor().pending.guess` names the guess the player owes.
+- The public endgame view hides who guessed until POST_GAME, because Jagat Seth may be hunting Mir Jafar.
+- `playerResults(state)`: the winning faction wins and Jagat Seth loses (Gold win: only Jagat Seth). Jean Law's locked Green target wins only if Red won, and has `jeanLawLocked: true`.
+- `matchSummary(state)`: a **server-only** report for saving and the post-game screen. It includes ballot weights, so never send it to clients as is.
+
 ## Not here yet
 
-- Mir Jafar / Jagat Seth guesses and win credit (endgame module). For now the round winner is final.
 - Disconnect defaults (reconnection module)
 
 ## Scripts
