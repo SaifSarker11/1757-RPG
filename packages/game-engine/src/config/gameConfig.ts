@@ -103,6 +103,18 @@ export const ALLOWED_CARDS: Readonly<Record<Team, readonly Card[]>> = {
   GOLD: ["SUCCESS", "SABOTAGE"],
 };
 
+/** Mir Jafar's endgame guess must find this role (§4.6). */
+export const MIR_JAFAR_TARGET: RoleId = "MIR_MADAN";
+
+/**
+ * Jagat Seth's target depends on the provisional winner after Mir Jafar's
+ * guess (§4.6) [DEFAULT].
+ */
+export const JAGAT_SETH_TARGET: Readonly<Record<"GREEN" | "RED", RoleId>> = {
+  RED: "RAI_DURLABH",
+  GREEN: "MIR_JAFAR",
+};
+
 /** [DEFAULT] Mir Madan sees the Reds only during Round 1's Discussion (§4.2). */
 export const MIR_MADAN_VISION: { round: number; phases: readonly Phase[] } = {
   round: 1,
