@@ -21,6 +21,14 @@ export default function HomePage() {
 
   const [currentTheme, setCurrentTheme] = useState("retro");
   const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [userStats, setUserStats] = useState<{
+    xp: number;
+    level: number;
+    matchesPlayed: number;
+    matchesWon: number;
+    winRate: number;
+  } | null>(null);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [joinCode, setJoinCode] = useState("");
   const [maxPlayers, setMaxPlayers] = useState(10);
@@ -38,6 +46,22 @@ export default function HomePage() {
   useEffect(() => {
     if (session?.user) {
       setDisplayName(session.user.name);
+      // Fetch extended profile & stats
+      fetch(`${API_URL}/api/users/me`, { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (json?.data) {
+            if (json.data.username) setUsername(json.data.username);
+          }
+        })
+        .catch(() => {});
+
+      fetch(`${API_URL}/api/users/me/stats`, { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (json?.data) setUserStats(json.data);
+        })
+        .catch(() => {});
     }
   }, [session]);
 
@@ -74,17 +98,19 @@ export default function HomePage() {
     setProfileMessage(null);
     setActionLoading(true);
     try {
-      const res = await fetch(`${API_URL}/users/update-profile`, {
-        method: "POST",
+      const res = await fetch(`${API_URL}/api/users/me`, {
+        method: "PATCH",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: session.user.id,
           name: displayName.trim(),
+          ...(username.trim() ? { username: username.trim() } : {}),
         }),
       });
 
       if (!res.ok) {
-        throw new Error("Failed to update profile");
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error ?? "Failed to update profile");
       }
 
       await authClient.getSession({ fetchOptions: { cache: "no-store" } });
@@ -310,15 +336,36 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Profile Settings (5 Columns) */}
-        <div className="lg:col-span-5 flex flex-col">
+        {/* RIGHT COLUMN: Profile Settings & Stats (5 Columns) */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col justify-between pixel-card">
             <div>
               <h3 className="text-xl font-historical font-bold text-primary border-b-4 border-double pb-2 mb-4 uppercase">Profile Settings</h3>
               <p className="text-xs text-base-content/70 mb-4 font-sans">
-                Update your display name here. Anonymous guest profiles are supported, but setting a unique name makes it easier for other conspirators to identify you.
+                Customize your identity. You can change your display name and set a unique conspirator handle.
               </p>
             </div>
+
+            {userStats && (
+              <div className="grid grid-cols-2 gap-2 p-3 bg-base-200 border-2 border-base-300 font-pixel text-xs mb-4">
+                <div>
+                  <span className="text-base-content/60 block">LEVEL</span>
+                  <span className="text-base font-bold text-primary">{userStats.level}</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">TOTAL XP</span>
+                  <span className="text-base font-bold">{userStats.xp}</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">MATCHES</span>
+                  <span className="font-bold">{userStats.matchesPlayed} ({userStats.matchesWon}W)</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">WIN RATE</span>
+                  <span className="font-bold text-accent">{userStats.winRate}%</span>
+                </div>
+              </div>
+            )}
 
             {profileMessage && (
               <div className="alert alert-info text-xs font-pixel py-2 rounded-none border-2 border-info mb-4">
@@ -338,12 +385,23 @@ export default function HomePage() {
                 />
               </div>
 
+              <div className="form-control">
+                <span className="label-text font-pixel font-bold mb-1">Handle / Username</span>
+                <input
+                  type="text"
+                  placeholder="e.g. siraj1757"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={actionLoading || !displayName.trim()}
                 className="btn btn-primary w-full rounded-none font-pixel border-2 pixel-btn"
               >
-                {actionLoading ? "SAVING..." : "UPDATE NAME"}
+                {actionLoading ? "SAVING..." : "SAVE PROFILE"}
               </button>
             </form>
           </div>
