@@ -119,6 +119,13 @@ model Room {
   host        User         @relation(fields: [hostUserId], references: [id])
   status      RoomStatus   @default(WAITING)
   maxPlayers  Int          @default(15)
+  /// Listed in the public lobby and eligible for Quick Join.
+  isPublic    Boolean      @default(true)
+  discussionSeconds Int    @default(120)
+  /// Named roles the host allows. Nawab Siraj is always added by the engine.
+  enabledRoles PlayerRole[] @default([NAWAB_SIRAJ, LUTFUNNESA, MIR_MADAN, MOHON_LAL, SAINT_FRASY, DE_BUSSY, RAJA_RAMNARAIN, MIR_JAFAR, UMICHAD, JEAN_LAW, GHASHETI_BEGUM, YAR_LUTUF, TARA_BAI, RAI_DURLABH, JAGAT_SETH])
+  /// Users the host kicked; they can't rejoin this room.
+  bannedUserIds String[]   @default([])
   currentRound Int         @default(1)
   greenWins   Int          @default(0)
   redWins     Int          @default(0)
