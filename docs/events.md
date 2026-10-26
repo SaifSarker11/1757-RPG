@@ -75,6 +75,33 @@ Engine (see `@repo/game-engine` `ErrorCode`): `WRONG_PHASE`, `NOT_LEADER`, `INVA
 - At POST_GAME the match is written to Postgres once (`Match` …), the room becomes `FINISHED`, and the live state is dropped 30 min later.
 - A lobby with no connected sockets is deleted after 10 min (cancelled if someone rejoins).
 
+## Reconnect & disconnect (M7)
+
+### Client reconnect flow
+
+When a player's network drops and they reconnect:
+
+1. Re-connect the socket (Socket.IO auto-reconnects by default).
+2. Emit `room:join` with `{ roomId }`. The server cancels the grace-period timer and immediately re-sends `game:view` for that player.
+3. Alternatively, emit `game:sync` — the server re-sends the view and also cancels the grace timer.
+
+### Server grace-period auto-action
+
+If a player is disconnected when they have a **mandatory** pending action, the server waits **30 seconds** and then acts on their behalf:
+
+| Pending action | Auto-action |
+|---|---|
+| `vote` (BALLOT phase) | `CAST_VOTE { vote: "REJECT" }` |
+| `playCard` (RESOLUTION phase) | `PLAY_CARD { card: allowedCards[0] }` (Greens → SUCCESS only) |
+| `nominate` (SELECTION phase) | No auto-action — the phase timer handles nomination timeout |
+| `guess` (ENDGAME phase) | No auto-action — the phase timer handles guess timeout |
+
+The 30-second window is intentionally shorter than any phase timer so a player's inaction doesn't stall the game indefinitely.
+
+### Presence events
+
+`player:status` `{ userId, online: boolean }` is emitted to the room channel on every connect/disconnect. Clients should use this to show an offline indicator, **not** to gate game actions (the server enforces that).
+
 ## Removed
 
 The old `round:proposeTeam`, `round:approvalVote`, `round:missionVote`, `endgame:guess`, `debussy:lockOn`, `jeanlaw:lock`, `user:identify` and the server events `role:assigned`, `round:*`, `guess:*`, `debussy:reveal`, `jeanlaw:lockConfirmed`, `game:end`. Everything they carried is in `game:view` / `game:event`.
