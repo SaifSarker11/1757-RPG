@@ -260,16 +260,4 @@ export async function registerRoomRoutes(app: FastifyInstance, deps: RoomRouteDe
       return reply.send({ data: { userId: user.id, token: id }, success: true });
     });
   }
-
-  app.post("/users/update-profile", async (request, reply) => {
-    const { userId, name } = request.body as { userId: string; name: string };
-    if (!userId || !name) {
-      return reply.status(400).send({ error: "userId and name required", success: false });
-    }
-    await db.user.update({
-      where: { id: userId },
-      data: { name },
-    });
-    return { success: true };
-  });
 }
