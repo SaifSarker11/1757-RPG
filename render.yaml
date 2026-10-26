@@ -1,0 +1,36 @@
+# =============================================================================
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Declares the API web service and its environment for one-click deploys.
+# =============================================================================
+
+services:
+  - type: web
+    name: 1757-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    region: singapore
+    plan: starter
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: DATABASE_URL
+        sync: false                # Set manually in Render dashboard
+      - key: DIRECT_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        generateValue: true        # Render auto-generates a random secret
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: WEB_URL
+        sync: false
+      - key: ADMIN_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: COOKIE_DOMAIN
+        sync: false
