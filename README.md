@@ -1,159 +1,136 @@
-# Turborepo starter
+# 1757-RPG
 
-This Turborepo starter is maintained by the Turborepo core team.
+A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as a monorepo with Turborepo.
 
-## Using this example
+## Architecture
 
-Run the following command:
+| App / Package | Stack | Purpose |
+|---|---|---|
+| `apps/api` | Fastify + Socket.io + Prisma | Game server, REST API, real-time engine |
+| `apps/web` | Next.js 16 | Player-facing web client |
+| `apps/admin` | Next.js 16 | Administrative dashboard & telemetry |
+| `apps/mobile` | Expo (React Native) | Mobile client |
+| `packages/game-engine` | Pure TypeScript | Deterministic FSM, role assignment, views |
+| `packages/db` | Prisma | Schema, migrations, generated client |
+| `packages/auth` | BetterAuth | Auth config shared across apps |
+| `packages/config` | dotenv | Centralised env loader |
 
-```sh
-npx create-turbo@latest
+## Prerequisites
+
+- **Node.js** ≥ 18
+- **pnpm** 9 (`corepack enable && corepack prepare pnpm@9.0.0 --activate`)
+- **Docker** (optional, for containerised local dev)
+
+## Quick Start (local)
+
+```bash
+# 1. Clone and install
+git clone https://github.com/SaifSarker11/1757-RPG.git
+cd 1757-RPG
+pnpm install
+
+# 2. Configure environment
+cp .env.example .env
+# → Edit .env with your Neon Postgres URLs and a BetterAuth secret
+
+# 3. Generate Prisma client and push schema
+pnpm db:generate
+pnpm db:push
+
+# 4. Start all apps in development mode
+pnpm dev
 ```
 
-## What's inside?
+| Service | URL |
+|---|---|
+| API | http://localhost:3001 |
+| Web | http://localhost:3000 |
+| Admin | http://localhost:3002 |
 
-This Turborepo includes the following packages/apps:
+## Quick Start (Docker)
 
-### Apps and Packages
+```bash
+# Copy the Docker-specific env template
+cp .env.docker .env
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+# Start Postgres + Redis + API
+docker compose up -d
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+# Run the web/admin apps on the host
+pnpm dev --filter=web --filter=admin
 ```
 
-Without global `turbo`, use your package manager:
+The API health endpoint is available at `http://localhost:3001/health`.
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm dlx turbo build
-pnpm exec turbo build
-```
+## Environment Variables
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+All apps load variables from a single root `.env` file (see [`.env.example`](.env.example) for the full list).
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ | Pooled Postgres connection (Neon `*-pooler.*`) |
+| `DIRECT_URL` | ✅ | Direct Postgres connection (Prisma CLI) |
+| `BETTER_AUTH_SECRET` | ✅ | Session signing secret |
+| `BETTER_AUTH_URL` | ✅ | API base URL for auth callbacks |
+| `WEB_URL` | ✅ | Web client origin (CORS) |
+| `ADMIN_URL` | ✅ | Admin console origin (CORS) |
+| `REDIS_URL` | — | Redis for game snapshots (falls back to memory) |
+| `PORT` | — | API listen port (default `3001`) |
+| `COOKIE_DOMAIN` | — | Cross-subdomain cookie scope |
 
-```sh
-turbo build --filter=docs
-```
+## Scripts
 
-Without global `turbo`:
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start all apps in development mode |
+| `pnpm build` | Build all apps and packages |
+| `pnpm test` | Run all workspace tests (Vitest) |
+| `pnpm typecheck` | Type-check all packages |
+| `pnpm lint` | Lint all packages |
+| `pnpm db:generate` | Regenerate Prisma client |
+| `pnpm db:push` | Push schema changes to the database |
+| `pnpm docker:up` | Start Docker Compose stack |
+| `pnpm docker:down` | Stop Docker Compose stack |
+| `pnpm dev:kill` | Kill processes on dev ports |
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+## Deployment
 
-### Develop
+### Render (API)
 
-To develop all apps and packages, run the following command:
+The API deploys to [Render](https://render.com) as a Docker web service.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+1. Connect the repo on the Render dashboard.
+2. Render auto-detects `render.yaml` and creates the service.
+3. Set `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL`, `WEB_URL`, `ADMIN_URL`, and `BETTER_AUTH_URL` in the Render environment.
+4. Pushes to `main` trigger automatic deploys via CI.
 
-```sh
-cd my-turborepo
-turbo dev
-```
+> **Cold-start note:** On the Render free/starter plan, the API service spins down after inactivity. The first request after a cold start may take 15-30 seconds. The web client shows a "Waking server…" indicator during this time.
 
-Without global `turbo`, use your package manager:
+### Vercel (Web & Admin)
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
+The Next.js apps deploy to [Vercel](https://vercel.com). The CI workflow triggers `vercel --prod` on pushes to `main`. Set `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` as GitHub Actions secrets.
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## CI/CD
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every push to `main` and every PR:
 
-```sh
-turbo dev --filter=web
-```
+1. **Install** → `pnpm install --frozen-lockfile`
+2. **Generate** → `pnpm db:generate`
+3. **Type-check** → `pnpm typecheck`
+4. **Test** → `pnpm test`
+5. **Build** → `pnpm build`
+6. **Deploy API** → Render webhook (main only)
+7. **Deploy Web** → Vercel CLI (main only)
 
-Without global `turbo`:
+## Documentation
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+- [`docs/events.md`](docs/events.md) — Socket.io event protocol
+- [`docs/rooms-api.md`](docs/rooms-api.md) — Room REST endpoints
+- [`docs/users-api.md`](docs/users-api.md) — User profile & stats API
+- [`docs/admin-telemetry.md`](docs/admin-telemetry.md) — Admin dashboard & telemetry
+- [`docs/web-game-ui.md`](docs/web-game-ui.md) — Web game interface
+- [`docs/deployment.md`](docs/deployment.md) — Deployment guide & hardening checklist
 
-### Remote Caching
+## License
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Private — all rights reserved.
