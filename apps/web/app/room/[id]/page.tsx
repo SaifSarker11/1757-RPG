@@ -13,6 +13,7 @@ import { RoleCard } from "@/components/RoleCard";
 import { RoundTracker } from "@/components/RoundTracker";
 import { ActionPanel } from "@/components/ActionPanel";
 import { PostGameSummary } from "@/components/PostGameSummary";
+import { NominationHistoryCard } from "@/components/NominationHistoryCard";
 
 interface PlayerInfo {
   userId: string;
@@ -880,7 +881,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               </div>
             ) : (
               <div className="flex-1 overflow-y-auto font-retro text-xs space-y-1.5 pr-1 leading-relaxed">
-                {voteLogs.length === 0 ? (
+                {playerView ? (
+                  <NominationHistoryCard
+                    nominations={playerView.game.nominations}
+                    playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
+                  />
+                ) : voteLogs.length === 0 ? (
                   <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-pixel">
                     <span className="text-[9px]">No historical decisions recorded.</span>
                   </div>
