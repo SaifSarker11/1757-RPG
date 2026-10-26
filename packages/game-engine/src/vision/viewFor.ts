@@ -1,4 +1,6 @@
-import { getTeamSize } from "../config/gameConfig.js";
+import { ballotWeight, getTeamSize } from "../config/gameConfig.js";
+import { allowedCardsFor } from "../phases/mission.js";
+import { lastBallotResultsCard } from "../phases/resultsCard.js";
 import type { GameState, PlayerState } from "../types.js";
 import type { PendingActions, PlayerView, PublicView } from "./types.js";
 import { computeReveals, computeVision } from "./visionRules.js";
@@ -21,6 +23,7 @@ export function publicView(state: GameState): PublicView {
     votedIds: state.players.filter((p) => state.votes[p.id] !== undefined).map((p) => p.id),
     playedIds: state.ministerIds.filter((id) => state.cards[id] !== undefined),
     nominations: structuredClone(state.nominations),
+    lastBallot: lastBallotResultsCard(state),
     roundResults: structuredClone(state.roundResults),
     outcome: state.outcome ? { ...state.outcome } : null,
   };
@@ -28,16 +31,18 @@ export function publicView(state: GameState): PublicView {
 
 function pendingActions(state: GameState, me: PlayerState): PendingActions {
   const inDiscussion = state.phase === "DISCUSSION";
+  const playCard =
+    state.phase === "RESOLUTION" &&
+    state.ministerIds.includes(me.id) &&
+    state.cards[me.id] === undefined;
   return {
     nominate:
       state.phase === "SELECTION" && me.seat === state.leaderSeat
         ? { teamSize: getTeamSize(state.players.length, state.round) }
         : null,
     vote: state.phase === "BALLOT" && state.votes[me.id] === undefined,
-    playCard:
-      state.phase === "RESOLUTION" &&
-      state.ministerIds.includes(me.id) &&
-      state.cards[me.id] === undefined,
+    playCard,
+    allowedCards: playCard ? [...allowedCardsFor(me)] : [],
     deBussyReveal: inDiscussion && me.role === "DE_BUSSY" && state.abilities.deBussy === null,
     jeanLawLock: inDiscussion && me.role === "JEAN_LAW" && state.abilities.jeanLaw === null,
   };
@@ -57,6 +62,7 @@ export function viewFor(state: GameState, playerId: string): PlayerView {
     reveals: computeReveals(state, me),
     jeanLawTargetId: me.role === "JEAN_LAW" ? (state.abilities.jeanLaw?.targetId ?? null) : null,
     myVote: state.votes[me.id] ?? null,
+    myVoteWeight: ballotWeight(me.role),
     myCard: state.cards[me.id] ?? null,
     pending: pendingActions(state, me),
     game: publicView(state),

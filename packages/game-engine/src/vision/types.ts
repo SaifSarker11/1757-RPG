@@ -1,3 +1,4 @@
+import type { BallotResultsCard } from "../phases/resultsCard.js";
 import type {
   Card,
   GameOutcome,
@@ -57,6 +58,8 @@ export interface PublicView {
   /** Which ministers have played a card, without the cards. */
   playedIds: string[];
   nominations: NominationRecord[];
+  /** Results card for the most recent nomination attempt. */
+  lastBallot: BallotResultsCard | null;
   roundResults: RoundResult[];
   outcome: GameOutcome | null;
 }
@@ -65,6 +68,8 @@ export interface PendingActions {
   nominate: { teamSize: number } | null;
   vote: boolean;
   playCard: boolean;
+  /** Cards this player may play right now; empty unless `playCard`. */
+  allowedCards: Card[];
   deBussyReveal: boolean;
   jeanLawLock: boolean;
 }
@@ -76,6 +81,8 @@ export interface PlayerView {
   /** Jean Law's own lock target; null for everyone else. */
   jeanLawTargetId: string | null;
   myVote: Vote | null;
+  /** This player's own ballot weight (2 for Saint Frais / Yar Lutuf). */
+  myVoteWeight: number;
   myCard: Card | null;
   pending: PendingActions;
   game: PublicView;
