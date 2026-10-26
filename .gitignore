@@ -49,3 +49,9 @@ apps/mobile/expo-env.d.ts
 
 /.puku-cli
 /.puku
+
+# Local planning & audit docs
+plan.md
+rules.md
+audit.md
+modules.md
