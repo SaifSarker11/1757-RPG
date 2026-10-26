@@ -139,8 +139,30 @@ registerSocketHandlers(io, {
 const restored = await games.restore();
 if (restored > 0) app.log.info(`Restored ${restored} live game(s) from snapshots`);
 
-app.get("/health", async () => {
-  return { status: "ok", timestamp: new Date().toISOString() };
+app.get("/health", async (request, reply) => {
+  let dbStatus = "ok";
+  try {
+    await db.$queryRaw`SELECT 1`;
+  } catch {
+    dbStatus = "error";
+  }
+
+  const isHealthy = dbStatus === "ok";
+  const status = isHealthy ? 200 : 503;
+
+  return reply.status(status).send({
+    status: isHealthy ? "ok" : "degraded",
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    services: {
+      database: dbStatus,
+      redis: process.env.REDIS_URL ? "configured" : "memory_fallback",
+    },
+    memory: {
+      rssMb: Math.round(process.memoryUsage().rss / (1024 * 1024)),
+      heapUsedMb: Math.round(process.memoryUsage().heapUsed / (1024 * 1024)),
+    },
+  });
 });
 
 try {
