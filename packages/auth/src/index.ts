@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { anonymous, bearer } from "better-auth/plugins";
 import { db } from "@repo/db";
+import { generateGuestName } from "./guestName.js";
 
 const trustedOrigins = [
   process.env.WEB_URL ?? "http://localhost:3000",
@@ -27,7 +28,7 @@ export const auth = betterAuth({
         },
       }
     : undefined,
-  plugins: [anonymous(), bearer()],
+  plugins: [anonymous({ generateName: generateGuestName }), bearer()],
 });
 
 export type Auth = typeof auth;
