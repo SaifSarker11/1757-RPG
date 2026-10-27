@@ -25,7 +25,8 @@ export async function registerAuthRoutes(app: FastifyInstance) {
     url: "/api/auth/*",
     async handler(request, reply) {
       try {
-        const url = new URL(request.url, `http://${request.headers.host}`);
+        const base = process.env.BETTER_AUTH_URL || `http://${request.headers.host}`;
+        const url = new URL(request.url, base);
         const headers = fromNodeHeaders(request.headers);
         const body = getRequestBody(request);
 

@@ -20,14 +20,21 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  advanced: process.env.COOKIE_DOMAIN
-    ? {
-        crossSubDomainCookies: {
-          enabled: true,
-          domain: process.env.COOKIE_DOMAIN,
-        },
-      }
-    : undefined,
+  advanced: {
+    ...(process.env.COOKIE_DOMAIN
+      ? {
+          crossSubDomainCookies: {
+            enabled: true,
+            domain: process.env.COOKIE_DOMAIN,
+          },
+        }
+      : {}),
+    defaultCookieAttributes: {
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+    },
+  },
   plugins: [anonymous({ generateName: generateGuestName }), bearer()],
 });
 
