@@ -259,3 +259,73 @@ describe("M7 reconnect & disconnect", () => {
     expect(views.get("u2")?.length).toBe(before); // old socket got nothing extra
   });
 });
+
+describe("voice chat signaling", () => {
+  type Participant = { socketId: string; userId: string; muted: boolean };
+  const latest = (s: ClientSocket) => {
+    const box: { list: Participant[] } = { list: [] };
+    s.on("voice:participants", (list: Participant[]) => (box.list = list));
+    return box;
+  };
+
+  it("needs the room channel first", async () => {
+    const a = await client("u1");
+    expect(await send(a, "voice:join", { roomId: "room-1" })).toMatchObject({ error: { code: "NOT_IN_ROOM" } });
+  });
+
+  it("gives the newcomer the existing peers and shows everyone who is in voice", async () => {
+    const { sockets } = await seatEveryone();
+    const [a, b, c] = sockets as [ClientSocket, ClientSocket, ClientSocket];
+    const watcher = latest(c);
+    const peersForB: Participant[][] = [];
+    b.on("voice:peers", (p: Participant[]) => peersForB.push(p));
+
+    expect(await send(a, "voice:join", { roomId: "room-1" })).toEqual({ ok: true });
+    expect(await send(b, "voice:join", { roomId: "room-1" })).toEqual({ ok: true });
+
+    await until(() => peersForB.length === 1 && watcher.list.length === 2);
+    expect(peersForB[0]).toEqual([{ socketId: a.id, userId: "u1", muted: false }]);
+
+    expect(await send(b, "voice:mute", { roomId: "room-1", muted: true })).toEqual({ ok: true });
+    await until(() => watcher.list.find((p) => p.userId === "u2")?.muted === true);
+
+    b.disconnect();
+    await until(() => watcher.list.length === 1);
+  });
+
+  it("relays signaling only between voice members", async () => {
+    const { sockets } = await seatEveryone();
+    const [a, b, c] = sockets as [ClientSocket, ClientSocket, ClientSocket];
+    const received: Array<{ from: string; data: unknown }> = [];
+    b.on("voice:signal", (msg: { from: string; data: unknown }) => received.push(msg));
+
+    await send(a, "voice:join", { roomId: "room-1" });
+    await send(b, "voice:join", { roomId: "room-1" });
+    const offer = { sdp: { type: "offer", sdp: "v=0" } };
+
+    expect(await send(a, "voice:signal", { roomId: "room-1", to: b.id, data: offer })).toEqual({ ok: true });
+    await until(() => received.length === 1);
+    expect(received[0]).toEqual({ from: a.id, data: offer });
+
+    // c isn't in voice: can't send, can't be targeted.
+    expect(await send(c, "voice:signal", { roomId: "room-1", to: b.id, data: offer })).toMatchObject({
+      error: { code: "NOT_IN_VOICE" },
+    });
+    expect(await send(a, "voice:signal", { roomId: "room-1", to: c.id, data: offer })).toMatchObject({
+      error: { code: "NOT_IN_VOICE" },
+    });
+    expect(
+      await send(a, "voice:signal", { roomId: "room-1", to: b.id, data: { sdp: { type: "bogus", sdp: "" } } })
+    ).toMatchObject({ error: { code: "INVALID_PAYLOAD" } });
+  });
+
+  it("leaving the room leaves voice", async () => {
+    const { sockets } = await seatEveryone();
+    const [a, , c] = sockets as [ClientSocket, ClientSocket, ClientSocket];
+    const watcher = latest(c);
+    await send(a, "voice:join", { roomId: "room-1" });
+    await until(() => watcher.list.length === 1);
+    await send(a, "room:leave", { roomId: "room-1" });
+    await until(() => watcher.list.length === 0);
+  });
+});

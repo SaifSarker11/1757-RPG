@@ -19,6 +19,24 @@ export type ClientAction = z.infer<typeof clientAction>;
 
 export const gameActionPayload = roomRefPayload.extend({ action: clientAction });
 
+export const voiceMutePayload = roomRefPayload.extend({ muted: z.boolean() });
+
+/** WebRTC signaling relayed to one peer: an SDP offer/answer or an ICE candidate. */
+export const voiceSignalPayload = roomRefPayload.extend({
+  to: z.string().min(1).max(64),
+  data: z.union([
+    z.object({ sdp: z.object({ type: z.enum(["offer", "answer"]), sdp: z.string().max(20_000) }) }),
+    z.object({
+      candidate: z.object({
+        candidate: z.string().max(2_000),
+        sdpMid: z.string().max(64).nullable().optional(),
+        sdpMLineIndex: z.number().int().min(0).max(64).nullable().optional(),
+        usernameFragment: z.string().max(256).nullable().optional(),
+      }),
+    }),
+  ]),
+});
+
 /** Attaches the session player to a validated client action. */
 export function toEngineAction(action: ClientAction, playerId: string): Action {
   return { ...action, playerId };
@@ -38,6 +56,8 @@ export type RealtimeErrorCode =
   | "SKIP_NOT_ALLOWED"
   | "NOTHING_TO_SKIP"
   | "NO_GAME"
+  | "VOICE_FULL"
+  | "NOT_IN_VOICE"
   | "INTERNAL";
 
 const MESSAGES: Partial<Record<RealtimeErrorCode, string>> = {
@@ -53,6 +73,8 @@ const MESSAGES: Partial<Record<RealtimeErrorCode, string>> = {
   SKIP_NOT_ALLOWED: "Skipping is only available in custom rooms",
   NOTHING_TO_SKIP: "There is no timer to skip right now",
   NO_GAME: "No game is running in this room",
+  VOICE_FULL: "The voice channel is full",
+  NOT_IN_VOICE: "Join the voice channel first",
   INTERNAL: "Something went wrong",
 };
 

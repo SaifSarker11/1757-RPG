@@ -31,6 +31,8 @@ export class TokenBucket {
 export const SOCKET_LIMITS = {
   chat: { capacity: 5, perMs: 5_000 },
   action: { capacity: 10, perMs: 1_000 },
+  /** Voice signaling: an offer/answer plus a burst of ICE candidates per peer. */
+  signal: { capacity: 60, perMs: 1_000 },
 } as const;
 
 /** HTTP limit per IP [DEFAULT]. */
@@ -43,6 +45,7 @@ export function createSocketLimiter(now: () => number = Date.now) {
   const buckets: Record<SocketLimitKind, TokenBucket> = {
     chat: new TokenBucket(SOCKET_LIMITS.chat.capacity, SOCKET_LIMITS.chat.perMs, now),
     action: new TokenBucket(SOCKET_LIMITS.action.capacity, SOCKET_LIMITS.action.perMs, now),
+    signal: new TokenBucket(SOCKET_LIMITS.signal.capacity, SOCKET_LIMITS.signal.perMs, now),
   };
   return (kind: SocketLimitKind) => buckets[kind].tryTake();
 }

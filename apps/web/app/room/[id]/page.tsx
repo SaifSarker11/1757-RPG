@@ -15,6 +15,8 @@ import { ActionPanel } from "@/components/ActionPanel";
 import { PostGameSummary } from "@/components/PostGameSummary";
 import { NominationHistoryCard } from "@/components/NominationHistoryCard";
 import { CustomRoomSettings } from "@/components/CustomRoomSettings";
+import { VoiceChatPanel } from "@/components/VoiceChatPanel";
+import { useVoiceChat } from "@/lib/useVoiceChat";
 
 interface PlayerInfo {
   userId: string;
@@ -87,6 +89,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
   const { data: session, isPending } = authClient.useSession();
   const socketRef = useRef<Socket | null>(null);
+  // Mirrors socketRef so hooks that subscribe to the socket re-run when it changes.
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   // Theme selector state
   const [currentTheme, setCurrentTheme] = useState("retro");
@@ -123,7 +127,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(false);
   const [phaseTransitionText, setPhaseTransitionText] = useState<string | null>(null);
   const [activeRolesOnly, setActiveRolesOnly] = useState<boolean>(true);
-  const [rightSidebarTab, setRightSidebarTab] = useState<"chat" | "chronicle">("chat");
+  const [rightSidebarTab, setRightSidebarTab] = useState<"chat" | "chronicle" | "voice">("chat");
 
   useEffect(() => {
     roundNumberRef.current = roundNumber;
@@ -234,6 +238,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     });
 
     socketRef.current = socket;
+    setSocket(socket);
 
     socket.emit("room:join", { roomId });
 
@@ -403,8 +408,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
     return () => {
       socket.disconnect();
+      setSocket(null);
     };
   }, [roomId, session]);
+
+  // Lives here, not in the tab, so switching tabs doesn't drop the call.
+  const voice = useVoiceChat(socket, roomId);
 
   // Discussion countdown timer
   useEffect(() => {
@@ -738,6 +747,24 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                         </span>
                       )}
 
+                      {/* Voice: mic badge, green while talking */}
+                      {(() => {
+                        const inVoice = voice.participants.filter((v) => v.userId === p.userId);
+                        if (inVoice.length === 0) return null;
+                        const talking = inVoice.some((v) => !v.muted && voice.isSpeaking(v.socketId));
+                        const allMuted = inVoice.every((v) => v.muted);
+                        return (
+                          <span
+                            title={allMuted ? "In voice (muted)" : "In voice"}
+                            className={`absolute -bottom-1 -left-1 text-[10px] leading-none px-0.5 border ${
+                              talking ? "bg-success border-success scale-125" : "bg-base-100 border-base-content/20"
+                            } transition-transform`}
+                          >
+                            {allMuted ? "🔇" : "🎙️"}
+                          </span>
+                        );
+                      })()}
+
                       {/* Connection marker */}
                       <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-base-100 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
                     </div>
@@ -876,10 +903,21 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               >
                 Chronicle
               </button>
+              <button
+                onClick={() => { gameAudio.playClick(); setRightSidebarTab("voice"); }}
+                className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "voice" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
+              >
+                Voice{voice.joined ? (voice.muted ? " 🔇" : " 🎙️") : voice.participants.length > 0 ? ` (${voice.participants.length})` : ""}
+              </button>
             </div>
 
             {/* Render Tab Contents */}
-            {rightSidebarTab === "chat" ? (
+            {rightSidebarTab === "voice" ? (
+              <VoiceChatPanel
+                voice={voice}
+                playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
+              />
+            ) : rightSidebarTab === "chat" ? (
               <div className="flex-1 flex flex-col justify-between overflow-hidden">
                 <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-2">
                   {messages.length === 0 ? (
