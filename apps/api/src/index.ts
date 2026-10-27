@@ -4,6 +4,7 @@ import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import { Server } from "socket.io";
+import { db } from "@repo/db";
 import { registerAuthRoutes } from "./auth-routes.js";
 import { registerRoomRoutes } from "./routes/rooms.js";
 import { registerSocketHandlers } from "./socket/index.js";
