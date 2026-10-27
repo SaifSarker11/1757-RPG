@@ -4,20 +4,33 @@ import { anonymous, bearer } from "better-auth/plugins";
 import { db } from "@repo/db";
 import { generateGuestName } from "./guestName.js";
 
-const trustedOrigins = [
-  process.env.WEB_URL,
-  process.env.ADMIN_URL,
-  process.env.BETTER_AUTH_URL,
-  "http://localhost:3000",
-  "http://localhost:3002",
-  "http://localhost:3001",
-  "https://*.vercel.app",
-].filter((url): url is string => Boolean(url));
-
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3001",
-  trustedOrigins,
+  trustedOrigins: async (request) => {
+    const origin = request.headers.get("origin");
+    const configured = [
+      process.env.WEB_URL,
+      process.env.ADMIN_URL,
+      process.env.BETTER_AUTH_URL,
+      "http://localhost:3000",
+      "http://localhost:3002",
+      "http://localhost:3001",
+    ].filter((url): url is string => Boolean(url));
+
+    if (origin) {
+      if (configured.includes(origin)) return [origin];
+      try {
+        const { hostname } = new URL(origin);
+        if (hostname.endsWith(".vercel.app") || hostname === "vercel.app") {
+          return [origin];
+        }
+      } catch {
+        // invalid origin url
+      }
+    }
+    return configured;
+  },
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
