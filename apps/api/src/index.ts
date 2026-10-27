@@ -44,6 +44,7 @@ function isDevLanOrigin(origin: string): boolean {
 function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true;
   if (allowedOrigins.includes(origin)) return true;
+  if (/\.vercel\.app$/.test(new URL(origin).hostname)) return true;
   return process.env.NODE_ENV !== "production" && isDevLanOrigin(origin);
 }
 
