@@ -54,6 +54,9 @@ function lobby(overrides: Partial<StartableRoom> = {}): StartableRoom {
     status: "WAITING",
     discussionSeconds: 30,
     enabledRoles: ["NAWAB_SIRAJ", "LUTFUNNESA", "MIR_MADAN", "MIR_JAFAR", "DE_BUSSY", "LOYALIST"],
+    mode: "STANDARD",
+    roundDiscussionSeconds: [],
+    roleAssignments: {},
     players: USERS.map((userId, i) => ({
       userId,
       createdAt: new Date(1_000 + i),
@@ -421,5 +424,57 @@ describe("playerDisconnected / playerReconnected", () => {
   it("playerReconnected is a no-op without a tracker", () => {
     const ctx = setup();
     expect(() => ctx.service.playerReconnected("room-1", "u1")).not.toThrow();
+  });
+});
+
+describe("custom rooms", () => {
+  const custom = (overrides: Partial<StartableRoom> = {}) =>
+    lobby({
+      mode: "CUSTOM",
+      roundDiscussionSeconds: [40, 50, 60, 70, 80],
+      roleAssignments: { u2: "MIR_JAFAR", u5: "DE_BUSSY" },
+      ...overrides,
+    });
+
+  it("pins the host's roles and uses the per-round discussion time", async () => {
+    const ctx = setup(custom());
+    expect(await ctx.service.start("room-1", "u1")).toBeNull();
+    expect(viewOf(ctx.transport, "u2").me.role).toBe("MIR_JAFAR");
+    expect(viewOf(ctx.transport, "u5").me.role).toBe("DE_BUSSY");
+    await ctx.timeout(); // → DISCUSSION
+    expect(viewOf(ctx.transport, "u1").game.endsAt).toBe(ctx.clock.now + 40_000);
+  });
+
+  it("ignores custom settings in a standard room", async () => {
+    const ctx = setup(custom({ mode: "STANDARD", roleAssignments: {} }));
+    await ctx.service.start("room-1", "u1");
+    await ctx.timeout();
+    expect(viewOf(ctx.transport, "u1").game.endsAt).toBe(ctx.clock.now + 30_000);
+  });
+
+  it("leaves the room in the lobby when the pinned roles don't fit", async () => {
+    const ctx = setup(custom({ roleAssignments: { u1: "UMICHAD", u2: "JEAN_LAW", u3: "YAR_LUTUF" } }));
+    const error = await ctx.service.start("room-1", "u1");
+    expect(error?.code).toBe("INVALID_SETTINGS");
+    expect(error?.message).toMatch(/doesn't fit/);
+    expect(ctx.repo.claimForStart).not.toHaveBeenCalled();
+    expect(ctx.service.hasGame("room-1")).toBe(false);
+  });
+
+  it("lets only the host skip, and only in custom rooms", async () => {
+    const standard = setup();
+    await standard.service.start("room-1", "u1");
+    expect((await standard.service.skip("room-1", "u1"))?.code).toBe("SKIP_NOT_ALLOWED");
+
+    const ctx = setup(custom());
+    expect((await ctx.service.skip("room-1", "u1"))?.code).toBe("NO_GAME");
+    await ctx.service.start("room-1", "u1");
+    expect((await ctx.service.skip("room-1", "u2"))?.code).toBe("NOT_HOST");
+
+    expect(await ctx.service.skip("room-1", "u1")).toBeNull();
+    expect(viewOf(ctx.transport, "u3").game.phase).toBe("DISCUSSION");
+    // The next phase's timer is rescheduled from the skip.
+    expect(ctx.scheduler.nextAt("tick:")).toBe(ctx.clock.now + 40_000);
+    expect(await ctx.store.load("room-1")).toMatchObject({ hostCanSkip: true, hostUserId: "u1", step: 2 });
   });
 });

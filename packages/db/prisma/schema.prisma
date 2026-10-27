@@ -86,6 +86,13 @@ enum RoomStatus {
   FINISHED
 }
 
+/// STANDARD plays the default rules; CUSTOM lets the host set per-round
+/// timers, pin roles to players and skip phases.
+enum RoomMode {
+  STANDARD
+  CUSTOM
+}
+
 enum PlayerTeam {
   GREEN
   RED
@@ -122,6 +129,11 @@ model Room {
   /// Listed in the public lobby and eligible for Quick Join.
   isPublic    Boolean      @default(true)
   discussionSeconds Int    @default(120)
+  mode        RoomMode     @default(STANDARD)
+  /// Custom rooms: Discussion seconds for R1–R5. Empty means `discussionSeconds` every round.
+  roundDiscussionSeconds Int[] @default([])
+  /// Custom rooms: userId → role pinned by the host. Host-only; never sent to other players.
+  roleAssignments Json      @default("{}")
   /// Named roles the host allows. Nawab Siraj is always added by the engine.
   enabledRoles PlayerRole[] @default([NAWAB_SIRAJ, LUTFUNNESA, MIR_MADAN, MOHON_LAL, SAINT_FRASY, DE_BUSSY, RAJA_RAMNARAIN, MIR_JAFAR, UMICHAD, JEAN_LAW, GHASHETI_BEGUM, YAR_LUTUF, TARA_BAI, RAI_DURLABH, JAGAT_SETH])
   /// Users the host kicked; they can't rejoin this room.

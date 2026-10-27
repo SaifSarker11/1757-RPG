@@ -15,6 +15,9 @@ function row(overrides: Partial<RoomRow> = {}): RoomRow {
     isPublic: true,
     discussionSeconds: 90,
     enabledRoles: ["NAWAB_SIRAJ", "DE_BUSSY"],
+    mode: "STANDARD",
+    roundDiscussionSeconds: [],
+    roleAssignments: {},
     bannedUserIds: ["banned"],
     currentRound: 0,
     greenWins: 0,
@@ -51,6 +54,16 @@ describe("toRoomDetail", () => {
   it("shows no roles in the lobby", () => {
     expect(toRoomDetail(row()).rolesInPlay).toEqual([]);
   });
+
+  it("counts pinned roles for present players without saying who gets what", () => {
+    const detail = toRoomDetail(
+      row({ mode: "CUSTOM", roleAssignments: { u1: "MIR_JAFAR", u2: "LOYALIST", gone: "UMICHAD" } })
+    );
+    expect(detail.mode).toBe("CUSTOM");
+    expect(detail.fixedRoleCount).toBe(2);
+    expect(JSON.stringify(detail)).not.toContain("MIR_JAFAR");
+    expect(toRoomDetail(row({ roleAssignments: { u1: "MIR_JAFAR" } })).fixedRoleCount).toBe(0);
+  });
 });
 
 describe("inviteUrl", () => {
@@ -68,6 +81,7 @@ describe("toLobbyListing", () => {
       playerCount: 3,
       maxPlayers: 8,
       discussionSeconds: 90,
+      mode: "STANDARD",
     });
   });
 });
@@ -120,6 +134,8 @@ describe("createSocketNotifier", () => {
       discussionSeconds: 90,
       enabledRoles: ["NAWAB_SIRAJ", "DE_BUSSY"],
       isPublic: true,
+      mode: "STANDARD",
+      roundDiscussionSeconds: [],
     });
   });
 

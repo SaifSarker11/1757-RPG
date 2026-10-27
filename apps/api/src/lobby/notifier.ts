@@ -54,6 +54,8 @@ export function createSocketNotifier(io: Server, sources: NotifierSources): Lobb
           discussionSeconds: room.discussionSeconds,
           enabledRoles: room.enabledRoles,
           isPublic: room.isPublic,
+          mode: room.mode,
+          roundDiscussionSeconds: room.roundDiscussionSeconds,
         });
       });
     },

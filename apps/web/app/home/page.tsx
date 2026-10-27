@@ -32,6 +32,7 @@ export default function HomePage() {
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [joinCode, setJoinCode] = useState("");
   const [maxPlayers, setMaxPlayers] = useState(10);
+  const [roomMode, setRoomMode] = useState<"STANDARD" | "CUSTOM">("STANDARD");
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -133,8 +134,8 @@ export default function HomePage() {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          hostUserId: session.user.id,
           maxPlayers,
+          mode: roomMode,
         }),
       });
 
@@ -280,7 +281,47 @@ export default function HomePage() {
             {/* Action 1: Create a Room */}
             <div className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
               <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Create Chamber</h3>
-              <p className="text-xs text-base-content/75 mb-4 font-sans">Initialize a new secure game room. Choose the maximum capacity limit (6-15 players).</p>
+              <p className="text-xs text-base-content/75 mb-4 font-sans">Initialize a new secure game room. Choose the rules and the maximum capacity limit (6-15 players).</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" role="radiogroup" aria-label="Room mode">
+                {([
+                  {
+                    mode: "STANDARD",
+                    title: "Standard Council",
+                    blurb: "The usual rules: every character in play, roles dealt at random, fixed timers.",
+                  },
+                  {
+                    mode: "CUSTOM",
+                    title: "Royal Decree",
+                    blurb: "Custom rules: set each round's timer, pick the characters, fix who plays whom, and skip timers as host.",
+                  },
+                ] as const).map((option) => {
+                  const selected = roomMode === option.mode;
+                  return (
+                    <button
+                      key={option.mode}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => {
+                        gameAudio.playClick();
+                        setRoomMode(option.mode);
+                      }}
+                      className={`text-left p-3 border-2 rounded-none transition-colors ${
+                        selected
+                          ? "border-primary bg-primary/10 shadow-[3px_3px_0px_0px_var(--color-primary)]"
+                          : "border-base-content/15 bg-base-100 hover:border-base-content/40"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 font-pixel text-xs font-bold uppercase">
+                        <span className={`w-3 h-3 border-2 ${selected ? "bg-primary border-primary" : "border-base-content/40"}`} />
+                        {option.title}
+                      </span>
+                      <span className="block text-[11px] font-sans text-base-content/70 mt-1 leading-snug">{option.blurb}</span>
+                    </button>
+                  );
+                })}
+              </div>
               
               <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
                 <div className="form-control flex-1">
@@ -300,7 +341,7 @@ export default function HomePage() {
                   disabled={actionLoading}
                   className="btn btn-primary rounded-none font-pixel border-2 pixel-btn"
                 >
-                  {actionLoading ? "CREATING..." : "NEW ROOM"}
+                  {actionLoading ? "CREATING..." : roomMode === "CUSTOM" ? "NEW CUSTOM ROOM" : "NEW ROOM"}
                 </button>
               </div>
             </div>

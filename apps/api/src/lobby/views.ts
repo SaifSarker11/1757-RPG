@@ -1,4 +1,5 @@
 import type { NamedRoleId } from "@repo/game-engine";
+import type { RoomMode } from "./schemas.js";
 
 /** Shape of a room as loaded from Prisma with its players and their users. */
 export interface RoomRow {
@@ -10,6 +11,10 @@ export interface RoomRow {
   isPublic: boolean;
   discussionSeconds: number;
   enabledRoles: string[];
+  mode: RoomMode;
+  roundDiscussionSeconds: number[];
+  /** userId -> role. Host-only; only its size reaches the room detail. */
+  roleAssignments: unknown;
   bannedUserIds: string[];
   currentRound: number;
   greenWins: number;
@@ -33,6 +38,10 @@ export interface RoomDetail {
   isPublic: boolean;
   discussionSeconds: number;
   enabledRoles: NamedRoleId[];
+  mode: RoomMode;
+  roundDiscussionSeconds: number[];
+  /** How many present players have a pinned role. Who gets what stays with the host. */
+  fixedRoleCount: number;
   inviteUrl: string;
   currentRound: number;
   greenWins: number;
@@ -50,10 +59,19 @@ export interface LobbyListing {
   playerCount: number;
   maxPlayers: number;
   discussionSeconds: number;
+  mode: RoomMode;
 }
 
 export function inviteUrl(code: string, webUrl = process.env.WEB_URL ?? "http://localhost:3000"): string {
   return `${webUrl.replace(/\/$/, "")}/join/${code}`;
+}
+
+/** Reads the stored JSON defensively; anything malformed counts as no assignment. */
+export function readRoleAssignments(raw: unknown): Record<string, string> {
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return {};
+  return Object.fromEntries(
+    Object.entries(raw).filter((entry): entry is [string, string] => typeof entry[1] === "string")
+  );
 }
 
 function displayName(p: RoomRow["players"][number]): string {
@@ -76,6 +94,9 @@ export function toRoomDetail(room: RoomRow): RoomDetail {
     isPublic: room.isPublic,
     discussionSeconds: room.discussionSeconds,
     enabledRoles: room.enabledRoles as NamedRoleId[],
+    mode: room.mode,
+    roundDiscussionSeconds: room.roundDiscussionSeconds,
+    fixedRoleCount: countFixedRoles(room),
     inviteUrl: inviteUrl(room.code),
     currentRound: room.currentRound,
     greenWins: room.greenWins,
@@ -94,5 +115,12 @@ export function toLobbyListing(room: RoomRow): LobbyListing {
     playerCount: room.players.length,
     maxPlayers: room.maxPlayers,
     discussionSeconds: room.discussionSeconds,
+    mode: room.mode,
   };
+}
+
+function countFixedRoles(room: RoomRow): number {
+  if (room.mode !== "CUSTOM") return 0;
+  const assignments = readRoleAssignments(room.roleAssignments);
+  return room.players.filter((p) => assignments[p.userId] !== undefined).length;
 }

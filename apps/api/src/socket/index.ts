@@ -183,6 +183,10 @@ export function registerSocketHandlers(io: Server, deps: SocketDeps): void {
       deps.games.act(roomId, user.id, action)
     );
 
+    handle("game:skip", roomRefPayload, "action", (user, { roomId }) =>
+      deps.games.skip(roomId, user.id)
+    );
+
     handle("game:sync", roomRefPayload, "action", async (user, { roomId }) => {
       // M7: treat an explicit sync as a reconnect signal.
       deps.games.playerReconnected(roomId, user.id);

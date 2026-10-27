@@ -34,6 +34,9 @@ export type RealtimeErrorCode =
   | "NOT_HOST"
   | "GAME_ALREADY_STARTED"
   | "INVALID_PLAYER_COUNT"
+  | "INVALID_SETTINGS"
+  | "SKIP_NOT_ALLOWED"
+  | "NOTHING_TO_SKIP"
   | "NO_GAME"
   | "INTERNAL";
 
@@ -43,9 +46,12 @@ const MESSAGES: Partial<Record<RealtimeErrorCode, string>> = {
   RATE_LIMITED: "Slow down",
   ROOM_NOT_FOUND: "Room not found",
   NOT_IN_ROOM: "You are not in this room",
-  NOT_HOST: "Only the host can start the game",
+  NOT_HOST: "Only the host can do that",
   GAME_ALREADY_STARTED: "The game has already started",
   INVALID_PLAYER_COUNT: "A game needs 6 to 15 players",
+  INVALID_SETTINGS: "The room settings don't work for this many players",
+  SKIP_NOT_ALLOWED: "Skipping is only available in custom rooms",
+  NOTHING_TO_SKIP: "There is no timer to skip right now",
   NO_GAME: "No game is running in this room",
   INTERNAL: "Something went wrong",
 };
@@ -55,6 +61,6 @@ export interface RealtimeError {
   message: string;
 }
 
-export function realtimeError(code: RealtimeErrorCode): RealtimeError {
-  return { code, message: MESSAGES[code] ?? code.replace(/_/g, " ").toLowerCase() };
+export function realtimeError(code: RealtimeErrorCode, message?: string): RealtimeError {
+  return { code, message: message ?? MESSAGES[code] ?? code.replace(/_/g, " ").toLowerCase() };
 }

@@ -14,6 +14,7 @@ import { RoundTracker } from "@/components/RoundTracker";
 import { ActionPanel } from "@/components/ActionPanel";
 import { PostGameSummary } from "@/components/PostGameSummary";
 import { NominationHistoryCard } from "@/components/NominationHistoryCard";
+import { CustomRoomSettings } from "@/components/CustomRoomSettings";
 
 interface PlayerInfo {
   userId: string;
@@ -461,6 +462,20 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     }
   };
 
+  /** Custom rooms: the host ends the current timer now. */
+  const handleSkip = () => {
+    gameAudio.playClick();
+    if (!socketRef.current) return;
+    setActionLoading(true);
+    socketRef.current.emit("game:skip", { roomId }, (ack: { ok: boolean; error?: { message: string } }) => {
+      setActionLoading(false);
+      if (!ack?.ok && ack?.error) {
+        setGameError(ack.error.message);
+        setTimeout(() => setGameError(null), 4000);
+      }
+    });
+  };
+
   const handleNominate = (ministerIds: string[]) => {
     emitGameAction({ type: "NOMINATE", ministerIds });
   };
@@ -522,6 +537,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const isHost = roomData?.hostUserId === session?.user.id;
+  const isCustomRoom = roomData?.mode === "CUSTOM";
+  const canSkip =
+    isCustomRoom && isHost && !!playerView?.game.endsAt && playerView.game.phase !== "POST_GAME";
   const isMyTurnToSelect = currentSelectorId === session?.user.id || (roomData?.hostUserId === session?.user.id && currentSelectorId === "");
   const sizeToSelect = getTeamSizeForRound(roundNumber, players.length);
 
@@ -560,7 +578,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
         </div>
 
-        <div className="flex-none flex items-center gap-3">
+        <div className="flex-none flex flex-wrap items-center justify-center gap-3">
           <button 
             onClick={toggleSound}
             className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
@@ -570,6 +588,21 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
           {playerView?.game.endsAt && (
             <CountdownTimer endsAt={playerView.game.endsAt} />
+          )}
+
+          {canSkip && (
+            <button
+              onClick={handleSkip}
+              disabled={actionLoading}
+              title="End the current timer now"
+              className="btn btn-warning btn-sm rounded-none border-2 font-pixel"
+            >
+              SKIP ⏭
+            </button>
+          )}
+
+          {isCustomRoom && !playerView && (
+            <span className="badge badge-secondary rounded-none font-pixel text-[9px] py-3">ROYAL DECREE</span>
           )}
 
           <span className="bg-neutral text-neutral-content px-3 py-1.5 border border-base-300 text-xs font-pixel">
@@ -752,6 +785,17 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               </div>
             )}
           </div>
+
+          {/* Custom rules, shown in the lobby only */}
+          {!playerView && isCustomRoom && (
+            <CustomRoomSettings
+              roomId={roomId}
+              apiUrl={API_URL}
+              room={roomData}
+              players={players.map((p) => ({ userId: p.userId, name: p.name }))}
+              isHost={isHost}
+            />
+          )}
         </div>
 
         {/* COLUMN 2: Phase Actions, Logs & Chat Sidebar (4 Columns) */}

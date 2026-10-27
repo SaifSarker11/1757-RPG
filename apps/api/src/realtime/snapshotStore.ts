@@ -20,6 +20,10 @@ export interface GameSnapshot {
   identities: Record<string, PlayerIdentity>;
   /** Set once the match result has been written to Postgres. */
   savedMatchId: string | null;
+  /** The room host at start. Missing on snapshots from before custom rooms. */
+  hostUserId?: string;
+  /** Custom rooms: the host may end any timed phase early. */
+  hostCanSkip?: boolean;
   state: GameState;
 }
 

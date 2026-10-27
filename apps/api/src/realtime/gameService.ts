@@ -12,6 +12,7 @@ import {
   type GameEvent,
   type GameState,
   type NamedRoleId,
+  type RoleId,
 } from "@repo/game-engine";
 import type { PlayerIdentity } from "../persistence/matchRecord.js";
 import type { DisconnectTracker } from "./disconnectTracker.js";
@@ -78,22 +79,33 @@ export class GameService {
       if (room.status !== "WAITING") return realtimeError("GAME_ALREADY_STARTED");
       const count = room.players.length;
       if (count < MIN_PLAYERS || count > MAX_PLAYERS) return realtimeError("INVALID_PLAYER_COUNT");
-      if (!(await this.deps.repo.claimForStart(roomId))) return realtimeError("GAME_ALREADY_STARTED");
 
       // Seats follow join order.
       const players = [...room.players].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      const custom = room.mode === "CUSTOM";
       const seed = this.randomSeed();
-      const { state, events } = createGame({
-        playerIds: players.map((p) => p.userId),
-        settings: {
-          discussionSeconds: room.discussionSeconds,
-          enabledRoles: room.enabledRoles.filter((r): r is NamedRoleId =>
-            (ALL_NAMED_ROLES as readonly string[]).includes(r)
-          ),
-        },
-        now: this.now(),
-        rng: createRng(seed),
-      });
+      // Created before claiming the room, so settings that don't fit leave it in the lobby.
+      let created: ReturnType<typeof createGame>;
+      try {
+        created = createGame({
+          playerIds: players.map((p) => p.userId),
+          settings: {
+            discussionSeconds: room.discussionSeconds,
+            enabledRoles: room.enabledRoles.filter((r): r is NamedRoleId =>
+              (ALL_NAMED_ROLES as readonly string[]).includes(r)
+            ),
+            ...(custom ? { roundDiscussionSeconds: room.roundDiscussionSeconds } : {}),
+          },
+          fixedRoles: custom ? (room.roleAssignments as Record<string, RoleId>) : undefined,
+          now: this.now(),
+          rng: createRng(seed),
+        });
+      } catch (error) {
+        if (error instanceof RangeError) return realtimeError("INVALID_SETTINGS", error.message);
+        throw error;
+      }
+      const { state, events } = created;
+      if (!(await this.deps.repo.claimForStart(roomId))) return realtimeError("GAME_ALREADY_STARTED");
 
       const identities: Record<string, PlayerIdentity> = {};
       for (const p of players) {
@@ -112,6 +124,8 @@ export class GameService {
           startedAt: this.now(),
           identities,
           savedMatchId: null,
+          hostUserId: room.hostUserId,
+          hostCanSkip: custom,
           state,
         },
         state,
@@ -132,6 +146,21 @@ export class GameService {
       const rejected = events.find((e) => e.type === "ACTION_REJECTED");
       if (rejected?.type === "ACTION_REJECTED") return realtimeError(rejected.code);
 
+      await this.commit(game, state, events);
+      return null;
+    });
+  }
+
+  /** Custom rooms: the host ends the current phase now, as if its timer ran out. */
+  skip(roomId: string, userId: string): Promise<RealtimeError | null> {
+    return this.guarded(roomId, async () => {
+      const game = this.games.get(roomId);
+      if (!game) return realtimeError("NO_GAME");
+      if (!game.hostCanSkip) return realtimeError("SKIP_NOT_ALLOWED");
+      if (game.hostUserId !== userId) return realtimeError("NOT_HOST");
+
+      const { state, events } = this.reduceStep(game, { type: "SKIP" });
+      if (events.length === 0) return realtimeError("NOTHING_TO_SKIP");
       await this.commit(game, state, events);
       return null;
     });

@@ -2,6 +2,7 @@ import { db } from "@repo/db";
 import type { MatchSummary } from "@repo/game-engine";
 import type { MatchContext } from "../persistence/matchRecord.js";
 import { saveMatch } from "../persistence/saveMatch.js";
+import { readRoleAssignments } from "../lobby/views.js";
 
 export interface StartableRoom {
   id: string;
@@ -10,6 +11,10 @@ export interface StartableRoom {
   status: "WAITING" | "IN_PROGRESS" | "FINISHED";
   discussionSeconds: number;
   enabledRoles: string[];
+  mode: "STANDARD" | "CUSTOM";
+  roundDiscussionSeconds: number[];
+  /** userId -> role pinned by the host (custom rooms). */
+  roleAssignments: Record<string, string>;
   players: Array<{ userId: string; createdAt: Date; isAnonymous: boolean }>;
 }
 
@@ -39,6 +44,9 @@ export const prismaRoomRepository: GameRoomRepository = {
       status: room.status,
       discussionSeconds: room.discussionSeconds,
       enabledRoles: room.enabledRoles,
+      mode: room.mode,
+      roundDiscussionSeconds: room.roundDiscussionSeconds,
+      roleAssignments: readRoleAssignments(room.roleAssignments),
       players: room.players.map((p) => ({
         userId: p.userId,
         createdAt: p.createdAt,

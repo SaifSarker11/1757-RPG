@@ -48,3 +48,22 @@ describe("kickBody", () => {
     expect(parse(kickBody, { userId: "u1" })).toEqual({ ok: true, data: { userId: "u1" } });
   });
 });
+
+describe("custom room settings", () => {
+  it("accepts a mode, per-round timers and role assignments", () => {
+    const body = {
+      mode: "CUSTOM",
+      roundDiscussionSeconds: [30, 60, 90, 120, 300],
+      roleAssignments: { u1: "MIR_JAFAR", u2: "LOYALIST", u3: "LOYALIST" },
+    };
+    expect(parse(updateSettingsBody, body)).toEqual({ ok: true, data: body });
+  });
+
+  it("rejects bad timers, unknown roles and a named role given twice", () => {
+    expect(parse(updateSettingsBody, { mode: "CHAOS" }).ok).toBe(false);
+    expect(parse(updateSettingsBody, { roundDiscussionSeconds: [10] }).ok).toBe(false);
+    expect(parse(updateSettingsBody, { roundDiscussionSeconds: [60, 60, 60, 60, 60, 60] }).ok).toBe(false);
+    expect(parse(updateSettingsBody, { roleAssignments: { u1: "KING" } }).ok).toBe(false);
+    expect(parse(updateSettingsBody, { roleAssignments: { u1: "MIR_JAFAR", u2: "MIR_JAFAR" } }).ok).toBe(false);
+  });
+});

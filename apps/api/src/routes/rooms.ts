@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
-import { db, type PlayerRole } from "@repo/db";
+import { db, type PlayerRole, type Prisma } from "@repo/db";
 import { createRequireUser, currentUser, type SessionResolver } from "../lib/session.js";
 import type { LobbyNotifier } from "../lobby/notifier.js";
 import { generateUniqueRoomCode, normalizeRoomCode } from "../lobby/roomCode.js";
@@ -28,7 +28,7 @@ import {
   roomIdParams,
   updateSettingsBody,
 } from "../lobby/schemas.js";
-import { toRoomDetail } from "../lobby/views.js";
+import { readRoleAssignments, toRoomDetail } from "../lobby/views.js";
 
 export interface RoomRouteDeps {
   resolveSession: SessionResolver;
@@ -95,6 +95,9 @@ export async function registerRoomRoutes(app: FastifyInstance, deps: RoomRouteDe
         discussionSeconds: settings.discussionSeconds,
         enabledRoles: settings.enabledRoles as PlayerRole[],
         isPublic: settings.isPublic,
+        mode: settings.mode,
+        roundDiscussionSeconds: settings.roundDiscussionSeconds,
+        roleAssignments: settings.roleAssignments as Prisma.InputJsonObject,
         players: { create: { userId: user.id } },
       },
     });
@@ -106,6 +109,7 @@ export async function registerRoomRoutes(app: FastifyInstance, deps: RoomRouteDe
       status: room.status,
       maxPlayers: room.maxPlayers,
       hostUserId: room.hostUserId,
+      mode: room.mode,
     });
   });
 
@@ -204,16 +208,33 @@ export async function registerRoomRoutes(app: FastifyInstance, deps: RoomRouteDe
     const error = settingsError(room, user.id, body.data);
     if (error) return sendLobbyError(reply, error);
 
-    const { enabledRoles, ...rest } = body.data;
+    const { enabledRoles, roleAssignments, ...rest } = body.data;
     await db.room.update({
       where: { id: roomId },
-      data: { ...rest, ...(enabledRoles ? { enabledRoles: enabledRoles as PlayerRole[] } : {}) },
+      data: {
+        ...rest,
+        ...(enabledRoles ? { enabledRoles: enabledRoles as PlayerRole[] } : {}),
+        ...(roleAssignments ? { roleAssignments: roleAssignments as Prisma.InputJsonObject } : {}),
+      },
     });
 
     notifier.roomChanged(roomId);
     notifier.lobbyChanged();
     const updated = await loadRoomRow(roomId);
     return updated ? toRoomDetail(updated) : sendLobbyError(reply, "ROOM_NOT_FOUND");
+  });
+
+  /** Custom rooms: who the host pinned to which role. Host-only, so roles stay secret. */
+  app.get("/rooms/:roomId/role-assignments", { preHandler: requireUser }, async (request, reply) => {
+    const params = parse(roomIdParams, request.params);
+    if (!params.ok) return sendInvalid(reply, params.message);
+    const room = await db.room.findUnique({
+      where: { id: params.data.roomId },
+      select: { hostUserId: true, roleAssignments: true },
+    });
+    if (!room) return sendLobbyError(reply, "ROOM_NOT_FOUND");
+    if (room.hostUserId !== currentUser(request).id) return sendLobbyError(reply, "NOT_HOST");
+    return { roleAssignments: readRoleAssignments(room.roleAssignments) };
   });
 
   app.post("/rooms/:roomId/kick", { preHandler: requireUser }, async (request, reply) => {

@@ -55,6 +55,11 @@ export interface GameSettings {
   discussionSeconds: number;
   /** Named roles the host allows. Nawab Siraj is always included. */
   enabledRoles: readonly NamedRoleId[];
+  /**
+   * Custom rooms: Discussion length per round (R1–R5). Overrides
+   * `discussionSeconds` for each round it covers.
+   */
+  roundDiscussionSeconds?: readonly number[];
 }
 
 export interface NominationRecord {
@@ -135,6 +140,11 @@ export interface GameState {
 
 export type Action =
   | { type: "TICK" }
+  /**
+   * Ends the current phase now, exactly as if its timer ran out. The engine
+   * doesn't know who the host is; the server decides who may send it.
+   */
+  | { type: "SKIP" }
   | { type: "NOMINATE"; playerId: string; ministerIds: string[] }
   | { type: "CAST_VOTE"; playerId: string; vote: Vote }
   | { type: "PLAY_CARD"; playerId: string; card: Card }

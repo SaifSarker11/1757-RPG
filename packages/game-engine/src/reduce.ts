@@ -17,8 +17,8 @@ import type { Action, ErrorCode, GameState, ReduceResult } from "./types.js";
 export function reduce(state: GameState, action: Action, now: number, rng: Rng): ReduceResult {
   const step: Step = { state: structuredClone(state), events: [], now };
 
-  if (action.type === "TICK") {
-    tick(step, rng);
+  if (action.type === "TICK" || action.type === "SKIP") {
+    tick(step, rng, action.type === "SKIP");
     return { state: step.state, events: step.events };
   }
 
@@ -31,7 +31,7 @@ export function reduce(state: GameState, action: Action, now: number, rng: Rng):
 
 function applyPlayerAction(
   step: Step,
-  action: Exclude<Action, { type: "TICK" }>,
+  action: Exclude<Action, { type: "TICK" } | { type: "SKIP" }>,
   rng: Rng
 ): ErrorCode | null {
   switch (action.type) {
@@ -50,10 +50,13 @@ function applyPlayerAction(
   }
 }
 
-/** Applies the timeout of the current phase once `now` has reached `endsAt`. */
-function tick(step: Step, rng: Rng): void {
+/**
+ * Applies the timeout of the current phase once `now` has reached `endsAt`,
+ * or straight away when `force` is set (a host skip).
+ */
+function tick(step: Step, rng: Rng, force = false): void {
   const { state } = step;
-  if (state.endsAt === null || step.now < state.endsAt) return;
+  if (state.endsAt === null || (!force && step.now < state.endsAt)) return;
 
   switch (state.phase) {
     case "ROLE_REVEAL":

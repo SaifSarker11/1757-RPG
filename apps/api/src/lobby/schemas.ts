@@ -4,17 +4,41 @@ import {
   DISCUSSION_SECONDS,
   MAX_PLAYERS,
   MIN_PLAYERS,
+  TOTAL_ROUNDS,
   type NamedRoleId,
+  type RoleId,
 } from "@repo/game-engine";
 
 // Bounds come from the engine's gameConfig so rules live in one place.
 const namedRole = z.enum(ALL_NAMED_ROLES as unknown as [NamedRoleId, ...NamedRoleId[]]);
+const anyRole = z.enum([...ALL_NAMED_ROLES, "LOYALIST", "EIC_SPY"] as unknown as [RoleId, ...RoleId[]]);
+const seconds = z.number().int().min(DISCUSSION_SECONDS.min).max(DISCUSSION_SECONDS.max);
+
+export const ROOM_MODES = ["STANDARD", "CUSTOM"] as const;
+export type RoomMode = (typeof ROOM_MODES)[number];
+
+/** userId -> pinned role. A named role can be pinned to one player only; fillers repeat. */
+const roleAssignments = z
+  .record(z.string().min(1).max(128), anyRole)
+  .refine((v) => Object.keys(v).length <= MAX_PLAYERS, { message: `At most ${MAX_PLAYERS} assignments` })
+  .refine(
+    (v) => {
+      const named = Object.values(v).filter((r) => r !== "LOYALIST" && r !== "EIC_SPY");
+      return new Set(named).size === named.length;
+    },
+    { message: "Each character can be assigned to one player only" }
+  );
 
 export const roomSettingsSchema = z.object({
   maxPlayers: z.number().int().min(MIN_PLAYERS).max(MAX_PLAYERS),
-  discussionSeconds: z.number().int().min(DISCUSSION_SECONDS.min).max(DISCUSSION_SECONDS.max),
+  discussionSeconds: seconds,
   enabledRoles: z.array(namedRole).max(ALL_NAMED_ROLES.length),
   isPublic: z.boolean(),
+  mode: z.enum(ROOM_MODES),
+  /** Custom rooms only: Discussion length for R1-R5. Empty = `discussionSeconds` every round. */
+  roundDiscussionSeconds: z.array(seconds).max(TOTAL_ROUNDS),
+  /** Custom rooms only. Host-only data: never part of the room detail. */
+  roleAssignments,
 });
 
 export type RoomSettings = z.infer<typeof roomSettingsSchema>;
@@ -24,6 +48,9 @@ export const DEFAULT_ROOM_SETTINGS: RoomSettings = {
   discussionSeconds: DISCUSSION_SECONDS.default,
   enabledRoles: [...ALL_NAMED_ROLES],
   isPublic: true,
+  mode: "STANDARD",
+  roundDiscussionSeconds: [],
+  roleAssignments: {},
 };
 
 /** Create: every setting optional. Unknown keys (e.g. a legacy `hostUserId`) are stripped. */

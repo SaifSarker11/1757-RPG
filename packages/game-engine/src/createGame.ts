@@ -2,12 +2,14 @@ import { enterPhase, type Step } from "./phases/common.js";
 import { type Rng, randomInt } from "./rng.js";
 import { assignRoles } from "./roles/assignRoles.js";
 import { resolveSettings } from "./settings.js";
-import type { GameSettings, GameState, ReduceResult } from "./types.js";
+import type { GameSettings, GameState, ReduceResult, RoleId } from "./types.js";
 
 export interface CreateGameInput {
   /** Seat order is the order of this array. */
   playerIds: readonly string[];
   settings?: Partial<GameSettings>;
+  /** Custom rooms: roles the host pinned to players. Throws RangeError if they can't fit. */
+  fixedRoles?: Readonly<Record<string, RoleId>>;
   now: number;
   rng: Rng;
 }
@@ -15,7 +17,7 @@ export interface CreateGameInput {
 /** Deals roles, picks a random first Leader and opens ROLE_REVEAL. */
 export function createGame(input: CreateGameInput): ReduceResult {
   const settings = resolveSettings(input.settings);
-  const players = assignRoles(input.playerIds, settings, input.rng);
+  const players = assignRoles(input.playerIds, settings, input.rng, input.fixedRoles);
 
   const state: GameState = {
     players,

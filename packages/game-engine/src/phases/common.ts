@@ -9,7 +9,9 @@ export interface Step {
 }
 
 export function phaseSeconds(state: GameState, phase: Phase): number | null {
-  if (phase === "DISCUSSION") return state.settings.discussionSeconds;
+  if (phase === "DISCUSSION") {
+    return state.settings.roundDiscussionSeconds?.[state.round - 1] ?? state.settings.discussionSeconds;
+  }
   if (phase === "POST_GAME") return null;
   return PHASE_SECONDS[phase];
 }
