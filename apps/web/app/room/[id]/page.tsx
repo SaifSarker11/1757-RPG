@@ -17,6 +17,8 @@ import { NominationHistoryCard } from "@/components/NominationHistoryCard";
 import { CustomRoomSettings } from "@/components/CustomRoomSettings";
 import { VoiceChatPanel } from "@/components/VoiceChatPanel";
 import { useVoiceChat } from "@/lib/useVoiceChat";
+import { MusicControl } from "@/components/MusicControl";
+import { musicPlayer } from "@/lib/music";
 
 interface PlayerInfo {
   userId: string;
@@ -415,6 +417,13 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   // Lives here, not in the tab, so switching tabs doesn't drop the call.
   const voice = useVoiceChat(socket, roomId);
 
+  // Background music pauses while anyone in this room is in voice chat.
+  const voiceActive = voice.participants.length > 0;
+  useEffect(() => {
+    musicPlayer.setSuppressed("voice", voiceActive);
+    return () => musicPlayer.setSuppressed("voice", false);
+  }, [voiceActive]);
+
   // Discussion countdown timer
   useEffect(() => {
     if (currentPhase !== "DISCUSSION" || discussionTimer <= 0) return;
@@ -594,6 +603,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           >
             {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
           </button>
+
+          <MusicControl />
 
           {playerView?.game.endsAt && (
             <CountdownTimer endsAt={playerView.game.endsAt} />

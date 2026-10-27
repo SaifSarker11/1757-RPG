@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { gameAudio } from "@/lib/audio";
+import { MusicControl } from "@/components/MusicControl";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -229,6 +230,8 @@ export default function HomePage() {
           >
             {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
           </button>
+
+          <MusicControl />
 
           <span className="text-xs font-pixel uppercase bg-neutral text-neutral-content px-3 py-1.5 border border-base-300">
             {session.user.name}
