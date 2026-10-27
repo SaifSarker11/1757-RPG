@@ -15,6 +15,7 @@ export {
   type BallotResultsCard,
 } from "./phases/resultsCard.js";
 export { roundWins } from "./phases/round.js";
+export { isPaused } from "./phases/pause.js";
 export * from "./vision/types.js";
 export { viewFor, publicView } from "./vision/viewFor.js";
 export { computeVision, computeReveals, isMirMadanVisionActive } from "./vision/visionRules.js";

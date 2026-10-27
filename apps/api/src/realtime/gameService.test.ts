@@ -477,4 +477,28 @@ describe("custom rooms", () => {
     expect(ctx.scheduler.nextAt("tick:")).toBe(ctx.clock.now + 40_000);
     expect(await ctx.store.load("room-1")).toMatchObject({ hostCanSkip: true, hostUserId: "u1", step: 2 });
   });
+
+  it("lets only the host pause and resume, and only in custom rooms", async () => {
+    const standard = setup();
+    await standard.service.start("room-1", "u1");
+    expect((await standard.service.setPaused("room-1", "u1", true))?.code).toBe("PAUSE_NOT_ALLOWED");
+
+    const ctx = setup(custom());
+    await ctx.service.start("room-1", "u1");
+    expect((await ctx.service.setPaused("room-1", "u2", true))?.code).toBe("NOT_HOST");
+    expect((await ctx.service.setPaused("room-1", "u1", false))?.code).toBe("NOT_PAUSED");
+
+    const deadline = ctx.scheduler.nextAt("tick:")!;
+    ctx.clock.now = deadline - 5_000;
+    expect(await ctx.service.setPaused("room-1", "u1", true)).toBeNull();
+    // Frozen for everyone: no timer, no armed tick, and the time left is shown.
+    expect(viewOf(ctx.transport, "u3").game).toMatchObject({ endsAt: null, pausedRemainingMs: 5_000 });
+    expect(ctx.scheduler.nextAt("tick:")).toBeUndefined();
+    expect((await ctx.service.setPaused("room-1", "u1", true))?.code).toBe("NOTHING_TO_PAUSE");
+
+    ctx.clock.now += 60_000;
+    expect(await ctx.service.setPaused("room-1", "u1", false)).toBeNull();
+    expect(viewOf(ctx.transport, "u3").game.phase).toBe("ROLE_REVEAL");
+    expect(ctx.scheduler.nextAt("tick:")).toBe(ctx.clock.now + 5_000);
+  });
 });

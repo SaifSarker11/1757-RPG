@@ -55,6 +55,9 @@ export type RealtimeErrorCode =
   | "INVALID_SETTINGS"
   | "SKIP_NOT_ALLOWED"
   | "NOTHING_TO_SKIP"
+  | "PAUSE_NOT_ALLOWED"
+  | "NOTHING_TO_PAUSE"
+  | "NOT_PAUSED"
   | "NO_GAME"
   | "VOICE_FULL"
   | "NOT_IN_VOICE"
@@ -72,6 +75,10 @@ const MESSAGES: Partial<Record<RealtimeErrorCode, string>> = {
   INVALID_SETTINGS: "The room settings don't work for this many players",
   SKIP_NOT_ALLOWED: "Skipping is only available in custom rooms",
   NOTHING_TO_SKIP: "There is no timer to skip right now",
+  PAUSE_NOT_ALLOWED: "Pausing is only available in custom rooms",
+  NOTHING_TO_PAUSE: "There is no running timer to pause",
+  NOT_PAUSED: "The game isn't paused",
+  GAME_PAUSED: "The game is paused by the host",
   NO_GAME: "No game is running in this room",
   VOICE_FULL: "The voice channel is full",
   NOT_IN_VOICE: "Join the voice channel first",

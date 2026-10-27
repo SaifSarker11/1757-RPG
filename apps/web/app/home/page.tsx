@@ -296,7 +296,7 @@ export default function HomePage() {
                   {
                     mode: "CUSTOM",
                     title: "Royal Decree",
-                    blurb: "Custom rules: set each round's timer, pick the characters, fix who plays whom, and skip timers as host.",
+                    blurb: "Custom rules: set each round's timer, pick the characters, fix who plays whom, and pause or skip timers as host.",
                   },
                 ] as const).map((option) => {
                   const selected = roomMode === option.mode;

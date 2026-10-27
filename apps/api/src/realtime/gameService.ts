@@ -166,6 +166,21 @@ export class GameService {
     });
   }
 
+  /** Custom rooms: the host freezes the phase timer for everyone, or restarts it. */
+  setPaused(roomId: string, userId: string, paused: boolean): Promise<RealtimeError | null> {
+    return this.guarded(roomId, async () => {
+      const game = this.games.get(roomId);
+      if (!game) return realtimeError("NO_GAME");
+      if (!game.hostCanSkip) return realtimeError("PAUSE_NOT_ALLOWED");
+      if (game.hostUserId !== userId) return realtimeError("NOT_HOST");
+
+      const { state, events } = this.reduceStep(game, { type: paused ? "PAUSE" : "RESUME" });
+      if (events.length === 0) return realtimeError(paused ? "NOTHING_TO_PAUSE" : "NOT_PAUSED");
+      await this.commit(game, state, events);
+      return null;
+    });
+  }
+
   /** Re-sends a player's view (after a reconnect or page reload). */
   sync(roomId: string, userId: string): Promise<RealtimeError | null> {
     return this.guarded(roomId, async () => {
@@ -300,7 +315,11 @@ export class GameService {
 
   private scheduleTick(game: GameSnapshot): void {
     const { endsAt } = game.state;
-    if (endsAt === null) return;
+    if (endsAt === null) {
+      // No timer, or paused: drop any tick armed for the old deadline.
+      this.deps.scheduler.cancel(tickKey(game.roomId));
+      return;
+    }
     this.deps.scheduler.schedule(tickKey(game.roomId), endsAt, () => {
       void this.tick(game.roomId);
     });

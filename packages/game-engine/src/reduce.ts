@@ -5,6 +5,7 @@ import { enterPhase, type Step } from "./phases/common.js";
 import { endgameTimedOut, guess } from "./phases/endgame.js";
 import { playCard, resolutionTimedOut } from "./phases/mission.js";
 import { nominate, selectionTimedOut } from "./phases/nomination.js";
+import { isPaused, pause, resume } from "./phases/pause.js";
 import { finishRound } from "./phases/round.js";
 import type { Rng } from "./rng.js";
 import type { Action, ErrorCode, GameState, ReduceResult } from "./types.js";
@@ -21,8 +22,13 @@ export function reduce(state: GameState, action: Action, now: number, rng: Rng):
     tick(step, rng, action.type === "SKIP");
     return { state: step.state, events: step.events };
   }
+  if (action.type === "PAUSE" || action.type === "RESUME") {
+    (action.type === "PAUSE" ? pause : resume)(step);
+    return { state: step.state, events: step.events };
+  }
 
-  const error = applyPlayerAction(step, action, rng);
+  // While paused the game is frozen: nobody can act until the host resumes.
+  const error = isPaused(state) ? "GAME_PAUSED" : applyPlayerAction(step, action, rng);
   if (error) {
     return { state, events: [{ type: "ACTION_REJECTED", playerId: action.playerId, code: error }] };
   }
@@ -31,7 +37,7 @@ export function reduce(state: GameState, action: Action, now: number, rng: Rng):
 
 function applyPlayerAction(
   step: Step,
-  action: Exclude<Action, { type: "TICK" } | { type: "SKIP" }>,
+  action: Exclude<Action, { type: "TICK" | "SKIP" | "PAUSE" | "RESUME" }>,
   rng: Rng
 ): ErrorCode | null {
   switch (action.type) {
@@ -52,11 +58,17 @@ function applyPlayerAction(
 
 /**
  * Applies the timeout of the current phase once `now` has reached `endsAt`,
- * or straight away when `force` is set (a host skip).
+ * or straight away when `force` is set (a host skip). A paused timer never
+ * runs out; skipping while paused ends the phase and clears the pause.
  */
 function tick(step: Step, rng: Rng, force = false): void {
   const { state } = step;
-  if (state.endsAt === null || (!force && step.now < state.endsAt)) return;
+  if (isPaused(state)) {
+    if (!force) return;
+    state.pausedRemainingMs = null;
+  } else if (state.endsAt === null || (!force && step.now < state.endsAt)) {
+    return;
+  }
 
   switch (state.phase) {
     case "ROLE_REVEAL":

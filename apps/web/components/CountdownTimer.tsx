@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 
 interface CountdownTimerProps {
   endsAt: number | null;
+  /** Set while the host has paused: the frozen time left, shown without counting down. */
+  pausedRemainingMs?: number | null;
   onExpire?: () => void;
   className?: string;
 }
 
-export function CountdownTimer({ endsAt, onExpire, className = "" }: CountdownTimerProps) {
+export function CountdownTimer({ endsAt, pausedRemainingMs = null, onExpire, className = "" }: CountdownTimerProps) {
   const [secondsRemaining, setSecondsRemaining] = useState<number>(0);
 
   useEffect(() => {
@@ -30,6 +32,15 @@ export function CountdownTimer({ endsAt, onExpire, className = "" }: CountdownTi
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, [endsAt, onExpire]);
+
+  if (pausedRemainingMs !== null) {
+    return (
+      <div className={`font-pixel font-bold px-3 py-1 border-2 inline-flex items-center gap-2 bg-info text-info-content border-info ${className}`}>
+        <span className="text-xs uppercase tracking-wider">PAUSED:</span>
+        <span className="text-sm font-mono">{Math.ceil(pausedRemainingMs / 1000)}s</span>
+      </div>
+    );
+  }
 
   if (!endsAt) return null;
 

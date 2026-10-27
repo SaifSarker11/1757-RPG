@@ -201,7 +201,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
           {room.fixedRoleCount > 0
             ? `The host has fixed the roles of ${room.fixedRoleCount} seat(s); the rest are dealt at random.`
             : "Every seat is dealt at random."}{" "}
-          The host can skip timers during the match.
+          The host can pause and skip timers during the match.
         </p>
       </div>
     );
@@ -306,13 +306,13 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
                 (r) => ROLE_INFO[r].team === team && (enabled.has(r) || r === "NAWAB_SIRAJ" || r === current)
               );
             return (
-              <div key={p.userId} className="flex items-center gap-2">
-                <span className="font-pixel text-[9px] w-14 shrink-0 whitespace-nowrap text-base-content/60">SEAT {seat + 1}</span>
-                <span className="font-pixel text-[10px] flex-1 truncate uppercase">{p.name}</span>
+              <div key={p.userId} className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="font-pixel text-[9px] shrink-0 whitespace-nowrap text-base-content/60">SEAT {seat + 1}</span>
+                <span className="font-pixel text-[10px] flex-1 min-w-0 truncate uppercase">{p.name}</span>
                 <select
                   value={current}
                   onChange={(e) => assign(p.userId, e.target.value)}
-                  className="select select-bordered select-xs rounded-none border-2 font-pixel text-[10px] w-44 bg-base-200"
+                  className="select select-bordered select-xs rounded-none border-2 font-pixel text-[10px] w-full sm:w-44 bg-base-200"
                 >
                   <option value="">🎲 Random</option>
                   <optgroup label="Green">{offered("GREEN").map(option)}</optgroup>
@@ -336,9 +336,10 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
         )}
       </section>
 
-      {/* 4. Skip */}
+      {/* 4. Skip & pause */}
       <p className="text-[10px] text-base-content/70 font-sans border-t border-dashed border-base-content/20 pt-3">
-        During the match you&apos;ll have a <b>SKIP</b> button that ends the current timer straight away.
+        During the match you&apos;ll have a <b>PAUSE</b> button that freezes the timer for everyone, and a{" "}
+        <b>SKIP</b> button that ends the current timer straight away.
       </p>
 
       {message && (

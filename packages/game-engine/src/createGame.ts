@@ -24,6 +24,7 @@ export function createGame(input: CreateGameInput): ReduceResult {
     settings,
     phase: "ROLE_REVEAL",
     endsAt: null,
+    pausedRemainingMs: null,
     round: 1,
     attempt: 1,
     leaderSeat: randomInt(input.rng, players.length),

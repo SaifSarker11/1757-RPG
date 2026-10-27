@@ -1,5 +1,6 @@
 import { ballotWeight, getTeamSize } from "../config/gameConfig.js";
 import { allowedCardsFor } from "../phases/mission.js";
+import { isPaused } from "../phases/pause.js";
 import { lastBallotResultsCard } from "../phases/resultsCard.js";
 import { playerResults } from "../scoring.js";
 import type { EndgameStep, GameState, GuessRecord, PlayerState, RoleId } from "../types.js";
@@ -20,6 +21,7 @@ export function publicView(state: GameState): PublicView {
     round: state.round,
     attempt: state.attempt,
     endsAt: state.endsAt,
+    pausedRemainingMs: state.pausedRemainingMs ?? null,
     leaderSeat: state.leaderSeat,
     failTrack: state.failTrack,
     teamSize: getTeamSize(state.players.length, state.round),
@@ -54,6 +56,17 @@ function publicEndgame(state: GameState): PublicEndgame | null {
   };
 }
 
+/** While paused nobody can act, so nothing is pending. */
+const NOTHING_PENDING: PendingActions = {
+  nominate: null,
+  vote: false,
+  playCard: false,
+  allowedCards: [],
+  deBussyReveal: false,
+  jeanLawLock: false,
+  guess: null,
+};
+
 const GUESSER_ROLE: Readonly<Record<EndgameStep, RoleId>> = {
   MIR_JAFAR_GUESS: "MIR_JAFAR",
   JAGAT_SETH_GUESS: "JAGAT_SETH",
@@ -65,6 +78,7 @@ function pendingGuess(state: GameState, me: PlayerState): EndgameStep | null {
 }
 
 function pendingActions(state: GameState, me: PlayerState): PendingActions {
+  if (isPaused(state)) return NOTHING_PENDING;
   const inDiscussion = state.phase === "DISCUSSION";
   const playCard =
     state.phase === "RESOLUTION" &&
