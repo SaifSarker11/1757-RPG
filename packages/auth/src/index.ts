@@ -8,7 +8,7 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3001",
   trustedOrigins: async (request) => {
-    const origin = request.headers.get("origin");
+    const origin = request?.headers?.get?.("origin") ?? (request?.headers && "origin" in request.headers ? (request.headers as any).origin : null);
     const configured = [
       process.env.WEB_URL,
       process.env.ADMIN_URL,
@@ -18,7 +18,7 @@ export const auth = betterAuth({
       "http://localhost:3001",
     ].filter((url): url is string => Boolean(url));
 
-    if (origin) {
+    if (origin && typeof origin === "string") {
       if (configured.includes(origin)) return [origin];
       try {
         const { hostname } = new URL(origin);
