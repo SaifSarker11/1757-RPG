@@ -22,17 +22,13 @@ export async function saveMatch(
   // M8: Award XP and recalculate levels for non-guest players
   const forfeits = new Set(ctx.disconnectedForfeits ?? []);
   for (const player of summary.players) {
-    const identity = ctx.identities[player.id];
+    const identity = ctx.identities[player.playerId];
     if (!identity?.userId) continue;
 
-    const won = summary.playerResults[player.id]?.won ?? false;
-    const jeanLawLocked = summary.playerResults[player.id]?.jeanLawLocked ?? false;
-    const isForfeit = forfeits.has(player.id);
-
     const xpGained = computeMatchXp({
-      won,
-      jeanLawLocked,
-      disconnectedForfeit: isForfeit,
+      won: player.won,
+      jeanLawLocked: player.jeanLawLocked,
+      disconnectedForfeit: forfeits.has(player.playerId),
     });
 
     if (xpGained > 0) {

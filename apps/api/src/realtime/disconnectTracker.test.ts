@@ -28,7 +28,7 @@ class FakeScheduler implements Scheduler {
 
 function setup(graceMs = DISCONNECT_GRACE_MS) {
   const scheduler = new FakeScheduler();
-  const onGraceExpired = vi.fn<[string, string], void>();
+  const onGraceExpired = vi.fn<(roomId: string, userId: string) => void>();
   const tracker = createDisconnectTracker({
     scheduler,
     onGraceExpired,

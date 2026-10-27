@@ -232,7 +232,11 @@ describe("M7 reconnect & disconnect", () => {
     clients.push(reconnected);
     await send(reconnected, "room:join", { roomId: "room-1" });
 
-    await until(() => statusEvents.some((e) => (e as { online: boolean }).online === true));
+    const isU1Online = (e: unknown) => {
+      const s = e as { userId: string; online: boolean };
+      return s.userId === "u1" && s.online;
+    };
+    await until(() => statusEvents.some(isU1Online));
     expect(statusEvents).toContainEqual({ userId: "u1", online: true });
   });
 
