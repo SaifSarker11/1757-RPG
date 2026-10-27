@@ -2,7 +2,7 @@ import "@repo/config/load-env";
 import { neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import ws from "ws";
-import { PrismaClient } from "./generated";
+import { PrismaClient } from "./generated/index.js";
 
 neonConfig.webSocketConstructor = ws;
 
@@ -26,4 +26,12 @@ export const db = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
 
-export type { Prisma } from "./generated";
+export type { Prisma } from "./generated/index.js";
+export {
+  RoomStatus,
+  PlayerTeam,
+  PlayerRole,
+  MatchEndReason,
+  RoundEndReason,
+  BallotChoice,
+} from "./generated/index.js";

@@ -2,8 +2,30 @@ import "@repo/config/load-env";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import { Server, Socket } from "socket.io";
-import { registerAuthRoutes } from "./auth-routes";
+import rateLimit from "@fastify/rate-limit";
+import { Server } from "socket.io";
+import { db } from "@repo/db";
+import { registerAuthRoutes } from "./auth-routes.js";
+import { registerRoomRoutes } from "./routes/rooms.js";
+import { registerSocketHandlers } from "./socket/index.js";
+import { resolveAuthSession } from "./lib/authSession.js";
+import { createSocketNotifier } from "./lobby/notifier.js";
+import { listPublicRooms, loadRoomDetail } from "./lobby/roomQueries.js";
+import { createRedis } from "./lib/redis.js";
+import { GameService } from "./realtime/gameService.js";
+import { createLobbyCleanup } from "./realtime/lobbyCleanup.js";
+import { HTTP_RATE_LIMIT } from "./realtime/rateLimit.js";
+import { prismaRoomRepository } from "./realtime/roomRepository.js";
+import { createTimerScheduler } from "./realtime/scheduler.js";
+import {
+  MemorySnapshotStore,
+  RedisSnapshotStore,
+  type SnapshotStore,
+} from "./realtime/snapshotStore.js";
+import { createSocketTransport } from "./realtime/transport.js";
+import { createDisconnectTracker } from "./realtime/disconnectTracker.js";
+import { registerUserRoutes } from "./users/routes.js";
+import { registerAdminRoutes } from "./admin/routes.js";
 
 const app = Fastify({ logger: true });
 
@@ -30,7 +52,6 @@ await app.register(cors, {
       return;
     }
 
-    // Expo Go / LAN devices in development
     if (process.env.NODE_ENV !== "production" && isDevLanOrigin(origin)) {
       callback(null, true);
       return;
@@ -39,7 +60,7 @@ await app.register(cors, {
     callback(null, false);
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 });
 
@@ -47,11 +68,9 @@ await app.register(helmet, {
   crossOriginResourcePolicy: { policy: "cross-origin" },
 });
 
-await registerAuthRoutes(app);
+await app.register(rateLimit, { ...HTTP_RATE_LIMIT });
 
-app.get("/health", async () => {
-  return { status: "ok", timestamp: new Date().toISOString() };
-});
+await registerAuthRoutes(app);
 
 const io = new Server(app.server, {
   cors: {
@@ -60,15 +79,90 @@ const io = new Server(app.server, {
   },
 });
 
-io.on("connection", (socket: Socket) => {
-  app.log.info(`Socket connected: ${socket.id}`);
+const logError = (error: unknown, message: string) => app.log.error(error, message);
 
-  socket.on("chat:message", (data: { roomId: string }) => {
-    io.to(data.roomId).emit("chat:message", data);
-  });
+const lobbyNotifier = createSocketNotifier(io, {
+  listPublicRooms,
+  loadRoom: loadRoomDetail,
+  onError: (error) => logError(error, "Lobby notification failed"),
+});
+await registerRoomRoutes(app, { resolveSession: resolveAuthSession, notifier: lobbyNotifier });
+await registerUserRoutes(app, { resolveSession: resolveAuthSession });
+await registerAdminRoutes(app, { resolveSession: resolveAuthSession });
 
-  socket.on("disconnect", () => {
-    app.log.info(`Socket disconnected: ${socket.id}`);
+// Live games snapshot to Redis. Without Redis (local dev without Docker) they
+// fall back to memory and won't survive a restart.
+async function createSnapshotStore(): Promise<SnapshotStore> {
+  const redis = createRedis();
+  try {
+    await redis.connect();
+    return new RedisSnapshotStore(redis);
+  } catch (error) {
+    redis.disconnect();
+    app.log.warn(error, "Redis unavailable: live games will not survive a restart");
+    return new MemorySnapshotStore();
+  }
+}
+
+const scheduler = createTimerScheduler();
+
+const games = new GameService({
+  store: await createSnapshotStore(),
+  scheduler,
+  repo: prismaRoomRepository,
+  transport: createSocketTransport(io),
+  disconnects: createDisconnectTracker({
+    scheduler,
+    onGraceExpired: (roomId, userId) => {
+      void games.autoAct(roomId, userId);
+    },
+  }),
+  logError,
+});
+
+const cleanup = createLobbyCleanup({
+  scheduler,
+  connectedCount: async (roomId) => (await io.in(roomId).fetchSockets()).length,
+  deleteIfWaiting: (roomId) => prismaRoomRepository.deleteIfWaiting(roomId),
+  onDeleted: () => lobbyNotifier.lobbyChanged(),
+  logError,
+});
+
+registerSocketHandlers(io, {
+  resolveSession: resolveAuthSession,
+  games,
+  repo: prismaRoomRepository,
+  cleanup,
+  onGameStarted: () => lobbyNotifier.lobbyChanged(),
+  logError,
+});
+
+const restored = await games.restore();
+if (restored > 0) app.log.info(`Restored ${restored} live game(s) from snapshots`);
+
+app.get("/health", async (request, reply) => {
+  let dbStatus = "ok";
+  try {
+    await db.$queryRaw`SELECT 1`;
+  } catch {
+    dbStatus = "error";
+  }
+
+  const isHealthy = dbStatus === "ok";
+  const status = isHealthy ? 200 : 503;
+
+  return reply.status(status).send({
+    status: isHealthy ? "ok" : "degraded",
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    services: {
+      database: dbStatus,
+      redis: process.env.REDIS_URL ? "configured" : "memory_fallback",
+    },
+    memory: {
+      rssMb: Math.round(process.memoryUsage().rss / (1024 * 1024)),
+      heapUsedMb: Math.round(process.memoryUsage().heapUsed / (1024 * 1024)),
+    },
   });
 });
 
@@ -79,3 +173,22 @@ try {
   app.log.error(err);
   process.exit(1);
 }
+
+// ---------------------------------------------------------------------------
+// Graceful shutdown — close sockets, then HTTP, then DB
+// ---------------------------------------------------------------------------
+async function shutdown(signal: string) {
+  app.log.info(`Received ${signal}, shutting down gracefully…`);
+
+  // Stop accepting new socket connections; disconnect existing ones
+  io.close();
+
+  // Close the Fastify HTTP server (finishes in-flight requests)
+  await app.close();
+
+  app.log.info("Shutdown complete");
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));

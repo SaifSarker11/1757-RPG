@@ -1,0 +1,2860 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "b74e2a52e70bbe153f56fef7e8749326caec4631",
+  "generatedAt": "2026-06-17T10:52:31.169Z",
+  "files": {
+    ".dockerignore": {
+      "filePath": ".dockerignore",
+      "contentHash": "3b16b28bc693a04d6576af66e1b3896b61977ca09337ab449bd0aef57243481c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    ".env.example": {
+      "filePath": ".env.example",
+      "contentHash": "af2552d408a18adb4a8008a4990fec044439fff932e1bfd7dd8075c7d2a8f748",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    ".github/workflows/ci.yml": {
+      "filePath": ".github/workflows/ci.yml",
+      "contentHash": "6a7c95c9110066af6e61ac079cc3fd54c6ff38719daf7e7f00ba2d80a60c56e7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    ".npmrc": {
+      "filePath": ".npmrc",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    ".puku-cli/settings.local.json": {
+      "filePath": ".puku-cli/settings.local.json",
+      "contentHash": "4d47a47bd6ee9a8b111af3bf94a45209e69c138359a2d14f04e75f5f684d3fea",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "5125c5822b820001a8fe1df87c2d0d508126031bf0fc4b9f86ebb7e209069c8c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 41,
+      "hasStructuralAnalysis": false
+    },
+    "api.err.txt": {
+      "filePath": "api.err.txt",
+      "contentHash": "6f3c8788df5cc63d708c016be889c816772ef0fcefda76a2863584ffc06e22e1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": false
+    },
+    "api.out.txt": {
+      "filePath": "api.out.txt",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "apps/admin/app/globals.css": {
+      "filePath": "apps/admin/app/globals.css",
+      "contentHash": "b38f442249b695871b3a99b7a946c84fef4053936133bfae7a54d301e16630e5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": false
+    },
+    "apps/admin/app/home/page.tsx": {
+      "filePath": "apps/admin/app/home/page.tsx",
+      "contentHash": "ae0630fac86b0338c4e9a3c163b68878ce82fcf468d6e394bf14b7337e7e61e3",
+      "functions": [
+        {
+          "name": "HomePage",
+          "params": [],
+          "exported": true,
+          "lineCount": 39
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "HomePage"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/app/layout.tsx": {
+      "filePath": "apps/admin/app/layout.tsx",
+      "contentHash": "afb650ead23451cff443854e4c878dc9cf970f428622613e6af2eb465ffe5795",
+      "functions": [
+        {
+          "name": "RootLayout",
+          "params": [
+            "{\r\n  children,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        },
+        {
+          "source": "next/font/google",
+          "specifiers": [
+            "Geist",
+            "Geist_Mono"
+          ]
+        },
+        {
+          "source": "./globals.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "metadata",
+        "RootLayout"
+      ],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/app/login/page.tsx": {
+      "filePath": "apps/admin/app/login/page.tsx",
+      "contentHash": "c721340934583db108b7ea43d525757aade328eb5783e6015fda94639debab98",
+      "functions": [
+        {
+          "name": "LoginPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 106
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginPage"
+      ],
+      "totalLines": 113,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/app/page.tsx": {
+      "filePath": "apps/admin/app/page.tsx",
+      "contentHash": "ab8a640dfb9b50006eefadaed43707e871cd689bb3fc434ee77d693255afefb6",
+      "functions": [
+        {
+          "name": "Home",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        }
+      ],
+      "exports": [
+        "Home"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/app/signup/page.tsx": {
+      "filePath": "apps/admin/app/signup/page.tsx",
+      "contentHash": "e05dbfe2335330ce74e2cc625f30129167f4496bfe2dd479301b9cda1fa322d4",
+      "functions": [
+        {
+          "name": "SignupPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 93
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "SignupPage"
+      ],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/lib/auth-client.ts": {
+      "filePath": "apps/admin/lib/auth-client.ts",
+      "contentHash": "de66e9d2087e5d14ff935e2c6aa41de498594ba6cf0a59075b6bcad89876ec86",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "better-auth/react",
+          "specifiers": [
+            "createAuthClient"
+          ]
+        },
+        {
+          "source": "better-auth/client/plugins",
+          "specifiers": [
+            "anonymousClient"
+          ]
+        }
+      ],
+      "exports": [
+        "authClient"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/next-env.d.ts": {
+      "filePath": "apps/admin/next-env.d.ts",
+      "contentHash": "083e23c4c5e7761db151134ea1ef7896120c86c5888cdc8a861f534f7e86d6fd",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./.next/dev/types/routes.d.ts",
+          "specifiers": []
+        }
+      ],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/next.config.ts": {
+      "filePath": "apps/admin/next.config.ts",
+      "contentHash": "8201a4d84c10ec5c2aa4f6ab773c3ec79f7ca04b6ad9290c41edd0d13366ee25",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:path",
+          "specifiers": [
+            "path"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "@next/env",
+          "specifiers": [
+            "loadEnvConfig"
+          ]
+        },
+        {
+          "source": "next",
+          "specifiers": [
+            "NextConfig"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/package.json": {
+      "filePath": "apps/admin/package.json",
+      "contentHash": "7dd7023b5e59f5523bb234978f7d0dfddd6f134c0c0dfca8129dfb62a4e466ad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/postcss.config.mjs": {
+      "filePath": "apps/admin/postcss.config.mjs",
+      "contentHash": "c0b4a123ae7b1f40069fd2183841248c4af91f3153c4a2334b19e3bbc2017802",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/tsconfig.json": {
+      "filePath": "apps/admin/tsconfig.json",
+      "contentHash": "fbff01604d6cb54694be707f26e7a0eb21a6ef796b888c6a1dab1839fa7c6ccc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "apps/admin/tsconfig.tsbuildinfo": {
+      "filePath": "apps/admin/tsconfig.tsbuildinfo",
+      "contentHash": "c5d4d248577642dcd96819685802734d2cb87a726a8fec19271b175152af14bc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "apps/api/package.json": {
+      "filePath": "apps/api/package.json",
+      "contentHash": "060fc625ee9b92d1ddf0255452f81a9c4d4adad56c660f6f6b21294448d29c77",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/auth-routes.ts": {
+      "filePath": "apps/api/src/auth-routes.ts",
+      "contentHash": "d130fefaa2a3b8a6a623d2d1fc3e19451fbb4404f358e347fca1de4c05f082d7",
+      "functions": [
+        {
+          "name": "getRequestBody",
+          "params": [
+            "request"
+          ],
+          "returnType": "string | undefined",
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "registerAuthRoutes",
+          "params": [
+            "app"
+          ],
+          "exported": true,
+          "lineCount": 47
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fastify",
+          "specifiers": [
+            "FastifyInstance",
+            "FastifyRequest"
+          ]
+        },
+        {
+          "source": "better-auth/node",
+          "specifiers": [
+            "fromNodeHeaders"
+          ]
+        },
+        {
+          "source": "@repo/auth",
+          "specifiers": [
+            "auth"
+          ]
+        }
+      ],
+      "exports": [
+        "registerAuthRoutes"
+      ],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/game/redisKeys.ts": {
+      "filePath": "apps/api/src/game/redisKeys.ts",
+      "contentHash": "6b168fda44881e4a8581e040b0fd22f1e5215d3e567b741d76c7ed94dfd14f11",
+      "functions": [
+        {
+          "name": "gameStateKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "approvalVotesKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "missionVotesKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "playersKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "selectedTeamKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "deBussyUsedKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "jeanLawTargetKey",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "allKeys",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "GAME_STATE_TTL_SECONDS",
+        "gameStateKey",
+        "approvalVotesKey",
+        "missionVotesKey",
+        "playersKey",
+        "selectedTeamKey",
+        "deBussyUsedKey",
+        "jeanLawTargetKey",
+        "allKeys"
+      ],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/game/roleAssignment.ts": {
+      "filePath": "apps/api/src/game/roleAssignment.ts",
+      "contentHash": "a2ce039ca721557cf4541fd0afdcc1a20ee40ec26c17cdd4ad6ff8f249db94e2",
+      "functions": [
+        {
+          "name": "shuffleArray",
+          "params": [
+            "array"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "getRolePool",
+          "params": [
+            "playerCount"
+          ],
+          "returnType": "RoleName[]",
+          "exported": false,
+          "lineCount": 43
+        },
+        {
+          "name": "assignRoles",
+          "params": [
+            "userIds",
+            "playerCount"
+          ],
+          "returnType": "IRoleAssignment[]",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "getTeamForRole",
+          "params": [
+            "role"
+          ],
+          "returnType": "TeamName",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "buildPrivateRoleInfo",
+          "params": [
+            "assignment",
+            "allAssignments"
+          ],
+          "returnType": "IPrivateRoleInfo",
+          "exported": true,
+          "lineCount": 109
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/types",
+          "specifiers": [
+            "RoleName",
+            "TeamName",
+            "IRoleAssignment",
+            "IPrivateRoleInfo"
+          ]
+        }
+      ],
+      "exports": [
+        "assignRoles",
+        "getTeamForRole",
+        "buildPrivateRoleInfo"
+      ],
+      "totalLines": 275,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/game/roundConfig.ts": {
+      "filePath": "apps/api/src/game/roundConfig.ts",
+      "contentHash": "ee6eea24a2c70da3ce1a841e712bc9cb445252e45bc2d877ccae539b8a9a1571",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "ROUND_TEAM_SIZES",
+        "TOTAL_ROUNDS",
+        "MAX_REJECTIONS",
+        "ROUNDS_TO_WIN",
+        "ROUND_4_MIN_RED_ON_TEAM",
+        "DISCUSSION_DURATION_MS"
+      ],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/game/roundEngine.ts": {
+      "filePath": "apps/api/src/game/roundEngine.ts",
+      "contentHash": "3f176c6a0a773ec0bf43ccd44ede09fd76328216d96a2e2c2345cc7dc0c25908",
+      "functions": [
+        {
+          "name": "shuffleArray",
+          "params": [
+            "array"
+          ],
+          "returnType": "T[]",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "getRedisState",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "Promise<Record<string, string | undefined>>",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "setRedisState",
+          "params": [
+            "roomId",
+            "data"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "getPhase",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "Promise<GamePhase>",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "setPhase",
+          "params": [
+            "roomId",
+            "phase"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "emitToRoom",
+          "params": [
+            "io",
+            "roomId",
+            "event",
+            "data"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "emitPrivate",
+          "params": [
+            "io",
+            "socketId",
+            "event",
+            "data"
+          ],
+          "returnType": "Promise<void>",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "findSocketForUser",
+          "params": [
+            "io",
+            "userId"
+          ],
+          "returnType": "Promise<{ id: string; emit: (event: string, data: unknown) => void } | null>",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "initGameState",
+          "params": [
+            "roomId",
+            "playerIds",
+            "firstSelectorId"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "clearGameState",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "startDiscussionPhase",
+          "params": [
+            "roomId",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "handleTeamProposal",
+          "params": [
+            "roomId",
+            "selectorId",
+            "proposedTeam",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "handleApprovalVote",
+          "params": [
+            "roomId",
+            "userId",
+            "vote",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 91
+        },
+        {
+          "name": "handleMissionVote",
+          "params": [
+            "roomId",
+            "userId",
+            "vote",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 88
+        },
+        {
+          "name": "handleTransition",
+          "params": [
+            "roomId",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "triggerEndgame",
+          "params": [
+            "roomId",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "handleEndgameGuess",
+          "params": [
+            "roomId",
+            "userId",
+            "targetUserId",
+            "guessType",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "endGame",
+          "params": [
+            "roomId",
+            "winner",
+            "reason",
+            "io",
+            "extra"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "handleDebussyLockOn",
+          "params": [
+            "roomId",
+            "userId",
+            "targetUserId",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "handleJeanLawLock",
+          "params": [
+            "roomId",
+            "userId",
+            "targetUserId",
+            "io"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 38
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "socket.io",
+          "specifiers": [
+            "Server"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "db",
+            "PlayerRole",
+            "PlayerTeam",
+            "RoomStatus"
+          ]
+        },
+        {
+          "source": "@repo/types",
+          "specifiers": [
+            "GamePhase",
+            "GameEndPayload",
+            "RoleName"
+          ]
+        },
+        {
+          "source": "../lib/redis",
+          "specifiers": [
+            "redis"
+          ]
+        },
+        {
+          "source": "./redisKeys",
+          "specifiers": [
+            "allKeys",
+            "approvalVotesKey",
+            "gameStateKey",
+            "missionVotesKey",
+            "selectedTeamKey",
+            "playersKey",
+            "deBussyUsedKey",
+            "jeanLawTargetKey"
+          ]
+        },
+        {
+          "source": "./roundConfig",
+          "specifiers": [
+            "ROUND_TEAM_SIZES"
+          ]
+        }
+      ],
+      "exports": [
+        "SHUFFLE_DISCUSSION_DURATION_MS",
+        "initGameState",
+        "clearGameState",
+        "startDiscussionPhase",
+        "handleTeamProposal",
+        "handleApprovalVote",
+        "handleMissionVote",
+        "handleTransition",
+        "triggerEndgame",
+        "handleEndgameGuess",
+        "endGame",
+        "handleDebussyLockOn",
+        "handleJeanLawLock"
+      ],
+      "totalLines": 561,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/index.ts": {
+      "filePath": "apps/api/src/index.ts",
+      "contentHash": "e4d2a9891410a2b117db05f9604b66fb63ece2214cdb7fe2871eb5e5c7cbc57c",
+      "functions": [
+        {
+          "name": "isDevLanOrigin",
+          "params": [
+            "origin"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/config/load-env",
+          "specifiers": []
+        },
+        {
+          "source": "fastify",
+          "specifiers": [
+            "Fastify"
+          ]
+        },
+        {
+          "source": "@fastify/cors",
+          "specifiers": [
+            "cors"
+          ]
+        },
+        {
+          "source": "@fastify/helmet",
+          "specifiers": [
+            "helmet"
+          ]
+        },
+        {
+          "source": "socket.io",
+          "specifiers": [
+            "Server",
+            "Socket"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "db"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "PlayerRole",
+            "PlayerTeam"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "Prisma"
+          ]
+        },
+        {
+          "source": "./game/roleAssignment",
+          "specifiers": [
+            "assignRoles",
+            "buildPrivateRoleInfo"
+          ]
+        },
+        {
+          "source": "@repo/types",
+          "specifiers": [
+            "RoleName",
+            "TeamName",
+            "IRoleAssignment"
+          ]
+        },
+        {
+          "source": "./auth-routes",
+          "specifiers": [
+            "registerAuthRoutes"
+          ]
+        },
+        {
+          "source": "./routes/rooms.js",
+          "specifiers": [
+            "registerRoomRoutes"
+          ]
+        },
+        {
+          "source": "./socket/roomHandler.js",
+          "specifiers": [
+            "registerRoomHandlers"
+          ]
+        },
+        {
+          "source": "./game/roundEngine.js",
+          "specifiers": [
+            "initGameState",
+            "startDiscussionPhase",
+            "handleTeamProposal",
+            "handleApprovalVote",
+            "handleMissionVote",
+            "handleEndgameGuess",
+            "handleDebussyLockOn",
+            "handleJeanLawLock"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 333,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/lib/redis.ts": {
+      "filePath": "apps/api/src/lib/redis.ts",
+      "contentHash": "af0f14720d6463edc820e682396a6545754b12b6ef64fb7d858bc97257374366",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "ioredis",
+          "specifiers": [
+            "Redis"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/routes/rooms.ts": {
+      "filePath": "apps/api/src/routes/rooms.ts",
+      "contentHash": "15ce331d983a694c6351d6bf6e4e5dc842a345d508b63c65362c4c03ce79fab4",
+      "functions": [
+        {
+          "name": "generateRoomCode",
+          "params": [],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "generateUniqueRoomCode",
+          "params": [],
+          "returnType": "Promise<string>",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "generateId",
+          "params": [],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "registerRoomRoutes",
+          "params": [
+            "app"
+          ],
+          "exported": true,
+          "lineCount": 245
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fastify",
+          "specifiers": [
+            "FastifyInstance"
+          ]
+        },
+        {
+          "source": "crypto",
+          "specifiers": [
+            "randomBytes"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "db",
+            "RoomStatus"
+          ]
+        },
+        {
+          "source": "../services/roleAssignmentService.js",
+          "specifiers": [
+            "assignRoles"
+          ]
+        }
+      ],
+      "exports": [
+        "registerRoomRoutes"
+      ],
+      "totalLines": 322,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/roleAssignmentService.ts": {
+      "filePath": "apps/api/src/services/roleAssignmentService.ts",
+      "contentHash": "7818954aa0520e6faf2ce51556d47e2cf7a05485a8177303cd979fae5e8adfab",
+      "functions": [
+        {
+          "name": "assignRoles",
+          "params": [
+            "playerCount"
+          ],
+          "returnType": "IRoleAssignment[]",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "shuffleArray",
+          "params": [
+            "array"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "isRaiDurlabh",
+          "params": [
+            "role"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "PlayerRole",
+            "PlayerTeam"
+          ]
+        }
+      ],
+      "exports": [
+        "assignRoles",
+        "isRaiDurlabh"
+      ],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/services/roundService.ts": {
+      "filePath": "apps/api/src/services/roundService.ts",
+      "contentHash": "0ea01a19d7fac9b42b7c89aef4329b7cfdb3a6ffb38ff4f7e2f75a8c816da745",
+      "functions": [
+        {
+          "name": "advancePhase",
+          "params": [
+            "roomId",
+            "phase"
+          ],
+          "returnType": "Promise<PhaseTransition | null>",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "calculateRoundWinner",
+          "params": [
+            "roundId"
+          ],
+          "returnType": "Promise<PlayerTeam | null>",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "getNextSelector",
+          "params": [
+            "roomId",
+            "currentSelectorId"
+          ],
+          "returnType": "Promise<string | null>",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "getTeamSizeForRound",
+          "params": [
+            "roundNumber"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "db",
+            "PlayerTeam"
+          ]
+        }
+      ],
+      "exports": [
+        "advancePhase",
+        "calculateRoundWinner",
+        "getNextSelector",
+        "getTeamSizeForRound",
+        "DISCUSSION_DURATION_MS"
+      ],
+      "totalLines": 98,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/src/socket/roomHandler.ts": {
+      "filePath": "apps/api/src/socket/roomHandler.ts",
+      "contentHash": "8521cab4e8d5350a897bbcdcaf48e952f317839514ce358c09cf13ba0d633cdd",
+      "functions": [
+        {
+          "name": "hasActiveRedisGame",
+          "params": [
+            "roomId"
+          ],
+          "returnType": "Promise<boolean>",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "registerRoomHandlers",
+          "params": [
+            "io"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 181
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "socket.io",
+          "specifiers": [
+            "Server",
+            "Socket"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "db",
+            "PlayerTeam",
+            "RoomStatus"
+          ]
+        },
+        {
+          "source": "../lib/redis",
+          "specifiers": [
+            "redis"
+          ]
+        }
+      ],
+      "exports": [
+        "registerRoomHandlers"
+      ],
+      "totalLines": 203,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tsconfig.json": {
+      "filePath": "apps/api/tsconfig.json",
+      "contentHash": "2df9eb1c8aa461561581cfacfe9ccc161b0c4544aeccbc64b4111857f1b5b8ff",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "apps/api/tsconfig.tsbuildinfo": {
+      "filePath": "apps/api/tsconfig.tsbuildinfo",
+      "contentHash": "adb938d0b46e2b51a45435c06c0acb5d370683716bab9f891ea1606c42f40d39",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "apps/mobile/.expo/devices.json": {
+      "filePath": "apps/mobile/.expo/devices.json",
+      "contentHash": "4999f4b7b0c9228e1d00365cd633ba1366884a1aa6b52c7fbc654987161ec8a2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/.expo/README.md": {
+      "filePath": "apps/mobile/.expo/README.md",
+      "contentHash": "f7fa8374343414cec1bbfdcf649246f075338317208ffa51916434be8b9e3cbb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/.expo/types/router.d.ts": {
+      "filePath": "apps/mobile/.expo/types/router.d.ts",
+      "contentHash": "26f2920a5197917d0f15c89bf6acc86d51f49f07a346ba8887764023128a1ef1",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-router",
+          "specifiers": [
+            "* as Router"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/app.config.ts": {
+      "filePath": "apps/mobile/app.config.ts",
+      "contentHash": "d3bb7799a4e3e735fee9b99b872525e5382c8143d22d20be3d12bbcad5e8500d",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/config/load-env",
+          "specifiers": []
+        },
+        {
+          "source": "expo/config",
+          "specifiers": [
+            "ExpoConfig",
+            "ConfigContext"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/app/_layout.tsx": {
+      "filePath": "apps/mobile/app/_layout.tsx",
+      "contentHash": "790e83f49311b49cd40ff13411c532e52d2a3d4950533fbdd16adf0889819e45",
+      "functions": [
+        {
+          "name": "RootLayout",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-router",
+          "specifiers": [
+            "Stack"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "initializeAuthClient"
+          ]
+        }
+      ],
+      "exports": [
+        "RootLayout"
+      ],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/app/home.tsx": {
+      "filePath": "apps/mobile/app/home.tsx",
+      "contentHash": "12f641d0028a47bc79ace8f3eb97c9df43c945775e49a24a0a921714f5ac3b0f",
+      "functions": [
+        {
+          "name": "HomeScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 193
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-router",
+          "specifiers": [
+            "router"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-native",
+          "specifiers": [
+            "ActivityIndicator",
+            "FlatList",
+            "KeyboardAvoidingView",
+            "Platform",
+            "Pressable",
+            "SafeAreaView",
+            "ScrollView",
+            "StyleSheet",
+            "Text",
+            "TextInput",
+            "View"
+          ]
+        },
+        {
+          "source": "socket.io-client",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient",
+            "signOutMobile"
+          ]
+        },
+        {
+          "source": "@/lib/api-url",
+          "specifiers": [
+            "getApiUrl"
+          ]
+        }
+      ],
+      "exports": [
+        "HomeScreen"
+      ],
+      "totalLines": 427,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/app/index.tsx": {
+      "filePath": "apps/mobile/app/index.tsx",
+      "contentHash": "d7fd58545a617265c47b7ff135e422112d9e35e5d1956982d55bc52e0d0342f3",
+      "functions": [
+        {
+          "name": "LoginScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 105
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-router",
+          "specifiers": [
+            "router"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState"
+          ]
+        },
+        {
+          "source": "react-native",
+          "specifiers": [
+            "ActivityIndicator",
+            "Pressable",
+            "StyleSheet",
+            "Text",
+            "TextInput",
+            "View"
+          ]
+        },
+        {
+          "source": "@/lib/api-url",
+          "specifiers": [
+            "getApiUrl"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginScreen"
+      ],
+      "totalLines": 174,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/app/signup.tsx": {
+      "filePath": "apps/mobile/app/signup.tsx",
+      "contentHash": "20727c61d103eb3f3601bfe4e17c90c3fa683f3f2fbaba239f5662e9969bf54b",
+      "functions": [
+        {
+          "name": "SignupScreen",
+          "params": [],
+          "exported": true,
+          "lineCount": 67
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-router",
+          "specifiers": [
+            "router"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "react-native",
+          "specifiers": [
+            "Pressable",
+            "StyleSheet",
+            "Text",
+            "TextInput",
+            "View"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "SignupScreen"
+      ],
+      "totalLines": 113,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/lib/api-url.ts": {
+      "filePath": "apps/mobile/lib/api-url.ts",
+      "contentHash": "897b4473130b707ee8c7c133ef1df50d353ff903b07c460e6b30e33214e4def3",
+      "functions": [
+        {
+          "name": "getApiUrl",
+          "params": [],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-constants",
+          "specifiers": [
+            "Constants"
+          ]
+        },
+        {
+          "source": "react-native",
+          "specifiers": [
+            "Platform"
+          ]
+        }
+      ],
+      "exports": [
+        "getApiUrl"
+      ],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/lib/auth-client.ts": {
+      "filePath": "apps/mobile/lib/auth-client.ts",
+      "contentHash": "26257f3943ff7d0f11da3df5da43036c046caf78d7dd57a98ae193137d3fd44f",
+      "functions": [
+        {
+          "name": "initializeAuthClient",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "signOutMobile",
+          "params": [],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "better-auth/react",
+          "specifiers": [
+            "createAuthClient"
+          ]
+        },
+        {
+          "source": "better-auth/client/plugins",
+          "specifiers": [
+            "anonymousClient"
+          ]
+        },
+        {
+          "source": "./api-url",
+          "specifiers": [
+            "getApiUrl"
+          ]
+        },
+        {
+          "source": "./token-storage",
+          "specifiers": [
+            "clearAuthToken",
+            "getCachedAuthToken",
+            "loadAuthToken",
+            "saveAuthToken"
+          ]
+        }
+      ],
+      "exports": [
+        "authClient",
+        "initializeAuthClient",
+        "signOutMobile"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/lib/token-storage.ts": {
+      "filePath": "apps/mobile/lib/token-storage.ts",
+      "contentHash": "8bc953ccc47110415654f3ea25839a166bd44a60cf6b0a7d949993e6cbec8fac",
+      "functions": [
+        {
+          "name": "loadAuthToken",
+          "params": [],
+          "returnType": "Promise<string | null>",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "saveAuthToken",
+          "params": [
+            "token"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "clearAuthToken",
+          "params": [],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "getCachedAuthToken",
+          "params": [],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "expo-secure-store",
+          "specifiers": [
+            "* as SecureStore"
+          ]
+        }
+      ],
+      "exports": [
+        "loadAuthToken",
+        "saveAuthToken",
+        "clearAuthToken",
+        "getCachedAuthToken"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/package.json": {
+      "filePath": "apps/mobile/package.json",
+      "contentHash": "20525c6c8b9db7c4f811d2de904fc58200687d53b57b078c9fdfd3d6649d792b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "apps/mobile/tsconfig.json": {
+      "filePath": "apps/mobile/tsconfig.json",
+      "contentHash": "4f3f1aa62b7c90f2f1c930283a67a3674316a402e55857e0eaddef50692936a8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/app/globals.css": {
+      "filePath": "apps/web/app/globals.css",
+      "contentHash": "94d307fb925a3264dd331975b5e17170b1d887f361669cf839bdf37cc7a40db8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    "apps/web/app/home/page.tsx": {
+      "filePath": "apps/web/app/home/page.tsx",
+      "contentHash": "9e94009d0fccb3339c407c20b2f1a090afad19dfdf757e14b4599d1f32ef823b",
+      "functions": [
+        {
+          "name": "HomePage",
+          "params": [],
+          "exported": true,
+          "lineCount": 210
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "socket.io-client",
+          "specifiers": [
+            "io",
+            "Socket"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "HomePage"
+      ],
+      "totalLines": 227,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/app/layout.tsx": {
+      "filePath": "apps/web/app/layout.tsx",
+      "contentHash": "e3010b15d27d56338317ab69512005622a44ba635a57af1a3205951da01043c7",
+      "functions": [
+        {
+          "name": "RootLayout",
+          "params": [
+            "{\r\n  children,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next",
+          "specifiers": [
+            "Metadata"
+          ]
+        },
+        {
+          "source": "next/font/google",
+          "specifiers": [
+            "Geist",
+            "Geist_Mono"
+          ]
+        },
+        {
+          "source": "./globals.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "metadata",
+        "RootLayout"
+      ],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/app/login/page.tsx": {
+      "filePath": "apps/web/app/login/page.tsx",
+      "contentHash": "e38d774bb3391f6176cd1ae9194c8580f5a7d55fa1fdff5f7d0fae0323e69712",
+      "functions": [
+        {
+          "name": "LoginPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 124
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginPage"
+      ],
+      "totalLines": 131,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/app/page.tsx": {
+      "filePath": "apps/web/app/page.tsx",
+      "contentHash": "ab8a640dfb9b50006eefadaed43707e871cd689bb3fc434ee77d693255afefb6",
+      "functions": [
+        {
+          "name": "Home",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "redirect"
+          ]
+        }
+      ],
+      "exports": [
+        "Home"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/app/signup/page.tsx": {
+      "filePath": "apps/web/app/signup/page.tsx",
+      "contentHash": "e14380e08498df891d5cfc9c79fc3e16f70094b88f751fc733c71c469a4c62d1",
+      "functions": [
+        {
+          "name": "SignupPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 102
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "next/navigation",
+          "specifiers": [
+            "useRouter"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "FormEvent",
+            "useState"
+          ]
+        },
+        {
+          "source": "@/lib/auth-client",
+          "specifiers": [
+            "authClient"
+          ]
+        }
+      ],
+      "exports": [
+        "SignupPage"
+      ],
+      "totalLines": 109,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/eslint.config.mjs": {
+      "filePath": "apps/web/eslint.config.mjs",
+      "contentHash": "275a07c13fc7c83a652efcfa9fb6a207c451a2f5088e6793415ce44281285720",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "eslint/config",
+          "specifiers": [
+            "defineConfig",
+            "globalIgnores"
+          ]
+        },
+        {
+          "source": "eslint-config-next/core-web-vitals",
+          "specifiers": [
+            "nextVitals"
+          ]
+        },
+        {
+          "source": "eslint-config-next/typescript",
+          "specifiers": [
+            "nextTs"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/lib/auth-client.ts": {
+      "filePath": "apps/web/lib/auth-client.ts",
+      "contentHash": "d280046109c719aa9bf532ea3f6920b9c340d8b3afd715e800dc38270cab2fa2",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "better-auth/react",
+          "specifiers": [
+            "createAuthClient"
+          ]
+        },
+        {
+          "source": "better-auth/client/plugins",
+          "specifiers": [
+            "anonymousClient"
+          ]
+        }
+      ],
+      "exports": [
+        "authClient"
+      ],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/next.config.ts": {
+      "filePath": "apps/web/next.config.ts",
+      "contentHash": "8201a4d84c10ec5c2aa4f6ab773c3ec79f7ca04b6ad9290c41edd0d13366ee25",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:path",
+          "specifiers": [
+            "path"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "@next/env",
+          "specifiers": [
+            "loadEnvConfig"
+          ]
+        },
+        {
+          "source": "next",
+          "specifiers": [
+            "NextConfig"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/package.json": {
+      "filePath": "apps/web/package.json",
+      "contentHash": "42d26900145c7e9a07e187fe2f687bbd788b43654d1b9a5a17f5c5699bc43bc9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/postcss.config.mjs": {
+      "filePath": "apps/web/postcss.config.mjs",
+      "contentHash": "7b299d3d3b16699ddda397c0b2373b3af4f25f8fc9ccc9b3d9e64ef083bc1c21",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/README.md": {
+      "filePath": "apps/web/README.md",
+      "contentHash": "3b3ed71ebf50e973209bc634f6849e8ecf235a6c0686c285e1f36af5caa1c2cc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "apps/web/tsconfig.json": {
+      "filePath": "apps/web/tsconfig.json",
+      "contentHash": "fbff01604d6cb54694be707f26e7a0eb21a6ef796b888c6a1dab1839fa7c6ccc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "CLAUDE.md": {
+      "filePath": "CLAUDE.md",
+      "contentHash": "a742fe07b17c2e39879db5664c7a2e34651370081112a86703a28e4733930dbd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 84,
+      "hasStructuralAnalysis": true
+    },
+    "docker-compose.yml": {
+      "filePath": "docker-compose.yml",
+      "contentHash": "7c772a44d8135cf4ebdd01b0594bb48bf1dcdd1d3b3d25f26ebb602e7e79382d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "docs/socketio-chat-tutorial.md": {
+      "filePath": "docs/socketio-chat-tutorial.md",
+      "contentHash": "c18b7314d4076d29f2f4cdc6692637eb0d401ad480ed19492442e891f6e070dc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 197,
+      "hasStructuralAnalysis": true
+    },
+    "err.txt": {
+      "filePath": "err.txt",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "IMPORTANT.md": {
+      "filePath": "IMPORTANT.md",
+      "contentHash": "596ed93248ccccf62016ad8a1c0cf5c912bd8627af6c468b0aa7b74f4a65b84d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "known-errors.md": {
+      "filePath": "known-errors.md",
+      "contentHash": "97cebae419d559d97d7fbf81f4703b6dafcc0ec69a4e4af08b6a5a57ee766cda",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "out.txt": {
+      "filePath": "out.txt",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "d7cf9ded774e0fe6b409491bf3a8d86eadfe150ea3be802c6f1de492ef944d7c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "packages/auth/package.json": {
+      "filePath": "packages/auth/package.json",
+      "contentHash": "2a471b70823f61834e1495bcc990e394e371a992efe37adf9b743d3898a25483",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "packages/auth/src/index.ts": {
+      "filePath": "packages/auth/src/index.ts",
+      "contentHash": "db6e93f183b88623ac4eb581912b96c7c27048576fa98fe6b0a04bffd6a0f151",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "better-auth",
+          "specifiers": [
+            "betterAuth"
+          ]
+        },
+        {
+          "source": "better-auth/adapters/prisma",
+          "specifiers": [
+            "prismaAdapter"
+          ]
+        },
+        {
+          "source": "better-auth/plugins",
+          "specifiers": [
+            "anonymous",
+            "bearer"
+          ]
+        },
+        {
+          "source": "@repo/db",
+          "specifiers": [
+            "db"
+          ]
+        }
+      ],
+      "exports": [
+        "auth"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "packages/auth/tsconfig.json": {
+      "filePath": "packages/auth/tsconfig.json",
+      "contentHash": "892ffd014e8a3b4ac5397247fea2f1411f804c725bcf61aeb307dc357bc85977",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "packages/config/load-env.mjs": {
+      "filePath": "packages/config/load-env.mjs",
+      "contentHash": "756b56438bd782dd77496e5c48e5930604b8fe6250010802e942716e1ec48b90",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "dotenv",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "existsSync"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "resolve"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        }
+      ],
+      "exports": [
+        "monorepoRoot",
+        "envPath"
+      ],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "packages/config/package.json": {
+      "filePath": "packages/config/package.json",
+      "contentHash": "035cc7f687d2f0196c440e91e742469f26f0600c6477db8f0a09a730265f5f9e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "packages/config/tsconfig.base.json": {
+      "filePath": "packages/config/tsconfig.base.json",
+      "contentHash": "40e37ad66a2ac55ea6cbb11e819ae23533a43e301688c7b1904a00ebe2ab9276",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "packages/config/tsconfig.json": {
+      "filePath": "packages/config/tsconfig.json",
+      "contentHash": "bfca42b83f765126e0d109b59b44d3bca40aec829b628e1d9a89fffec5bf71f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "packages/db/package.json": {
+      "filePath": "packages/db/package.json",
+      "contentHash": "135276c0e7cf9b05ee67e4728c7019e1e445b0c5fd798bc9a8533d7092ad1185",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "packages/db/prisma.config.ts": {
+      "filePath": "packages/db/prisma.config.ts",
+      "contentHash": "aa23610ea9ca1b85090a8408dd09caf75c3d1ba1d1b346759f4716e865eff5f0",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/config/load-env",
+          "specifiers": []
+        },
+        {
+          "source": "prisma/config",
+          "specifiers": [
+            "defineConfig",
+            "env"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "packages/db/prisma/schema.prisma": {
+      "filePath": "packages/db/prisma/schema.prisma",
+      "contentHash": "bc1d73eee82d3ca8c365ac35e242c2b9d5036a6ac77fe2a589f992f613d3f480",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 166,
+      "hasStructuralAnalysis": false
+    },
+    "packages/db/src/index.ts": {
+      "filePath": "packages/db/src/index.ts",
+      "contentHash": "5e6548f6ee0a4f3a8d34927008d899aaa116394b1c096afc87f0d63de439eaad",
+      "functions": [
+        {
+          "name": "createPrismaClient",
+          "params": [],
+          "exported": false,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/config/load-env",
+          "specifiers": []
+        },
+        {
+          "source": "@neondatabase/serverless",
+          "specifiers": [
+            "neonConfig"
+          ]
+        },
+        {
+          "source": "@prisma/adapter-neon",
+          "specifiers": [
+            "PrismaNeon"
+          ]
+        },
+        {
+          "source": "ws",
+          "specifiers": [
+            "ws"
+          ]
+        },
+        {
+          "source": "./generated/index.js",
+          "specifiers": [
+            "PrismaClient"
+          ]
+        }
+      ],
+      "exports": [
+        "db",
+        "Prisma",
+        "RoomStatus",
+        "PlayerTeam",
+        "PlayerRole"
+      ],
+      "totalLines": 30,
+      "hasStructuralAnalysis": true
+    },
+    "packages/db/tsconfig.json": {
+      "filePath": "packages/db/tsconfig.json",
+      "contentHash": "4de9c8011ce4fa4c44034843e0e25f4a3ac9208eb760cc5f0ad80b1093d80b29",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "packages/eslint-config/base.js": {
+      "filePath": "packages/eslint-config/base.js",
+      "contentHash": "aa91ab975d10bbdef4f618def1e94d7cd341472792447c4860faa2601ba72d2c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@eslint/js",
+          "specifiers": [
+            "js"
+          ]
+        },
+        {
+          "source": "eslint-config-prettier",
+          "specifiers": [
+            "eslintConfigPrettier"
+          ]
+        },
+        {
+          "source": "eslint-plugin-turbo",
+          "specifiers": [
+            "turboPlugin"
+          ]
+        },
+        {
+          "source": "typescript-eslint",
+          "specifiers": [
+            "tseslint"
+          ]
+        },
+        {
+          "source": "eslint-plugin-only-warn",
+          "specifiers": [
+            "onlyWarn"
+          ]
+        }
+      ],
+      "exports": [
+        "config"
+      ],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "packages/eslint-config/next.js": {
+      "filePath": "packages/eslint-config/next.js",
+      "contentHash": "fad2ed12453eb734a5ce5d2b62f1cbe1b1a6b1efcb30d1069ed6464934fc0d4b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@eslint/js",
+          "specifiers": [
+            "js"
+          ]
+        },
+        {
+          "source": "eslint/config",
+          "specifiers": [
+            "globalIgnores"
+          ]
+        },
+        {
+          "source": "eslint-config-prettier",
+          "specifiers": [
+            "eslintConfigPrettier"
+          ]
+        },
+        {
+          "source": "typescript-eslint",
+          "specifiers": [
+            "tseslint"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react-hooks",
+          "specifiers": [
+            "pluginReactHooks"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react",
+          "specifiers": [
+            "pluginReact"
+          ]
+        },
+        {
+          "source": "globals",
+          "specifiers": [
+            "globals"
+          ]
+        },
+        {
+          "source": "@next/eslint-plugin-next",
+          "specifiers": [
+            "pluginNext"
+          ]
+        },
+        {
+          "source": "./base.js",
+          "specifiers": [
+            "baseConfig"
+          ]
+        }
+      ],
+      "exports": [
+        "nextJsConfig"
+      ],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "packages/eslint-config/package.json": {
+      "filePath": "packages/eslint-config/package.json",
+      "contentHash": "03bd793ed43905ae020301aa858635f83b63c841b2b5f5eec5e34c4976372de5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "packages/eslint-config/react-internal.js": {
+      "filePath": "packages/eslint-config/react-internal.js",
+      "contentHash": "6916ebae94b721ebe2f37d0178124eea45742c4288225422bb0db7d047afc22b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@eslint/js",
+          "specifiers": [
+            "js"
+          ]
+        },
+        {
+          "source": "eslint-config-prettier",
+          "specifiers": [
+            "eslintConfigPrettier"
+          ]
+        },
+        {
+          "source": "typescript-eslint",
+          "specifiers": [
+            "tseslint"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react-hooks",
+          "specifiers": [
+            "pluginReactHooks"
+          ]
+        },
+        {
+          "source": "eslint-plugin-react",
+          "specifiers": [
+            "pluginReact"
+          ]
+        },
+        {
+          "source": "globals",
+          "specifiers": [
+            "globals"
+          ]
+        },
+        {
+          "source": "./base.js",
+          "specifiers": [
+            "baseConfig"
+          ]
+        }
+      ],
+      "exports": [
+        "config"
+      ],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "packages/eslint-config/README.md": {
+      "filePath": "packages/eslint-config/README.md",
+      "contentHash": "7b4cd040c333b09dbd7da49b8c4ee90d06c7aa75c8ebcad38a568de5e9d5f9ae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "packages/types/package.json": {
+      "filePath": "packages/types/package.json",
+      "contentHash": "e1650dc09a7e0f9c04df81689f519dd1e4a5fb5cca8e6680334671d28821baa7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "packages/types/src/index.d.ts": {
+      "filePath": "packages/types/src/index.d.ts",
+      "contentHash": "735c2eed6f6ce15707a8b37a9644749ac64c8e79ab06b22dc80a25ab9d3b2a5f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 229,
+      "hasStructuralAnalysis": true
+    },
+    "packages/types/src/index.js": {
+      "filePath": "packages/types/src/index.js",
+      "contentHash": "ed04b014873c151eb8e99c4cadf623b86754ce44fa8b0c252b1df4549e9ab953",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "packages/types/src/index.ts": {
+      "filePath": "packages/types/src/index.ts",
+      "contentHash": "1f7e69fe91b34ff0e33cf0cde096ad3f4bad552bd351eaf69db6a3e0b23b7877",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 209,
+      "hasStructuralAnalysis": true
+    },
+    "packages/types/tsconfig.json": {
+      "filePath": "packages/types/tsconfig.json",
+      "contentHash": "0782c357ec8f020fb6a853abda1349c9a175f32d7e518fa4ee692cf7d6b8cd60",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "packages/types/tsconfig.tsbuildinfo": {
+      "filePath": "packages/types/tsconfig.tsbuildinfo",
+      "contentHash": "f2c53d56017992f7e5ee5675a29dcb05c5d1317e37a3a7b7a419744a84b10745",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "packages/typescript-config/base.json": {
+      "filePath": "packages/typescript-config/base.json",
+      "contentHash": "d8b3d16f7e9e09305a5788fbb4d9da90ffc4210481b6b08a8dd5454417c6092a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "packages/typescript-config/nextjs.json": {
+      "filePath": "packages/typescript-config/nextjs.json",
+      "contentHash": "d7275fa425f6c22ab696a7c5e668fdcb1530979c82aacde41589cbdc635b59c4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "packages/typescript-config/package.json": {
+      "filePath": "packages/typescript-config/package.json",
+      "contentHash": "eff31f5eb3ce107074a861351dd9dc2f2d4479e5bfe4d3aab97827af23f9681a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "packages/typescript-config/react-library.json": {
+      "filePath": "packages/typescript-config/react-library.json",
+      "contentHash": "64251a38b71ce7b8d9c6a92500c39432e3da8f9b44c454906f99ea14767e4b8d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "packages/ui/eslint.config.mjs": {
+      "filePath": "packages/ui/eslint.config.mjs",
+      "contentHash": "e8d245b5f7242a24f39e81c435281148ffcbe33822e8cba69093fa1c2c7b88fd",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@repo/eslint-config/react-internal",
+          "specifiers": [
+            "config"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "packages/ui/package.json": {
+      "filePath": "packages/ui/package.json",
+      "contentHash": "f1d1f1c0989406b85cfc91062823bd600be232f52959b34e9d72f4d7643ca07f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "packages/ui/src/button.tsx": {
+      "filePath": "packages/ui/src/button.tsx",
+      "contentHash": "d68ca1b1982d49ea79f033a5018d61eeac3804bfa4033de828a73c761d0f8ad2",
+      "functions": [
+        {
+          "name": "Button",
+          "params": [
+            "{ children, className, appName }"
+          ],
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        }
+      ],
+      "exports": [
+        "Button"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "packages/ui/src/card.tsx": {
+      "filePath": "packages/ui/src/card.tsx",
+      "contentHash": "043d24b6432c1d21a72919fa26c871bb8c2734731d44fa618877cc824f8baeb9",
+      "functions": [
+        {
+          "name": "Card",
+          "params": [
+            "{\r\n  className,\r\n  title,\r\n  children,\r\n  href,\r\n}"
+          ],
+          "returnType": "JSX.Element",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "JSX"
+          ]
+        }
+      ],
+      "exports": [
+        "Card"
+      ],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "packages/ui/src/code.tsx": {
+      "filePath": "packages/ui/src/code.tsx",
+      "contentHash": "af559352664b2c4d109ff1adc59ba16380494a05385aa85c8c3b0f09e145fa37",
+      "functions": [
+        {
+          "name": "Code",
+          "params": [
+            "{\r\n  children,\r\n  className,\r\n}"
+          ],
+          "returnType": "JSX.Element",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "JSX"
+          ]
+        }
+      ],
+      "exports": [
+        "Code"
+      ],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "packages/ui/tsconfig.json": {
+      "filePath": "packages/ui/tsconfig.json",
+      "contentHash": "d76796075f3980917d22a76bbb606a50125a22c2b1a6861f0d72f42091cb9e2f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "pnpm-workspace.yaml": {
+      "filePath": "pnpm-workspace.yaml",
+      "contentHash": "774a8ec12497b8eda158df7ab157f5a2cad12dd8fece44ebf8b0711a772260fc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "2553e49f1b7097b4d81784aa11fc785331f875d121fc7aa92526e31b1ac54900",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 160,
+      "hasStructuralAnalysis": true
+    },
+    "scripts/kill-dev-ports.mjs": {
+      "filePath": "scripts/kill-dev-ports.mjs",
+      "contentHash": "1c09bf54256f9c3d457c230bff6c7112bac349c41d04e9c52c2f27542d4bd74f",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:child_process",
+          "specifiers": [
+            "execSync"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "test-socket.html": {
+      "filePath": "test-socket.html",
+      "contentHash": "8a3ce7ef03d9d01900be9015ae213d401aeac31a7c8f08744ed89e9ebe63ca17",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": false
+    },
+    "test-socket.js": {
+      "filePath": "test-socket.js",
+      "contentHash": "d029e0fd29d1ebd1259896d042648099ea7ebdfa7b2d8e39997bcead8ec8cda9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "turbo.json": {
+      "filePath": "turbo.json",
+      "contentHash": "c9e960aef31eab657e7688967eea2be67efa13c59cf448102a8ee5ffbe2d8078",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

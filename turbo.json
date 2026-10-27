@@ -13,6 +13,7 @@
     "NEXT_PUBLIC_WS_URL",
     "EXPO_PUBLIC_API_URL",
     "COOKIE_DOMAIN",
+    "REDIS_URL",
     "NODE_ENV"
   ],
   "tasks": {
@@ -27,6 +28,10 @@
     "lint": {},
     "typecheck": {
       "dependsOn": ["^db:generate", "db:generate"]
+    },
+    "test": {
+      "dependsOn": ["^db:generate", "db:generate"],
+      "cache": false
     },
     "db:generate": {
       "cache": false

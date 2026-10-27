@@ -1,12 +1,84 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { gameAudio } from "@/lib/audio";
+import { MusicControl } from "@/components/MusicControl";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
+const THEMES = [
+  "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave",
+  "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua",
+  "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula",
+  "cmyk", "autumn", "business", "acid", "lemon", "night", "coffee", "winter",
+  "dim", "nord", "sunset"
+];
 
 export default function HomePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+
+  const [currentTheme, setCurrentTheme] = useState("retro");
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [userStats, setUserStats] = useState<{
+    xp: number;
+    level: number;
+    matchesPlayed: number;
+    matchesWon: number;
+    winRate: number;
+  } | null>(null);
+  const [profileMessage, setProfileMessage] = useState<string | null>(null);
+  const [joinCode, setJoinCode] = useState("");
+  const [maxPlayers, setMaxPlayers] = useState(10);
+  const [roomMode, setRoomMode] = useState<"STANDARD" | "CUSTOM">("STANDARD");
+  const [error, setError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("daisyui-theme") || "retro";
+    setCurrentTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    setSoundEnabled(gameAudio.isEnabled());
+  }, []);
+
+  useEffect(() => {
+    if (session?.user) {
+      setDisplayName(session.user.name);
+      // Fetch extended profile & stats
+      fetch(`${API_URL}/api/users/me`, { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (json?.data) {
+            if (json.data.username) setUsername(json.data.username);
+          }
+        })
+        .catch(() => {});
+
+      fetch(`${API_URL}/api/users/me/stats`, { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (json?.data) setUserStats(json.data);
+        })
+        .catch(() => {});
+    }
+  }, [session]);
+
+  const changeTheme = (themeName: string) => {
+    gameAudio.playClick();
+    setCurrentTheme(themeName);
+    localStorage.setItem("daisyui-theme", themeName);
+    document.documentElement.setAttribute("data-theme", themeName);
+  };
+
+  const toggleSound = () => {
+    const nextVal = !soundEnabled;
+    gameAudio.setEnabled(nextVal);
+    setSoundEnabled(nextVal);
+  };
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -15,30 +87,370 @@ export default function HomePage() {
   }, [isPending, session, router]);
 
   async function handleSignOut() {
+    gameAudio.playClick();
     await authClient.signOut();
     router.replace("/login");
     router.refresh();
   }
 
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    gameAudio.playClick();
+    if (!displayName.trim() || !session?.user) return;
+    setProfileMessage(null);
+    setActionLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/users/me`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: displayName.trim(),
+          ...(username.trim() ? { username: username.trim() } : {}),
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error ?? "Failed to update profile");
+      }
+
+      await authClient.getSession({ fetchOptions: { cache: "no-store" } });
+      setProfileMessage("Profile updated successfully");
+    } catch (err) {
+      setProfileMessage(err instanceof Error ? err.message : "Error updating profile");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCreateRoom = async () => {
+    gameAudio.playClick();
+    if (!session?.user) return;
+    setError(null);
+    setActionLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/rooms`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          maxPlayers,
+          mode: roomMode,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error ?? "Failed to create room");
+      }
+
+      const data = await res.json();
+      router.push(`/room/${data.roomId}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error creating room");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleJoinRoomByCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    gameAudio.playClick();
+    const codeOrId = joinCode.trim();
+    if (!codeOrId || !session?.user) return;
+    setError(null);
+    setActionLoading(true);
+    try {
+      let roomId = "";
+
+      if (codeOrId.length === 6) {
+        const res = await fetch(`${API_URL}/rooms/code/${codeOrId.toUpperCase()}`);
+        if (!res.ok) {
+          throw new Error("Invalid room code or room not found");
+        }
+        const data = await res.json();
+        roomId = data.roomId;
+      } else {
+        const res = await fetch(`${API_URL}/rooms/${codeOrId}`);
+        if (!res.ok) {
+          throw new Error("Invalid room ID or room not found");
+        }
+        const data = await res.json();
+        roomId = data.id;
+      }
+      
+      const joinRes = await fetch(`${API_URL}/rooms/${roomId}/join`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: session.user.id }),
+      });
+
+      if (!joinRes.ok) {
+        const joinErr = await joinRes.json();
+        if (joinErr.error !== "User already in room") {
+          throw new Error(joinErr.error ?? "Failed to join room");
+        }
+      }
+
+      router.push(`/room/${roomId}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error joining room");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (isPending || !session) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-zinc-500">Loading...</p>
+      <main className="flex min-h-screen items-center justify-center bg-stone-900 text-amber-500 font-retro">
+        <div className="text-center font-sans">
+          <span className="loading loading-spinner loading-lg text-amber-500 mb-4"></span>
+          <p className="text-2xl font-bold tracking-widest font-retro">UNROLLING OLD SCROLLS...</p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="space-y-4 text-center">
-        <h1 className="text-4xl font-bold">Welcome to 1757!</h1>
-        <button
-          className="rounded-md border border-zinc-300 px-4 py-2"
-          type="button"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </button>
+    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center scanlines">
+      
+      {/* Navbar Banner in 2D Indie style */}
+      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-5xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex-1">
+          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
+        </div>
+
+        <div className="flex-none flex items-center gap-3">
+          {/* Sound Toggle */}
+          <button 
+            onClick={toggleSound}
+            className={`btn btn-sm btn-outline border-2 rounded-none font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
+          >
+            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
+          </button>
+
+          <MusicControl />
+
+          <span className="text-xs font-pixel uppercase bg-neutral text-neutral-content px-3 py-1.5 border border-base-300">
+            {session.user.name}
+          </span>
+
+          {/* Theme Dropdown */}
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
+              Theme: {currentTheme}
+            </div>
+            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
+              {THEMES.map((themeName) => (
+                <li key={themeName}>
+                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
+                    {themeName}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <button
+            onClick={handleSignOut}
+            className="btn btn-error btn-sm rounded-none border-2 font-pixel"
+          >
+            Leave
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-stretch">
+        
+        {/* LEFT COLUMN: Controls Dashboard (7 Columns) */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col gap-6 flex-1 justify-between pixel-card">
+            
+            <div>
+              <h2 className="text-2xl font-historical font-extrabold uppercase tracking-wide border-b-4 border-double pb-2 mb-4 text-primary">Lobby Secretary</h2>
+              <p className="text-sm font-sans leading-relaxed text-base-content/85">
+                Welcome, commander. Choose to initialize a new secretariat chamber or enter an active council session using the room registry code below.
+              </p>
+            </div>
+
+            {error && (
+              <div className="alert alert-error text-xs font-pixel py-3 rounded-none border-2 border-error">
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Action 1: Create a Room */}
+            <div className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
+              <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Create Chamber</h3>
+              <p className="text-xs text-base-content/75 mb-4 font-sans">Initialize a new secure game room. Choose the rules and the maximum capacity limit (6-15 players).</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" role="radiogroup" aria-label="Room mode">
+                {([
+                  {
+                    mode: "STANDARD",
+                    title: "Standard Council",
+                    blurb: "The usual rules: every character in play, roles dealt at random, fixed timers.",
+                  },
+                  {
+                    mode: "CUSTOM",
+                    title: "Royal Decree",
+                    blurb: "Custom rules: set each round's timer, pick the characters, fix who plays whom, and skip timers as host.",
+                  },
+                ] as const).map((option) => {
+                  const selected = roomMode === option.mode;
+                  return (
+                    <button
+                      key={option.mode}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => {
+                        gameAudio.playClick();
+                        setRoomMode(option.mode);
+                      }}
+                      className={`text-left p-3 border-2 rounded-none transition-colors ${
+                        selected
+                          ? "border-primary bg-primary/10 shadow-[3px_3px_0px_0px_var(--color-primary)]"
+                          : "border-base-content/15 bg-base-100 hover:border-base-content/40"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 font-pixel text-xs font-bold uppercase">
+                        <span className={`w-3 h-3 border-2 ${selected ? "bg-primary border-primary" : "border-base-content/40"}`} />
+                        {option.title}
+                      </span>
+                      <span className="block text-[11px] font-sans text-base-content/70 mt-1 leading-snug">{option.blurb}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+                <div className="form-control flex-1">
+                  <span className="label-text font-pixel font-bold mb-1">Max Capacity</span>
+                  <input
+                    type="number"
+                    min={6}
+                    max={15}
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(parseInt(e.target.value, 10))}
+                    className="input input-bordered w-full font-pixel bg-base-100 rounded-none border-2"
+                  />
+                </div>
+                
+                <button
+                  onClick={handleCreateRoom}
+                  disabled={actionLoading}
+                  className="btn btn-primary rounded-none font-pixel border-2 pixel-btn"
+                >
+                  {actionLoading ? "CREATING..." : roomMode === "CUSTOM" ? "NEW CUSTOM ROOM" : "NEW ROOM"}
+                </button>
+              </div>
+            </div>
+
+            {/* Action 2: Join by Room Code */}
+            <form onSubmit={handleJoinRoomByCode} className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
+              <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Enter Chamber</h3>
+              <p className="text-xs text-base-content/75 mb-4 font-sans">Input the 6-character uppercase registry code or paste the full room ID directly.</p>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+                <div className="form-control flex-1">
+                  <span className="label-text font-pixel font-bold mb-1">Registry Code</span>
+                  <input
+                    type="text"
+                    placeholder="e.g. A1B2C3"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value)}
+                    required
+                    className="input input-bordered w-full font-pixel bg-base-100 rounded-none border-2"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={actionLoading || !joinCode.trim()}
+                  className="btn btn-accent rounded-none font-pixel border-2 pixel-btn"
+                >
+                  {actionLoading ? "JOINING..." : "JOIN CHAMBER"}
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Profile Settings & Stats (5 Columns) */}
+        <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col justify-between pixel-card">
+            <div>
+              <h3 className="text-xl font-historical font-bold text-primary border-b-4 border-double pb-2 mb-4 uppercase">Profile Settings</h3>
+              <p className="text-xs text-base-content/70 mb-4 font-sans">
+                Customize your identity. You can change your display name and set a unique conspirator handle.
+              </p>
+            </div>
+
+            {userStats && (
+              <div className="grid grid-cols-2 gap-2 p-3 bg-base-200 border-2 border-base-300 font-pixel text-xs mb-4">
+                <div>
+                  <span className="text-base-content/60 block">LEVEL</span>
+                  <span className="text-base font-bold text-primary">{userStats.level}</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">TOTAL XP</span>
+                  <span className="text-base font-bold">{userStats.xp}</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">MATCHES</span>
+                  <span className="font-bold">{userStats.matchesPlayed} ({userStats.matchesWon}W)</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">WIN RATE</span>
+                  <span className="font-bold text-accent">{userStats.winRate}%</span>
+                </div>
+              </div>
+            )}
+
+            {profileMessage && (
+              <div className="alert alert-info text-xs font-pixel py-2 rounded-none border-2 border-info mb-4">
+                <span>{profileMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <div className="form-control">
+                <span className="label-text font-pixel font-bold mb-1">Display Name</span>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
+                  required
+                />
+              </div>
+
+              <div className="form-control">
+                <span className="label-text font-pixel font-bold mb-1">Handle / Username</span>
+                <input
+                  type="text"
+                  placeholder="e.g. siraj1757"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={actionLoading || !displayName.trim()}
+                className="btn btn-primary w-full rounded-none font-pixel border-2 pixel-btn"
+              >
+                {actionLoading ? "SAVING..." : "SAVE PROFILE"}
+              </button>
+            </form>
+          </div>
+        </div>
+
       </div>
     </main>
   );

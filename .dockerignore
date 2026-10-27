@@ -1,9 +1,47 @@
+# Dependencies
 node_modules
+
+# Environment
 .env
 .env.local
+.env.*.local
+.env.docker
+
+# Build outputs (rebuilt inside container)
 .next
 dist
-turbo
-*.log
+.turbo
+
+# Version control
 .git
+.gitignore
+
+# Logs
+*.log
+dev.log
+
+# Test & coverage
 coverage
+__tests__
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+
+# Docs (not needed in image)
+docs/
+doc/
+*.md
+!README.md
+
+# Docker (prevent recursive COPY)
+Dockerfile
+docker-compose.yml
+
+# Misc
+.claude/
+.kilo/
+.puku*
+.understand-anything/
+.agents/

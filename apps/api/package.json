@@ -9,26 +9,34 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsup src/index.ts --format esm --target es2022 --out-dir dist",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@repo/auth": "workspace:*",
-    "@repo/db": "workspace:*",
-    "@repo/config": "workspace:*",
-    "better-auth": "latest",
-    "fastify": "latest",
     "@fastify/cors": "latest",
     "@fastify/helmet": "latest",
-    "socket.io": "latest"
+    "@fastify/rate-limit": "10.3.0",
+    "@repo/auth": "workspace:*",
+    "@repo/config": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/game-engine": "workspace:*",
+    "better-auth": "latest",
+    "fastify": "latest",
+    "ioredis": "^5.11.0",
+    "socket.io": "latest",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
+    "@types/ioredis": "^5.0.0",
     "@types/node": "^22.15.3",
+    "socket.io-client": "^4.8.3",
     "tsup": "^8.5.1",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "3.2.4"
   }
 }
