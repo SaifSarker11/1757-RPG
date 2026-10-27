@@ -108,7 +108,7 @@ The API deploys to [Render](https://render.com) as a Docker web service.
 
 ### Vercel (Web & Admin)
 
-The Next.js apps deploy to [Vercel](https://vercel.com). The CI workflow triggers `vercel --prod` on pushes to `main`. Set `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` as GitHub Actions secrets.
+The Next.js apps deploy to [Vercel](https://vercel.com) through Vercel's Git integration whenever `main` changes. The Vercel project is on the Hobby plan, which only deploys commits authored by the project owner, so changes reach `main` through pull requests that the owner merges. Don't push directly to `main`: Vercel blocks those deploys.
 
 ## CI/CD
 
@@ -120,7 +120,7 @@ The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every push to `
 4. **Test** → `pnpm test`
 5. **Build** → `pnpm build`
 6. **Deploy API** → Render webhook (main only)
-7. **Deploy Web** → Vercel CLI (main only)
+7. **Deploy Web** → Vercel Git integration (when the owner merges a PR into main)
 
 ## Documentation
 
