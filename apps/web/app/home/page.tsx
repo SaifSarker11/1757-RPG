@@ -6,7 +6,10 @@ import { authClient } from "@/lib/auth-client";
 import { gameAudio } from "@/lib/audio";
 import { MusicControl } from "@/components/MusicControl";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_URL =
+  typeof window !== "undefined"
+    ? ""
+    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
 
 const THEMES = [
   "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave",
