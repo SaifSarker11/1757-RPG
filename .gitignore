@@ -55,3 +55,8 @@ plan.md
 rules.md
 audit.md
 modules.md
+
+# Generated / local tooling
+*.tsbuildinfo
+*.log
+.understand-anything/
