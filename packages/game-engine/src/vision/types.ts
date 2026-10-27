@@ -51,6 +51,8 @@ export interface PublicView {
   round: number;
   attempt: number;
   endsAt: number | null;
+  /** Custom rooms: time left on the frozen timer while the host has paused; null otherwise. */
+  pausedRemainingMs: number | null;
   leaderSeat: number;
   failTrack: number;
   teamSize: number;

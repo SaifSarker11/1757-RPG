@@ -199,6 +199,14 @@ export function registerSocketHandlers(io: Server, deps: SocketDeps): void {
       deps.games.skip(roomId, user.id)
     );
 
+    handle("game:pause", roomRefPayload, "action", (user, { roomId }) =>
+      deps.games.setPaused(roomId, user.id, true)
+    );
+
+    handle("game:resume", roomRefPayload, "action", (user, { roomId }) =>
+      deps.games.setPaused(roomId, user.id, false)
+    );
+
     handle("game:sync", roomRefPayload, "action", async (user, { roomId }) => {
       // M7: treat an explicit sync as a reconnect signal.
       deps.games.playerReconnected(roomId, user.id);

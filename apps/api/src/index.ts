@@ -40,25 +40,15 @@ function isDevLanOrigin(origin: string): boolean {
   );
 }
 
+/** Same rule for HTTP and sockets: the configured apps, plus LAN addresses in development. */
+function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  return process.env.NODE_ENV !== "production" && isDevLanOrigin(origin);
+}
+
 await app.register(cors, {
-  origin: (origin, callback) => {
-    if (!origin) {
-      callback(null, true);
-      return;
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-      return;
-    }
-
-    if (process.env.NODE_ENV !== "production" && isDevLanOrigin(origin)) {
-      callback(null, true);
-      return;
-    }
-
-    callback(null, false);
-  },
+  origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -74,7 +64,7 @@ await registerAuthRoutes(app);
 
 const io = new Server(app.server, {
   cors: {
-    origin: allowedOrigins,
+    origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
     credentials: true,
   },
 });

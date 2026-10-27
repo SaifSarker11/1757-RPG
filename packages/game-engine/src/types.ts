@@ -121,8 +121,13 @@ export interface GameState {
   players: PlayerState[];
   settings: GameSettings;
   phase: Phase;
-  /** Epoch ms when the current phase times out; null when it has no timer. */
+  /** Epoch ms when the current phase times out; null when it has no timer or is paused. */
   endsAt: number | null;
+  /**
+   * Custom rooms: time left on the phase timer while the host has paused it.
+   * Null when not paused. Optional so snapshots from before pausing existed still load.
+   */
+  pausedRemainingMs?: number | null;
   round: number;
   /** Nomination attempt within the current round, starting at 1. */
   attempt: number;
@@ -145,6 +150,10 @@ export type Action =
    * doesn't know who the host is; the server decides who may send it.
    */
   | { type: "SKIP" }
+  /** Freezes the current phase timer for everyone. Server decides who may send it. */
+  | { type: "PAUSE" }
+  /** Restarts a paused timer with the time that was left. */
+  | { type: "RESUME" }
   | { type: "NOMINATE"; playerId: string; ministerIds: string[] }
   | { type: "CAST_VOTE"; playerId: string; vote: Vote }
   | { type: "PLAY_CARD"; playerId: string; card: Card }
@@ -166,7 +175,8 @@ export type ErrorCode =
   | "NOT_YOUR_ABILITY"
   | "ABILITY_ALREADY_USED"
   | "INVALID_TARGET"
-  | "NOT_YOUR_GUESS";
+  | "NOT_YOUR_GUESS"
+  | "GAME_PAUSED";
 
 export type GameEvent =
   | {
@@ -207,6 +217,8 @@ export type GameEvent =
       provisionalWinner: RoundWinner;
     }
   | { type: "GAME_ENDED"; outcome: GameOutcome }
+  | { type: "GAME_PAUSED"; remainingMs: number }
+  | { type: "GAME_RESUMED"; endsAt: number }
   /**
    * Private state changed for these players only. The server re-sends
    * `viewFor` to each of them; nothing else about it is public.

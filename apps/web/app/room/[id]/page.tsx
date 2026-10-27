@@ -494,6 +494,21 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     });
   };
 
+  /** Custom rooms: the host freezes or restarts the timer for everyone. */
+  const handleTogglePause = () => {
+    gameAudio.playClick();
+    if (!socketRef.current) return;
+    setActionLoading(true);
+    const event = isPaused ? "game:resume" : "game:pause";
+    socketRef.current.emit(event, { roomId }, (ack: { ok: boolean; error?: { message: string } }) => {
+      setActionLoading(false);
+      if (!ack?.ok && ack?.error) {
+        setGameError(ack.error.message);
+        setTimeout(() => setGameError(null), 4000);
+      }
+    });
+  };
+
   const handleNominate = (ministerIds: string[]) => {
     emitGameAction({ type: "NOMINATE", ministerIds });
   };
@@ -556,8 +571,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
   const isHost = roomData?.hostUserId === session?.user.id;
   const isCustomRoom = roomData?.mode === "CUSTOM";
-  const canSkip =
-    isCustomRoom && isHost && !!playerView?.game.endsAt && playerView.game.phase !== "POST_GAME";
+  const isPaused = playerView?.game.pausedRemainingMs != null;
+  const hasTimer = !!playerView?.game.endsAt || isPaused;
+  const canSkip = isCustomRoom && isHost && hasTimer && playerView?.game.phase !== "POST_GAME";
+  const canPause = canSkip;
   const isMyTurnToSelect = currentSelectorId === session?.user.id || (roomData?.hostUserId === session?.user.id && currentSelectorId === "");
   const sizeToSelect = getTeamSizeForRound(roundNumber, players.length);
 
@@ -606,8 +623,19 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
           <MusicControl />
 
-          {playerView?.game.endsAt && (
-            <CountdownTimer endsAt={playerView.game.endsAt} />
+          {hasTimer && (
+            <CountdownTimer endsAt={playerView?.game.endsAt ?? null} pausedRemainingMs={playerView?.game.pausedRemainingMs ?? null} />
+          )}
+
+          {canPause && (
+            <button
+              onClick={handleTogglePause}
+              disabled={actionLoading}
+              title={isPaused ? "Restart the timer for everyone" : "Freeze the timer for everyone"}
+              className={`btn btn-sm rounded-none border-2 font-pixel ${isPaused ? "btn-success" : "btn-info"}`}
+            >
+              {isPaused ? "RESUME ▶" : "PAUSE ⏸"}
+            </button>
           )}
 
           {canSkip && (
@@ -660,6 +688,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           </button>
         </div>
       </div>
+
+      {isPaused && (
+        <div className="alert alert-info text-xs font-pixel py-2 rounded-none border-2 border-info w-full max-w-7xl mb-4 justify-center">
+          <span>⏸ THE HOST HAS PAUSED THE COUNCIL. TIMERS ARE FROZEN AND NO ONE CAN ACT UNTIL IT RESUMES.</span>
+        </div>
+      )}
 
       {gameError && (
         <div className="alert alert-error text-xs font-pixel py-2 rounded-none border-2 border-error w-full max-w-7xl mb-4">

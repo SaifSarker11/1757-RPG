@@ -24,6 +24,9 @@ Every event below takes an optional ack callback: `{ ok: true }` or `{ ok: false
 | `game:start` | `{ roomId }` | host | Deals roles and starts the match. Room → `IN_PROGRESS` |
 | `game:action` | `{ roomId, action }` | seated players | See actions below |
 | `game:sync` | `{ roomId }` | seated players | Re-sends the caller's `game:view` (reloads, reconnects) |
+| `game:skip` | `{ roomId }` | host, custom rooms | Ends the current phase now, as if its timer ran out (also clears a pause) |
+| `game:pause` | `{ roomId }` | host, custom rooms | Freezes the phase timer for everyone; player actions are refused with `GAME_PAUSED` until resumed |
+| `game:resume` | `{ roomId }` | host, custom rooms | Restarts a paused timer with the time that was left |
 | `chat:send-message` | `{ roomId?, userId, username, text }` | anyone | Unchanged from before (owned by the chat module) |
 
 ### Actions (`game:action`)
@@ -53,16 +56,16 @@ Use `view.pending` to decide which controls to show; it already accounts for pha
 
 `PlayerView` (from `@repo/game-engine`): `{ me, vision, reveals, jeanLawTargetId, myVote, myVoteWeight, myCard, pending, game }`, where `game` is the `PublicView`: phase, round, `endsAt`, Leader, fail track, team size, players (roles only in POST_GAME), ministers, who voted or played, nominations, `lastBallot`, round results, endgame progress, outcome and results.
 
-**Timers:** render a countdown from `view.game.endsAt` (epoch ms). The server runs the clock; the client never advances phases.
+**Timers:** render a countdown from `view.game.endsAt` (epoch ms). While paused, `endsAt` is null and `view.game.pausedRemainingMs` holds the frozen time left. The server runs the clock; the client never advances phases.
 
 ### Public events
 
-`PHASE_CHANGED`, `NOMINATION_MADE`, `NOMINATION_TIMED_OUT`, `VOTE_CAST` (who, not how), `BALLOT_RESOLVED` (every vote + raw headcount), `CARD_PLAYED` (who, not which), `MISSION_RESOLVED` (shuffled cards + counts), `ROUND_DEADLOCKED`, `GUESS_REQUESTED`, `GUESS_RESOLVED`, `GAME_ENDED`. Private engine events never leave the server.
+`PHASE_CHANGED`, `NOMINATION_MADE`, `NOMINATION_TIMED_OUT`, `VOTE_CAST` (who, not how), `BALLOT_RESOLVED` (every vote + raw headcount), `CARD_PLAYED` (who, not which), `MISSION_RESOLVED` (shuffled cards + counts), `ROUND_DEADLOCKED`, `GUESS_REQUESTED`, `GUESS_RESOLVED`, `GAME_ENDED`, `GAME_PAUSED` (`remainingMs`), `GAME_RESUMED` (`endsAt`). Private engine events never leave the server.
 
 ### Error codes
 
-Transport: `UNAUTHORIZED`, `INVALID_PAYLOAD`, `RATE_LIMITED`, `ROOM_NOT_FOUND`, `NOT_IN_ROOM`, `NOT_HOST`, `GAME_ALREADY_STARTED`, `INVALID_PLAYER_COUNT`, `NO_GAME`, `INTERNAL`.
-Engine (see `@repo/game-engine` `ErrorCode`): `WRONG_PHASE`, `NOT_LEADER`, `INVALID_TEAM_SIZE`, `UNKNOWN_PLAYER`, `DUPLICATE_PLAYER`, `ALREADY_VOTED`, `NOT_A_MINISTER`, `ALREADY_PLAYED`, `CARD_NOT_ALLOWED`, `NOT_YOUR_ABILITY`, `ABILITY_ALREADY_USED`, `INVALID_TARGET`, `NOT_YOUR_GUESS`, `NOT_IN_GAME`.
+Transport: `UNAUTHORIZED`, `INVALID_PAYLOAD`, `RATE_LIMITED`, `ROOM_NOT_FOUND`, `NOT_IN_ROOM`, `NOT_HOST`, `GAME_ALREADY_STARTED`, `INVALID_PLAYER_COUNT`, `INVALID_SETTINGS`, `SKIP_NOT_ALLOWED`, `NOTHING_TO_SKIP`, `PAUSE_NOT_ALLOWED`, `NOTHING_TO_PAUSE`, `NOT_PAUSED`, `NO_GAME`, `VOICE_FULL`, `NOT_IN_VOICE`, `INTERNAL`.
+Engine (see `@repo/game-engine` `ErrorCode`): `WRONG_PHASE`, `NOT_LEADER`, `INVALID_TEAM_SIZE`, `UNKNOWN_PLAYER`, `DUPLICATE_PLAYER`, `ALREADY_VOTED`, `NOT_A_MINISTER`, `ALREADY_PLAYED`, `CARD_NOT_ALLOWED`, `NOT_YOUR_ABILITY`, `ABILITY_ALREADY_USED`, `INVALID_TARGET`, `NOT_YOUR_GUESS`, `NOT_IN_GAME`, `GAME_PAUSED`.
 
 ## Limits
 
