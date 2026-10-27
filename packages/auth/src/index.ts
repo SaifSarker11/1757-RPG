@@ -38,6 +38,8 @@ export const auth = betterAuth({
     enabled: true,
   },
   advanced: {
+    disableOriginCheck: true,
+    disableCSRFCheck: true,
     ...(process.env.COOKIE_DOMAIN
       ? {
           crossSubDomainCookies: {
