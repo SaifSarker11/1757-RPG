@@ -192,6 +192,9 @@ importers:
         specifier: ^4.8.3
         version: 4.8.3
     devDependencies:
+      '@repo/game-engine':
+        specifier: workspace:*
+        version: link:../../packages/game-engine
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.3.0

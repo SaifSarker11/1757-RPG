@@ -1,15 +1,25 @@
 import React from "react";
-import type { PublicNomination } from "@/lib/game-types";
+import type { PublicNomination, PublicPlayer } from "@/lib/game-types";
 
 interface NominationHistoryCardProps {
   nominations: PublicNomination[];
+  players?: PublicPlayer[];
   playerNames?: Record<string, string>;
 }
 
 export function NominationHistoryCard({
   nominations,
+  players = [],
   playerNames = {},
 }: NominationHistoryCardProps) {
+  const seatOf = new Map(players.map((p) => [p.id, p.seat]));
+  const label = (id: string) => {
+    const seat = seatOf.get(id);
+    const name = playerNames[id];
+    if (seat === undefined) return name ?? "?";
+    return name ? `#${seat + 1} ${name}` : `#${seat + 1}`;
+  };
+
   if (nominations.length === 0) {
     return (
       <div className="p-3 bg-base-200 border-2 border-base-300 font-pixel text-xs text-base-content/60 text-center">
@@ -46,22 +56,21 @@ export function NominationHistoryCard({
 
             <div className="text-[10px] text-base-content/75 font-sans">
               <span className="font-pixel font-bold text-accent mr-1">Ministers:</span>
-              {nom.ministerSeats.map((s) => `#${s + 1}`).join(", ")}
+              {nom.ministerIds ? nom.ministerIds.map(label).join(", ") : "None (leader timed out)"}
             </div>
 
             {/* Votes breakdown */}
             <div className="flex flex-wrap gap-1 mt-1">
-              {nom.votes.map((v, vIdx) => (
+              {Object.entries(nom.votes).map(([playerId, vote]) => (
                 <span
-                  key={vIdx}
+                  key={playerId}
                   className={`px-1 py-0.5 text-[9px] font-mono border ${
-                    v.vote === "APPROVE"
+                    vote === "APPROVE"
                       ? "border-success text-success"
                       : "border-error text-error"
                   }`}
                 >
-                  S{v.seat + 1}: {v.vote === "APPROVE" ? "YEAH" : "NAY"}
-                  {v.weight > 1 ? ` (${v.weight}x)` : ""}
+                  {label(playerId)}: {vote === "APPROVE" ? "YEAH" : "NAY"}
                 </span>
               ))}
             </div>

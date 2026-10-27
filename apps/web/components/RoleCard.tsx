@@ -1,5 +1,19 @@
 import React from "react";
-import type { PlayerView } from "@/lib/game-types";
+import type { PlayerView, VisionLabel } from "@/lib/game-types";
+
+/** "YAR_LUTUF" → "Yar Lutuf". */
+function roleName(role: string): string {
+  return role
+    .split("_")
+    .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function visionText(label: VisionLabel): string {
+  if (label.kind === "ROLE") return roleName(label.role);
+  if (label.kind === "RED") return "Red conspirator";
+  return "Suspect";
+}
 
 interface RoleCardProps {
   view: PlayerView;
@@ -51,39 +65,35 @@ export function RoleCard({ view, playerNames = {} }: RoleCardProps) {
       </div>
 
       {/* Secret Visions / Information */}
-      {Object.keys(vision).length > 0 && (
+      {vision.length > 0 && (
         <div className="mt-2 p-2 bg-base-200 border-2 border-base-300 text-xs">
           <span className="font-pixel font-bold text-primary block mb-1">SECRET INTEL / VISIONS:</span>
           <ul className="space-y-1 font-mono">
-            {Object.entries(vision).map(([playerId, details]) => {
-              const name = playerNames[playerId] ?? `Player ${playerId.slice(0, 6)}`;
-              return (
-                <li key={playerId} className="flex justify-between items-center">
-                  <span>{name}:</span>
-                  <span className="font-bold text-accent">
-                    {details.apparentRole ?? details.apparentTeam ?? "Suspect"}
-                  </span>
-                </li>
-              );
-            })}
+            {vision.map((entry) => (
+              <li key={entry.playerId} className="flex justify-between items-center">
+                <span>
+                  #{entry.seat + 1} {playerNames[entry.playerId] ?? `Player ${entry.playerId.slice(0, 6)}`}:
+                </span>
+                <span className="font-bold text-accent">{visionText(entry.label)}</span>
+              </li>
+            ))}
           </ul>
         </div>
       )}
 
-      {/* Public/Private Reveals (e.g. De Bussy) */}
-      {Object.keys(reveals).length > 0 && (
+      {/* Private Reveals (e.g. De Bussy) */}
+      {reveals.length > 0 && (
         <div className="mt-1 p-2 bg-base-300 border border-base-content/20 text-xs">
           <span className="font-pixel font-bold text-warning block mb-1">REVEALED PLAYERS:</span>
           <ul className="space-y-1 font-mono">
-            {Object.entries(reveals).map(([playerId, role]) => {
-              const name = playerNames[playerId] ?? `Player ${playerId.slice(0, 6)}`;
-              return (
-                <li key={playerId} className="flex justify-between items-center">
-                  <span>{name}:</span>
-                  <span className="font-bold">{role}</span>
-                </li>
-              );
-            })}
+            {reveals.map((entry) => (
+              <li key={entry.playerId} className="flex justify-between items-center">
+                <span>
+                  #{entry.seat + 1} {playerNames[entry.playerId] ?? `Player ${entry.playerId.slice(0, 6)}`}:
+                </span>
+                <span className="font-bold">{roleName(entry.role)}</span>
+              </li>
+            ))}
           </ul>
         </div>
       )}

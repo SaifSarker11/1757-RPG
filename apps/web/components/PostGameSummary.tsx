@@ -16,6 +16,8 @@ export function PostGameSummary({
 
   if (!outcome) return null;
 
+  const resultById = new Map((results ?? []).map((r) => [r.playerId, r]));
+
   const winnerBadge =
     outcome.winner === "GREEN"
       ? "badge-success text-success-content"
@@ -56,7 +58,7 @@ export function PostGameSummary({
             <tbody>
               {players.map((p) => {
                 const name = playerNames[p.id] ?? `Player ${p.id.slice(0, 6)}`;
-                const res = results?.[p.id];
+                const res = resultById.get(p.id);
                 const won = res?.won;
                 const isHumiliated = res?.jeanLawLocked;
 

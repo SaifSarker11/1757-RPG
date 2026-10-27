@@ -884,6 +884,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                 {playerView ? (
                   <NominationHistoryCard
                     nominations={playerView.game.nominations}
+                    players={playerView.game.players}
                     playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
                   />
                 ) : voteLogs.length === 0 ? (
