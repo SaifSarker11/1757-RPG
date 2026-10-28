@@ -28,7 +28,11 @@ RUN pnpm install --frozen-lockfile
 # Copy full source after install (maximises cache hits)
 COPY . .
 
-# Generate Prisma client and build everything
+# Generate Prisma client and build everything.
+# prisma.config.ts requires DIRECT_URL, but generate (also re-run by the
+# turbo build) never connects. A placeholder, as in CI, keeps real
+# credentials out of the build; the runtime stage below doesn't inherit it.
+ENV DIRECT_URL="postgresql://build:build@localhost:5432/build"
 RUN pnpm db:generate
 RUN pnpm turbo run build --filter=api...
 
@@ -54,9 +58,8 @@ COPY --from=builder /app/packages packages/
 # Install production-only dependencies
 RUN pnpm install --frozen-lockfile --prod
 
-# Copy Prisma generated client (needed at runtime)
+# Prisma 7 generates into packages/db/src/generated (copied with packages/ above)
 COPY --from=builder /app/node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client node_modules/@prisma/client/
-COPY --from=builder /app/node_modules/.prisma node_modules/.prisma/
 
 ENV NODE_ENV=production
 EXPOSE 3001
