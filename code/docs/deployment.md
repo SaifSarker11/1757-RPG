@@ -43,7 +43,7 @@ Set these in the Render dashboard (API) and Vercel dashboard (Web/Admin):
 
 1. Create a **Web Service** on Render.
 2. Set **Docker** as the environment.
-3. Point the Dockerfile path to `./Dockerfile`.
+3. Leave Root Directory empty, set Dockerfile Path to `./code/Dockerfile` and Docker Build Context to `./code`.
 4. Set environment variables as listed above.
 5. Configure the health check path to `/health`.
 

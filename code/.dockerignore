@@ -1,5 +1,5 @@
-# Dependencies
-node_modules
+# Dependencies (**/ so nested workspace node_modules from the host stay out)
+**/node_modules
 
 # Environment
 .env
@@ -8,9 +8,9 @@ node_modules
 .env.docker
 
 # Build outputs (rebuilt inside container)
-.next
-dist
-.turbo
+**/.next
+**/dist
+**/.turbo
 
 # Version control
 .git

@@ -5,12 +5,10 @@ node_modules
 .pnp
 .pnp.js
 
-# Local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Local env files, anywhere in the tree. Only the committed templates are kept.
+.env*
+!.env.example
+!.env.docker
 .puku/
 # Testing
 coverage
@@ -36,19 +34,11 @@ yarn-error.log*
 .DS_Store
 *.pem
 
-
-.env
-.env.local
-node_modules
-
-apps/mobile/.expo/
-apps/mobile/expo-env.d.ts
+code/apps/mobile/.expo/
+code/apps/mobile/expo-env.d.ts
 
 .claude/
 .kilo/
-
-/.puku-cli
-/.puku
 
 # Local planning & audit docs
 plan.md
