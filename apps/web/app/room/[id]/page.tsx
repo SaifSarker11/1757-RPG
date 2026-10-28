@@ -610,85 +610,93 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         </div>
       )}
 
-      {/* Decorative Game Header */}
-      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-7xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex-1">
-          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
-        </div>
+      {/* Decorative Game Header: room identity + exit on top, game and audio controls below */}
+      <div className="bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-7xl px-4 py-3 mb-6 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
+            <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
 
-        <div className="flex-none flex flex-wrap items-center justify-center gap-3">
-          <button 
-            onClick={toggleSound}
-            className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
-          >
-            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
-          </button>
+            <span className="bg-neutral text-neutral-content px-3 py-1.5 border border-base-300 text-xs font-pixel">
+              Code: {roomData?.code ?? roomId.slice(0, 6)}
+            </span>
 
-          <MusicControl />
-
-          {hasTimer && (
-            <CountdownTimer endsAt={playerView?.game.endsAt ?? null} pausedRemainingMs={playerView?.game.pausedRemainingMs ?? null} />
-          )}
-
-          {canPause && (
-            <button
-              onClick={handleTogglePause}
-              disabled={actionLoading}
-              title={isPaused ? "Restart the timer for everyone" : "Freeze the timer for everyone"}
-              className={`btn btn-sm rounded-none border-2 font-pixel ${isPaused ? "btn-success" : "btn-info"}`}
-            >
-              {isPaused ? "RESUME ▶" : "PAUSE ⏸"}
-            </button>
-          )}
-
-          {canSkip && (
-            <button
-              onClick={handleSkip}
-              disabled={actionLoading}
-              title="End the current timer now"
-              className="btn btn-warning btn-sm rounded-none border-2 font-pixel"
-            >
-              SKIP ⏭
-            </button>
-          )}
-
-          {isCustomRoom && !playerView && (
-            <span className="badge badge-secondary rounded-none font-pixel text-[9px] py-3">ROYAL DECREE</span>
-          )}
-
-          <span className="bg-neutral text-neutral-content px-3 py-1.5 border border-base-300 text-xs font-pixel">
-            Code: {roomData?.code ?? roomId.slice(0, 6)}
-          </span>
-
-          {/* Theme Dropdown */}
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
-              Theme: {currentTheme}
-            </div>
-            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
-              {THEMES.map((themeName) => (
-                <li key={themeName}>
-                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
-                    {themeName}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {isCustomRoom && !playerView && (
+              <span className="badge badge-secondary rounded-none font-pixel text-[9px] py-3">ROYAL DECREE</span>
+            )}
           </div>
 
-          <button
-            onClick={() => { gameAudio.playClick(); setShowInfoModal(true); }}
-            className="btn btn-primary btn-sm rounded-none border-2 font-pixel"
-          >
-            INFO CODES
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => { gameAudio.playClick(); setShowInfoModal(true); }}
+              className="btn btn-primary btn-sm rounded-none border-2 font-pixel"
+            >
+              INFO CODES
+            </button>
 
-          <button
-            onClick={handleLeaveRoom}
-            className="btn btn-error btn-sm rounded-none border-2 font-pixel"
-          >
-            LEAVE
-          </button>
+            <button
+              onClick={handleLeaveRoom}
+              className="btn btn-error btn-sm rounded-none border-2 font-pixel"
+            >
+              LEAVE
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t-2 border-dashed border-base-content/20 pt-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {hasTimer && (
+              <CountdownTimer endsAt={playerView?.game.endsAt ?? null} pausedRemainingMs={playerView?.game.pausedRemainingMs ?? null} />
+            )}
+
+            {canPause && (
+              <button
+                onClick={handleTogglePause}
+                disabled={actionLoading}
+                title={isPaused ? "Restart the timer for everyone" : "Freeze the timer for everyone"}
+                className={`btn btn-sm rounded-none border-2 font-pixel ${isPaused ? "btn-success" : "btn-info"}`}
+              >
+                {isPaused ? "RESUME ▶" : "PAUSE ⏸"}
+              </button>
+            )}
+
+            {canSkip && (
+              <button
+                onClick={handleSkip}
+                disabled={actionLoading}
+                title="End the current timer now"
+                className="btn btn-warning btn-sm rounded-none border-2 font-pixel"
+              >
+                SKIP ⏭
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={toggleSound}
+              className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
+            >
+              {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
+            </button>
+
+            <MusicControl />
+
+            {/* Theme Dropdown */}
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
+                Theme: {currentTheme}
+              </div>
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
+                {THEMES.map((themeName) => (
+                  <li key={themeName}>
+                    <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
+                      {themeName}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
