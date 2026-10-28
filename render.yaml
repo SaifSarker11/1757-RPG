@@ -7,8 +7,13 @@ services:
   - type: web
     name: 1757-api
     runtime: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    # No rootDir: both paths resolve from the repo root, where the monorepo
+    # sits in /code. The build filter skips deploys for /doc-only changes.
+    dockerfilePath: ./code/Dockerfile
+    dockerContext: ./code
+    buildFilter:
+      paths:
+        - code/**
     region: singapore
     plan: starter
     healthCheckPath: /health
