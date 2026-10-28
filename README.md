@@ -225,10 +225,12 @@ See [`code/docs/deployment.md`](code/docs/deployment.md) for environment variabl
 
 | Member | Student ID | Responsibilities |
 |---|---|---|
-| Wasi Omar Syed | 230042143 | Game engine, FSM, rounds, voting, roles and rooms |
-| Md. Saif-Al Sarker | 230042106 | Auth, real-time chat, web UI and tests |
-| M Safwan Hasan Khan | 230042117 | Docker, deployment, Redis/Postgres data layer, CI/CD and the admin dashboard |
+| Wasi Omar Syed | 230042143 | Game engine (FSM, voting, missions, roles, vision, endgame), rooms and Royal Decree mode, rate limiting, voice chat, background music |
+| Md. Saif-Al Sarker | 230042106 | Monorepo scaffold and CI/CD, reconnection handling, web room page integration, users module, admin dashboard |
+| M Safwan Hasan Khan | 230042117 | Authentication and guest play, real-time chat, first room flow, UI themes and profiles, sound effects, Docker |
 
 **Course:** SWE 4404 Software Project Lab II, Islamic University of Technology
 
-**Supervisor:** _TODO: add supervisor name and designation_
+**Supervisor:** Samia Nawsheen, Junior Lecturer, Department of CSE, IUT
+
+**Course teacher:** Farzana Tabassum, Lecturer, Department of CSE, IUT

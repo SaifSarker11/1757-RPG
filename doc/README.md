@@ -4,10 +4,10 @@ Required deliverables for SWE 4404 (Software Project Lab II). Each file goes in 
 
 | File | Document | Status |
 |---|---|---|
-| [`srs.pdf`](srs.pdf) | Software Requirements Specification | TODO: add |
-| [`design.pdf`](design.pdf) | Design document | TODO: add |
-| [`final-presentation.pdf`](final-presentation.pdf) | Final presentation slides | TODO: add |
-| [`final-report.pdf`](final-report.pdf) | Final report | TODO: add |
+| [`srs.pdf`](srs.pdf) | Software Requirements Specification (requirements workbook, 16 July 2026) | Added |
+| [`design.pdf`](design.pdf) | Software Design Report (26 July 2026) | Added |
+| [`final-presentation.pdf`](final-presentation.pdf) | Final presentation slides | Added |
+| [`final-report.pdf`](final-report.pdf) | Final report | Added |
 
 [`screenshots/`](screenshots/) holds the gameplay screenshots used in the root [README](../README.md).
 
