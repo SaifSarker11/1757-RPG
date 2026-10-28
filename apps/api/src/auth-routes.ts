@@ -42,7 +42,7 @@ export async function registerAuthRoutes(app: FastifyInstance) {
         if (typeof response.headers.getSetCookie === "function") {
           const setCookies = response.headers.getSetCookie();
           for (const cookie of setCookies) {
-            reply.appendHeader("set-cookie", cookie);
+            reply.header("set-cookie", cookie);
           }
           response.headers.forEach((value, key) => {
             if (key.toLowerCase() !== "set-cookie") {
