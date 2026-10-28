@@ -26,7 +26,7 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
 ```bash
 # 1. Clone and install
 git clone https://github.com/SaifSarker11/1757-RPG.git
-cd 1757-RPG
+cd 1757-RPG/code   # the monorepo lives in /code
 pnpm install
 
 # 2. Configure environment

@@ -9,6 +9,10 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    # The monorepo lives in /code; the repo root only holds docs and deploy config.
+    defaults:
+      run:
+        working-directory: code
     env:
       DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci"
       DIRECT_URL: "postgresql://ci:ci@localhost:5432/ci" # <--- ADDED THIS LINE
@@ -23,6 +27,7 @@ jobs:
         with:
           node-version: 20
           cache: "pnpm"
+          cache-dependency-path: code/pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:generate
