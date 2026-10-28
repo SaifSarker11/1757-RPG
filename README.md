@@ -81,14 +81,14 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 ```mermaid
 flowchart LR
   subgraph Clients
-    W[Web · Next.js]
-    A[Admin · Next.js]
-    M[Mobile · Expo]
+    W["Web · Next.js"]
+    A["Admin · Next.js"]
+    M["Mobile · Expo"]
   end
-  W & A & M -- HTTP + Socket.IO --> API[API · Fastify + Socket.IO]
-  API --> E[game-engine<br/>reduce&#40;state, action&#41;]
-  API <--> R[(Redis<br/>live game snapshots)]
-  API <--> P[(PostgreSQL via Prisma<br/>users · rooms · match history)]
+  W & A & M -- HTTP + Socket.IO --> API["API · Fastify + Socket.IO"]
+  API --> E["game-engine<br/>reduce(state, action)"]
+  API <--> R[("Redis<br/>live game snapshots")]
+  API <--> P[("PostgreSQL via Prisma<br/>users · rooms · match history")]
 ```
 
 The game engine (`packages/game-engine`) is a pure function, `reduce(state, action, now, rng) → { state, events }`, with no network, database or clock of its own. That makes every rule deterministic and unit-testable. The API runs the engine, stores the state in Redis so live games survive a restart, and sends **each player their own `game:view`**, filtered so nobody receives secrets their role shouldn't see.
