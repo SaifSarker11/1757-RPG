@@ -175,7 +175,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
 
   if (!isHost) {
     return (
-      <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 pixel-card font-pixel text-[10px] space-y-3">
+      <div className="bg-base-100 border border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 council-panel rounded-2xl font-mono-code text-[10px] space-y-3">
         <h3 className="text-secondary uppercase border-b-2 border-dashed pb-1.5 border-base-content/20">
           Royal Decree · Custom Rules
         </h3>
@@ -183,7 +183,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
           <span className="text-base-content/60 uppercase block mb-1">Discussion per round</span>
           <div className="flex flex-wrap gap-1">
             {roundTimers(room).map((t, i) => (
-              <span key={i} className="badge badge-outline rounded-none">R{i + 1}: {t}s</span>
+              <span key={i} className="badge badge-outline rounded-xl">R{i + 1}: {t}s</span>
             ))}
           </div>
         </div>
@@ -191,7 +191,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
           <span className="text-base-content/60 uppercase block mb-1">Characters allowed</span>
           <div className="flex flex-wrap gap-1">
             {ALL_NAMED_ROLES.filter((r) => room.enabledRoles.includes(r) || r === "NAWAB_SIRAJ").map((r) => (
-              <span key={r} className={`badge badge-outline rounded-none ${TEAM_STYLE[ROLE_INFO[r].team]}`}>
+              <span key={r} className={`badge badge-outline rounded-xl ${TEAM_STYLE[ROLE_INFO[r].team]}`}>
                 {ROLE_INFO[r].name}
               </span>
             ))}
@@ -208,21 +208,21 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
   }
 
   return (
-    <div className="bg-base-100 border-4 border-secondary/50 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-5 pixel-card space-y-5">
+    <div className="bg-base-100 border border-secondary/50 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-5 council-panel rounded-2xl space-y-5">
       <div className="flex items-center justify-between border-b-4 border-double pb-2">
         <h3 className="text-lg font-historical font-extrabold uppercase text-primary">Royal Decree</h3>
-        <span className="badge badge-secondary rounded-none font-pixel text-[9px]">CUSTOM RULES</span>
+        <span className="badge badge-secondary rounded-xl font-mono-code text-[9px]">CUSTOM RULES</span>
       </div>
 
       {/* 1. Round timers */}
       <section>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="font-pixel text-xs font-bold uppercase text-secondary">Discussion time per round</h4>
+          <h4 className="font-mono-code text-xs font-bold uppercase text-secondary">Discussion time per round</h4>
           <label className="label cursor-pointer gap-2 p-0">
-            <span className="font-pixel text-[9px] uppercase">Same for all</span>
+            <span className="font-mono-code text-[9px] uppercase">Same for all</span>
             <input
               type="checkbox"
-              className="checkbox checkbox-xs rounded-none"
+              className="checkbox checkbox-xs rounded-xl"
               checked={sameForAll}
               onChange={(e) => {
                 setSameForAll(e.target.checked);
@@ -237,7 +237,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
         <div className="grid grid-cols-5 gap-2">
           {timers.map((t, i) => (
             <label key={i} className="flex flex-col gap-1">
-              <span className="font-pixel text-[9px] text-base-content/60">R{i + 1} (sec)</span>
+              <span className="font-mono-code text-[9px] text-base-content/60">R{i + 1} (sec)</span>
               <input
                 type="number"
                 min={DISCUSSION_SECONDS.min}
@@ -246,13 +246,13 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
                 value={Number.isNaN(t) ? "" : t}
                 disabled={sameForAll && i > 0}
                 onChange={(e) => setTimer(i, parseInt(e.target.value, 10))}
-                className="input input-bordered input-sm w-full font-pixel bg-base-200 rounded-none border-2 px-1"
+                className="input input-bordered input-sm w-full font-mono-code bg-base-200 rounded-xl border px-1"
               />
             </label>
           ))}
         </div>
         {!timersValid && (
-          <p className="text-error text-[10px] font-pixel mt-1">
+          <p className="text-error text-[10px] font-mono-code mt-1">
             Each round needs {DISCUSSION_SECONDS.min}–{DISCUSSION_SECONDS.max} seconds.
           </p>
         )}
@@ -260,7 +260,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
 
       {/* 2. Allowed characters */}
       <section>
-        <h4 className="font-pixel text-xs font-bold uppercase text-secondary mb-2">Characters allowed</h4>
+        <h4 className="font-mono-code text-xs font-bold uppercase text-secondary mb-2">Characters allowed</h4>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-1">
           {ALL_NAMED_ROLES.map((role) => {
             const def = ROLE_INFO[role];
@@ -269,7 +269,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
               <label key={role} className="flex items-center gap-2 cursor-pointer text-xs">
                 <input
                   type="checkbox"
-                  className="checkbox checkbox-xs rounded-none"
+                  className="checkbox checkbox-xs rounded-xl"
                   checked={locked || enabled.has(role)}
                   disabled={locked}
                   onChange={() => toggleRole(role)}
@@ -287,7 +287,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
 
       {/* 3. Seat assignments */}
       <section>
-        <h4 className="font-pixel text-xs font-bold uppercase text-secondary mb-2">Seat assignments</h4>
+        <h4 className="font-mono-code text-xs font-bold uppercase text-secondary mb-2">Seat assignments</h4>
         <div className="space-y-1.5">
           {players.map((p, seat) => {
             const current = assignments[p.userId] ?? "";
@@ -307,12 +307,12 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
               );
             return (
               <div key={p.userId} className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span className="font-pixel text-[9px] shrink-0 whitespace-nowrap text-base-content/60">SEAT {seat + 1}</span>
-                <span className="font-pixel text-[10px] flex-1 min-w-0 truncate uppercase">{p.name}</span>
+                <span className="font-mono-code text-[9px] shrink-0 whitespace-nowrap text-base-content/60">SEAT {seat + 1}</span>
+                <span className="font-mono-code text-[10px] flex-1 min-w-0 truncate uppercase">{p.name}</span>
                 <select
                   value={current}
                   onChange={(e) => assign(p.userId, e.target.value)}
-                  className="select select-bordered select-xs rounded-none border-2 font-pixel text-[10px] w-full sm:w-44 bg-base-200"
+                  className="select select-bordered select-xs rounded-xl border font-mono-code text-[10px] w-full sm:w-44 bg-base-200"
                 >
                   <option value="">🎲 Random</option>
                   <optgroup label="Green">{offered("GREEN").map(option)}</optgroup>
@@ -328,7 +328,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
           Seats follow join order. Only you can see these assignments.
         </p>
         {problems.length > 0 && (
-          <div className="alert alert-warning rounded-none border-2 text-[10px] font-pixel py-2 mt-2 flex flex-col items-start gap-0.5">
+          <div className="alert alert-warning rounded-xl border text-[10px] font-mono-code py-2 mt-2 flex flex-col items-start gap-0.5">
             {problems.map((p) => (
               <span key={p}>⚠ {p}</span>
             ))}
@@ -343,7 +343,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
       </p>
 
       {message && (
-        <div className={`alert ${message.ok ? "alert-success" : "alert-error"} rounded-none border-2 text-[10px] font-pixel py-2`}>
+        <div className={`alert ${message.ok ? "alert-success" : "alert-error"} rounded-xl border text-[10px] font-mono-code py-2`}>
           <span>{message.text}</span>
         </div>
       )}
@@ -351,7 +351,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
       <button
         onClick={save}
         disabled={saving || !dirty || !timersValid}
-        className="btn btn-secondary w-full rounded-none font-pixel border-2 pixel-btn"
+        className="btn btn-secondary w-full rounded-xl font-mono-code border rounded-xl transition-all active:scale-[0.98]"
       >
         {saving ? "SEALING..." : dirty ? "SEAL DECREE" : "DECREE SEALED"}
       </button>

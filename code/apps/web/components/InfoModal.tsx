@@ -27,41 +27,47 @@ export default function InfoModal({ open, onClose, roles }: InfoModalProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[200] pixel-modal">
-      <div className="bg-base-200 border-4 border-primary p-6 max-w-lg w-full pixel-card">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-historical font-extrabold text-primary uppercase tracking-wider">
-            Game Info
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-[200] p-4">
+      <div className="council-panel rounded-2xl p-6 max-w-lg w-full">
+        <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-4">
+          <h2 className="font-display text-2xl font-bold text-[#F2ECE1]">
+            Council Reference
           </h2>
           <button
             onClick={() => {
               gameAudio.playClick();
               onClose();
             }}
-            className="btn btn-sm btn-circle btn-ghost font-pixel"
+            className="h-8 w-8 rounded-lg border border-white/10 bg-white/5 text-[#9E9587] hover:text-[#F2ECE1] flex items-center justify-center transition-colors cursor-pointer"
           >
             ✕
           </button>
         </div>
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="space-y-5 max-h-96 overflow-y-auto pr-1">
           <section>
-            <h3 className="text-lg font-pixel font-bold text-secondary mb-2">Roles in Play</h3>
-            <ul className="list-disc list-inside space-y-1">
+            <h3 className="text-[11px] font-mono-code uppercase tracking-[0.2em] text-[#C8A252] mb-2.5">
+              Roles in Play
+            </h3>
+            <ul className="space-y-2.5">
               {roles.map((r) => (
-                <li key={r.name} className="text-sm">
-                  <span className="font-pixel font-bold">{r.name}</span> –
-                  <span className="ml-1 capitalize">{r.team} Team</span>
-                  <p className="ml-4 text-xs italic text-base-content/70">{r.power}</p>
+                <li key={r.name} className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-[#F2ECE1]">{r.name}</span>
+                    <span className="text-[10px] font-mono-code uppercase text-[#9E9587]">{r.team}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-[#9E9587] leading-relaxed">{r.power}</p>
                 </li>
               ))}
             </ul>
           </section>
-          <section>
-            <h3 className="text-lg font-pixel font-bold text-secondary mb-2">Settings</h3>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Sound Effects: {gameAudio.isEnabled() ? "ON" : "OFF"}</li>
-              <li>Theme: {localStorage.getItem("daisyui-theme") ?? "retro"}</li>
-            </ul>
+          <section className="border-t border-white/10 pt-3">
+            <h3 className="text-[11px] font-mono-code uppercase tracking-[0.2em] text-[#9E9587] mb-2">
+              Audio &amp; Theme
+            </h3>
+            <div className="flex gap-4 text-xs text-[#F2ECE1]/80">
+              <span>SFX: {gameAudio.isEnabled() ? "On" : "Off"}</span>
+              <span>Theme: {localStorage.getItem("daisyui-theme") ?? "dark"}</span>
+            </div>
           </section>
         </div>
       </div>

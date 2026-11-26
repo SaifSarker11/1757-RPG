@@ -22,52 +22,52 @@ export function NominationHistoryCard({
 
   if (nominations.length === 0) {
     return (
-      <div className="p-3 bg-base-200 border-2 border-base-300 font-pixel text-xs text-base-content/60 text-center">
+      <div className="p-4 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-[#9E9587] text-center">
         No nominations deliberated yet.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2 max-h-56 overflow-y-auto">
+    <div className="flex flex-col gap-2.5 max-h-64 overflow-y-auto pr-1">
       {nominations.map((nom, idx) => {
-        const approvedBadge = nom.approved
-          ? "badge-success text-success-content"
-          : "badge-error text-error-content";
+        const approvedStyle = nom.approved
+          ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/40"
+          : "bg-red-950/60 text-red-300 border-red-500/40";
 
         return (
           <div
             key={idx}
-            className="p-2.5 bg-base-100 border-2 border-base-300 font-pixel text-xs flex flex-col gap-1"
+            className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-xs flex flex-col gap-1.5"
           >
             <div className="flex justify-between items-center">
-              <span className="font-bold">
-                Round {nom.round} — Attempt #{nom.attempt}
+              <span className="font-mono-code font-semibold text-[#F2ECE1]">
+                R{nom.round} · Attempt #{nom.attempt}
               </span>
-              <span className={`badge badge-sm rounded-none text-[10px] ${approvedBadge}`}>
-                {nom.approved ? "APPROVED" : "REJECTED"}
+              <span className={`px-2 py-0.5 rounded-md border text-[10px] font-mono-code uppercase ${approvedStyle}`}>
+                {nom.approved ? "Approved" : "Rejected"}
               </span>
             </div>
 
-            <div className="text-[10px] text-base-content/75 font-sans">
-              <span className="font-pixel font-bold text-primary mr-1">Leader Seat:</span>
-              #{nom.leaderSeat + 1}
+            <div className="text-[11px] text-[#9E9587]">
+              <span className="text-[#C8A252] font-medium mr-1.5">Leader:</span>
+              Seat #{nom.leaderSeat + 1}
             </div>
 
-            <div className="text-[10px] text-base-content/75 font-sans">
-              <span className="font-pixel font-bold text-accent mr-1">Ministers:</span>
+            <div className="text-[11px] text-[#9E9587]">
+              <span className="text-[#F2ECE1]/80 font-medium mr-1.5">Ministers:</span>
               {nom.ministerIds ? nom.ministerIds.map(label).join(", ") : "None (leader timed out)"}
             </div>
 
             {/* Votes breakdown */}
-            <div className="flex flex-wrap gap-1 mt-1">
+            <div className="flex flex-wrap gap-1.5 mt-1 pt-1.5 border-t border-white/5">
               {Object.entries(nom.votes).map(([playerId, vote]) => (
                 <span
                   key={playerId}
-                  className={`px-1 py-0.5 text-[9px] font-mono border ${
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono-code border ${
                     vote === "APPROVE"
-                      ? "border-success text-success"
-                      : "border-error text-error"
+                      ? "border-emerald-500/30 bg-emerald-950/40 text-emerald-300"
+                      : "border-red-500/30 bg-red-950/40 text-red-300"
                   }`}
                 >
                   {label(playerId)}: {vote === "APPROVE" ? "YEAH" : "NAY"}

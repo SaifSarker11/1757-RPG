@@ -9,12 +9,12 @@ export function MusicControl() {
   const current = TRACKS.find((t) => t.id === music.trackId);
 
   const label = !current
-    ? "MUSIC: OFF 🔇"
+    ? "Music Off"
     : music.suppressed
-      ? "MUSIC: PAUSED ⏸"
+      ? "Music Paused"
       : music.awaitingGesture
-        ? "MUSIC: CLICK ▶"
-        : "MUSIC: ON 🎵";
+        ? "Play Music"
+        : "Music On";
 
   const choose = (trackId: string | null) => {
     gameAudio.playClick();
@@ -27,40 +27,52 @@ export function MusicControl() {
         tabIndex={0}
         role="button"
         title={current ? `Now playing: ${current.name}` : "Background music is off"}
-        className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${
-          current && !music.suppressed ? "btn-accent text-accent-content" : ""
+        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
+          current && !music.suppressed
+            ? "border-[#C8A252]/50 bg-[#C8A252]/15 text-[#F2ECE1]"
+            : "border-white/10 bg-white/5 text-[#9E9587] hover:text-[#F2ECE1]"
         }`}
       >
         {label}
       </div>
       <div
         tabIndex={0}
-        className="dropdown-content bg-base-100 rounded-none z-20 w-64 p-3 shadow-lg border-2 border-base-300 font-pixel space-y-2"
+        className="dropdown-content bg-[#161410] rounded-xl z-20 w-64 p-3.5 shadow-2xl border border-[#C8A252]/25 space-y-3 mt-2"
       >
-        <span className="text-[9px] uppercase text-base-content/60 block">Background music</span>
-        <ul className="menu p-0 gap-0.5">
+        <span className="text-[10px] font-mono-code uppercase tracking-wider text-[#9E9587] block">
+          Background Music
+        </span>
+        <ul className="menu p-0 gap-1">
           <li>
             <button
               onClick={() => choose(null)}
-              className={`rounded-none text-[10px] ${!current ? "active" : ""}`}
+              className={`rounded-lg text-xs px-2.5 py-1.5 ${
+                !current ? "bg-[#C8A252]/20 text-[#C8A252]" : "text-[#F2ECE1]/80 hover:bg-white/5"
+              }`}
             >
-              🔇 Off
+              Off
             </button>
           </li>
           {TRACKS.map((t) => (
             <li key={t.id}>
               <button
                 onClick={() => choose(t.id)}
-                className={`rounded-none text-[10px] flex justify-between ${t.id === music.trackId ? "active" : ""}`}
+                className={`rounded-lg text-xs px-2.5 py-1.5 flex justify-between ${
+                  t.id === music.trackId
+                    ? "bg-[#C8A252]/20 text-[#C8A252]"
+                    : "text-[#F2ECE1]/80 hover:bg-white/5"
+                }`}
               >
-                <span>🎵 {t.name}</span>
-                {t.id === music.trackId && music.playing && <span className="animate-pulse">▶</span>}
+                <span>{t.name}</span>
+                {t.id === music.trackId && music.playing && (
+                  <span className="animate-pulse text-[10px]">Playing</span>
+                )}
               </button>
             </li>
           ))}
         </ul>
 
-        <label className="flex items-center gap-2 text-[9px] uppercase">
+        <label className="flex items-center gap-2.5 text-[10px] font-mono-code uppercase tracking-wider text-[#9E9587]">
           Vol
           <input
             type="range"
@@ -69,21 +81,21 @@ export function MusicControl() {
             step={0.05}
             value={music.volume}
             onChange={(e) => musicPlayer.setVolume(Number(e.target.value))}
-            className="range range-xs range-accent flex-1"
+            className="range range-xs range-warning flex-1"
             aria-label="Music volume"
           />
         </label>
 
         {music.suppressed && current && (
-          <p className="text-[9px] text-warning leading-snug">
-            Paused while voice chat is active. It resumes when the voice channel empties.
+          <p className="text-[11px] text-amber-300/90 leading-snug">
+            Paused while voice chat is active. Resumes when voice channel empties.
           </p>
         )}
 
         {current && (
-          <p className="font-sans text-[9px] text-base-content/60 leading-snug border-t border-dashed border-base-content/20 pt-1.5">
+          <p className="text-[10px] text-[#9E9587] leading-snug border-t border-white/10 pt-2">
             “{current.title}” by {current.artist},{" "}
-            <a href={MUSIC_LICENSE.url} target="_blank" rel="noreferrer" className="link">
+            <a href={MUSIC_LICENSE.url} target="_blank" rel="noreferrer" className="underline hover:text-[#C8A252]">
               {MUSIC_LICENSE.name}
             </a>
           </p>
