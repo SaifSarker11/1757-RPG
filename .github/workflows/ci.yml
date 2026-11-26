@@ -46,3 +46,45 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{}'
+
+  deploy-web:
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Deploy web (apps/web) to Vercel
+        working-directory: code/apps/web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel --prod --yes --token="$VERCEL_TOKEN"
+
+  deploy-admin:
+    needs: ci
+    runs-on: ubuntu-latest
+    # Optional: enable by adding the ADMIN_VERCEL_PROJECT_ID repo secret.
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm i -g vercel@latest
+
+      - name: Deploy admin (apps/admin) to Vercel
+        working-directory: code/apps/admin
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.ADMIN_VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "ADMIN_VERCEL_PROJECT_ID not set — skipping admin deploy"
+            exit 0
+          fi
+          vercel --prod --yes --token="$VERCEL_TOKEN"

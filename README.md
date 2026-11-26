@@ -201,8 +201,8 @@ Manual test scripts are in [`code/docs/manual-testing.md`](code/docs/manual-test
 | Part | Where | How |
 |---|---|---|
 | API | **Render** | Docker image from `code/Dockerfile`, declared in [`render.yaml`](render.yaml) |
-| Web and admin | **Vercel** | Git integration, one project per app (`code/apps/web`, `code/apps/admin`) |
-| CI | **GitHub Actions** | [`ci.yml`](.github/workflows/ci.yml): install, Prisma generate, typecheck, test, build; pushes to `main` also trigger the Render deploy |
+| Web and admin | **Vercel** | Git integration or CI, one project per app (Root Directory `code/apps/web` / `code/apps/admin`) |
+| CI | **GitHub Actions** | [`ci.yml`](.github/workflows/ci.yml): install, Prisma generate, typecheck, test, build; pushes to `main` also trigger the Render and Vercel deploys |
 
 ```bash
 cd code

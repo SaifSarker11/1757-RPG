@@ -64,3 +64,14 @@ This document records the architectural changes, gameplay fixes, and UI/UX desig
 
 *   **API Leave Endpoint:** Connected the client to the `POST /rooms/:roomId/leave` endpoint.
 *   **Leave Room Controls:** Added a prominent **"Leave Room"** button to the navbar of [apps/web/app/room/[id]/page.tsx](../apps/web/app/room/%5Bid%5D/page.tsx). Clicking it removes the player from the database list, broadcasts a leave event to the socket channel, and redirects them to the main dashboard.
+
+---
+
+## Landing Page & Deployment Hardening (2026-11)
+
+*   **Cinematic landing page:** Replaced the `/` redirect with a full marketing landing page (`apps/web/components/landing/*`) built from two reference designs — a dark cinematic hero (looping 0.6x video, glass navigation pill, framer-motion entrances, animated mobile menu) and warm paper-cream editorial sections (Instrument Serif display type, six-step "How a round unfolds" cards, faction cards, the 17-role gallery, signature fill-sweep + label-roll pill buttons, IntersectionObserver blur-up reveals). Fonts are scoped to the landing via `next/font`; no global styles were changed and all in-app pages keep their existing theme.
+*   **Cross-origin socket authentication fix:** With the web client on Vercel and the API on Render, the Better Auth cookie lives on the web origin (auth runs behind the Next.js rewrite proxy) while Socket.IO connects to the API origin directly — the handshake previously arrived unauthenticated and every room/game event was refused. The room page now fetches the session token from the proxied `/api/me` endpoint (`lib/socket-token.ts`) and passes it as a Bearer token in the Socket.IO handshake; the API's existing `bearer` plugin support resolves the session. The `auth` callback refetches a fresh token on every reconnect.
+*   **Reproducible dependency pins:** Replaced every `"latest"` specifier (better-auth, fastify, @fastify/cors, @fastify/helmet, socket.io, @prisma/client, prisma, dotenv) with the exact locked versions so Vercel/Render builds are deterministic, and pinned the API's TypeScript dev-dependency.
+*   **Workspace build allow-list:** Corrected the invalid `allowBuilds` key in `pnpm-workspace.yaml` to pnpm's `onlyBuiltDependencies` (future-proofing for pnpm 10).
+*   **CI/CD completion:** The pipeline now deploys the web client to Vercel (`deploy-web`) and optionally the admin console (`deploy-admin`, gated on the `ADMIN_VERCEL_PROJECT_ID` secret), matching what `docs/deployment.md` already promised. Deployment documentation expanded with exact Vercel project setup (Root Directory, required `API_URL` build variable) and a cross-origin auth explainer.
+*   **Site metadata:** The web app's `<title>`/description no longer say "Create Next App".

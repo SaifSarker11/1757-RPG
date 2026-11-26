@@ -7,6 +7,6 @@
     "./load-env": "./load-env.mjs"
   },
   "dependencies": {
-    "dotenv": "latest"
+    "dotenv": "17.0.1"
   }
 }

@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@repo/db": "workspace:*",
-    "better-auth": "latest"
+    "better-auth": "1.6.11"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

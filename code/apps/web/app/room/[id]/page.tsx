@@ -6,6 +6,7 @@ import InfoModal from "@/components/InfoModal";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { authClient } from "@/lib/auth-client";
+import { fetchSocketToken } from "@/lib/socket-token";
 import { gameAudio } from "@/lib/audio";
 import type { PlayerView } from "@/lib/game-types";
 import { CountdownTimer } from "@/components/CountdownTimer";
@@ -236,11 +237,27 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   useEffect(() => {
     if (!session?.user?.id) return;
 
-    const socket = io(SOCKET_URL, {
+    let cancelled = false;
+    let socket: Socket | null = null;
+
+    // The auth cookie lives on the web origin (Better Auth runs behind the
+    // Next.js rewrite proxy), but the socket connects to the API origin
+    // directly, so the handshake needs the session token as a Bearer header.
+    // `auth` is re-invoked on every (re)connect attempt, fetching a fresh
+    // token each time.
+    socket = io(SOCKET_URL, {
       transports: ["websocket"],
       withCredentials: true,
+      auth: (cb) => {
+        void fetchSocketToken().then((token) => cb(token ? { token } : {}));
+      },
       query: { roomId, userId: session.user.id },
     });
+
+    if (cancelled) {
+      socket.disconnect();
+      return;
+    }
 
     socketRef.current = socket;
     setSocket(socket);
@@ -412,7 +429,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     });
 
     return () => {
-      socket.disconnect();
+      cancelled = true;
+      socket?.disconnect();
       setSocket(null);
     };
   }, [roomId, session]);

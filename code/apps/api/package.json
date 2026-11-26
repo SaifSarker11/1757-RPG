@@ -16,18 +16,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fastify/cors": "latest",
-    "@fastify/helmet": "latest",
+    "@fastify/cors": "11.2.0",
+    "@fastify/helmet": "13.0.2",
     "@fastify/rate-limit": "10.3.0",
     "@prisma/client-runtime-utils": "7.8.0",
     "@repo/auth": "workspace:*",
     "@repo/config": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/game-engine": "workspace:*",
-    "better-auth": "latest",
-    "fastify": "latest",
+    "better-auth": "1.6.11",
+    "fastify": "5.8.5",
     "ioredis": "^5.11.0",
-    "socket.io": "latest",
+    "socket.io": "4.8.3",
     "zod": "4.4.3"
   },
   "devDependencies": {
@@ -37,7 +37,7 @@
     "socket.io-client": "^4.8.3",
     "tsup": "^8.5.1",
     "tsx": "^4.22.3",
-    "typescript": "^6.0.3",
+    "typescript": "6.0.3",
     "vitest": "3.2.4"
   }
 }

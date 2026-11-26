@@ -2,7 +2,11 @@ packages:
   - "apps/*"
   - "packages/*"
 
-allowBuilds:
-  sharp: true
-  unrs-resolver: true
-  prisma: true
+# pnpm onlyBuiltDependencies: which packages may run postinstall scripts.
+# (pnpm 9 runs all scripts by default; this key future-proofs for pnpm >= 10.)
+onlyBuiltDependencies:
+  - sharp
+  - unrs-resolver
+  - prisma
+  - "@prisma/engines"
+  - esbuild
