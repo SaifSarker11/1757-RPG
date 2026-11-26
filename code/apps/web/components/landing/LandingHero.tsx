@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { PillLink } from "./PillLink";
-import { fontBody, fontDisplay } from "./fonts";
+import { fontMono, fontSans, ui } from "./fonts";
 
 const NAV_LINKS = [
   { label: "How to Play", href: "#how" },
@@ -13,22 +13,14 @@ const NAV_LINKS = [
 
 const VIDEO_SRC = "https://cdn.jiro.build/Kelo/Hero%2003.mp4";
 
-const STATS = [
+const HERO_CHIPS = ["Murshidabad · June 1757", "6–15 players", "Free to play"];
+
+const META = [
+  { figure: "17", label: "Secret roles" },
+  { figure: "05", label: "Rounds per game" },
   { figure: "6–15", label: "Players" },
-  { figure: "17", label: "Secret Roles" },
-  { figure: "5", label: "Rounds per Game" },
-  { figure: "P2P", label: "Voice Chat" },
+  { figure: "P2P", label: "Voice chat" },
 ];
-
-const statsContainer: Variants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.55 } },
-};
-
-const statsChild: Variants = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
 
 export function LandingHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -43,270 +35,270 @@ export function LandingHero() {
     }
     video.playbackRate = 0.6;
     void video.play().catch(() => {
-      /* autoplay blocked — the ink backdrop still looks right */
+      /* autoplay blocked — the poster frame still looks right */
     });
   }, []);
 
   return (
-    <section className="relative flex min-h-[100svh] w-full flex-col overflow-hidden bg-[#0A0908]">
-      {/* Background video (Kelo reference: slowed to 0.6x under a light tint) */}
-      <video
-        ref={videoRef}
-        className="absolute inset-0 z-0 h-full w-full object-cover"
-        src={VIDEO_SRC}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-      />
-      {/* Fallback glow behind the video while it streams */}
-      <div
-        aria-hidden
-        className="absolute inset-0 z-0"
-        style={{
-          background:
-            "radial-gradient(60% 55% at 50% 38%, rgba(200,162,75,0.16) 0%, rgba(10,9,8,0) 70%)",
-        }}
-      />
-      <div aria-hidden className="absolute inset-0 z-[1] bg-black/20" />
-      {/* Depth fade into the ink base */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 bottom-0 z-[2] h-[38%]"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(10,9,8,0) 0%, rgba(10,9,8,0.82) 100%)",
-        }}
-      />
-
-      {/* Floating glass navigation pill */}
-      <motion.nav
-        className="absolute left-0 right-0 top-6 z-50 px-6"
-        initial={{ y: -20, opacity: 0 }}
+    <section className="relative w-full">
+      {/* Top bar — Supply marketplace header: hairline bottom border on canvas */}
+      <motion.header
+        className="sticky top-0 z-40 border-b border-[#e6e6e4] bg-[#ececeb]/85 backdrop-blur-md"
+        initial={{ y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="mx-auto max-w-4xl">
-          <div className="flex items-center justify-between rounded-full border border-white/10 bg-white/5 p-2 px-4 backdrop-blur-xl">
-            <a
-              href="#top"
-              className="block text-[22px] leading-7 tracking-[0.02em] text-[#F6EFE1]"
-              style={fontDisplay}
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+          <a
+            href="#top"
+            className="flex items-baseline gap-2 text-[17px] font-semibold tracking-[-0.02em] text-[#111]"
+            style={fontSans}
+          >
+            1757
+            <span
+              className="hidden text-[10px] font-medium uppercase tracking-[0.22em] text-[#8a8a8a] sm:inline"
+              style={fontMono}
             >
-              1757
-            </a>
+              Plassey
+            </span>
+          </a>
 
-            {/* Desktop links */}
-            <div className="hidden items-center gap-5 md:flex">
+          {/* Desktop links */}
+          <nav
+            className="hidden items-center gap-6 md:flex"
+            style={fontSans}
+            aria-label="Sections"
+          >
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-[13px] font-medium text-[#5c5c5c] transition-colors duration-200 hover:text-[#111]"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Desktop auth */}
+          <div className="hidden items-center gap-2 md:flex" style={fontSans}>
+            <a
+              href="/login"
+              className="px-3 py-1.5 text-[13px] font-medium text-[#5c5c5c] transition-colors duration-200 hover:text-[#111]"
+            >
+              Sign in
+            </a>
+            <PillLink href="/login" className="px-4 py-2 text-[13px]">
+              Enter the Court
+            </PillLink>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="flex h-9 w-9 flex-col items-center justify-center gap-[5px] rounded-full border border-[#e6e6e4] bg-white md:hidden"
+          >
+            <span
+              className={`h-[2px] w-4 bg-[#111] transition-all duration-300 ${
+                menuOpen ? "translate-y-[7px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`h-[2px] w-4 bg-[#111] transition-all duration-300 ${
+                menuOpen ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`h-[2px] w-4 bg-[#111] transition-all duration-300 ${
+                menuOpen ? "-translate-y-[7px] -rotate-45" : ""
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Mobile menu — white card panel */}
+        <AnimatePresence>
+          {menuOpen ? (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="mx-6 mb-3 flex flex-col gap-1 rounded-[18px] border border-[#e6e6e4] bg-white p-3 shadow-[0_6px_14px_-6px_rgba(0,0,0,0.16)] md:hidden"
+              style={fontSans}
+            >
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
-                  className="group relative py-1 text-[13px] font-medium text-white/70 hover:text-white"
-                  style={fontBody}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-[12px] px-3 py-2.5 text-[14px] font-medium text-[#111] transition-colors hover:bg-[#f4f4f3]"
                 >
                   {link.label}
-                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-white transition-all duration-300 group-hover:w-full" />
                 </a>
               ))}
-            </div>
-
-            {/* Desktop auth */}
-            <div className="hidden items-center gap-2 md:flex" style={fontBody}>
-              <a
-                href="/login"
-               
-                className="px-2 py-1.5 text-[13px] font-medium text-white/70 hover:text-white"
-              >
-                Log in
-              </a>
-              <a
-                href="/login"
-               
-                className="rounded-full bg-white px-4 py-1.5 text-[13px] font-semibold text-black transition-transform duration-300 hover:scale-105 hover:bg-white/90 active:scale-95"
-              >
-                Enter the Court
-              </a>
-            </div>
-
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((open) => !open)}
-              className="flex h-8 w-8 flex-col items-center justify-center gap-[5px] md:hidden"
-            >
-              <span
-                className={`h-[2px] w-5 bg-white transition-all duration-300 ${
-                  menuOpen ? "translate-y-[7px] rotate-45" : ""
-                }`}
-              />
-              <span
-                className={`h-[2px] w-5 bg-white transition-all duration-300 ${
-                  menuOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`h-[2px] w-5 bg-white transition-all duration-300 ${
-                  menuOpen ? "-translate-y-[7px] -rotate-45" : ""
-                }`}
-              />
-            </button>
-          </div>
-
-          {/* Mobile menu */}
-          <AnimatePresence>
-            {menuOpen ? (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="mt-2 flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/60 p-4 backdrop-blur-xl md:hidden"
-                style={fontBody}
-              >
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="rounded-lg px-3 py-2 text-[15px] text-white/80 hover:bg-white/10 hover:text-white"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-                <div className="mt-1 border-t border-white/10 pt-3">
-                  <a
-                    href="/login"
-                   
-                    onClick={() => setMenuOpen(false)}
-                    className="block rounded-lg px-3 py-2 text-[15px] text-white/80 hover:bg-white/10 hover:text-white"
-                  >
-                    Log in
-                  </a>
-                  <a
-                    href="/login"
-                   
-                    onClick={() => setMenuOpen(false)}
-                    className="mt-2 block rounded-full bg-white px-5 py-2.5 text-center text-[15px] font-semibold text-black"
-                  >
-                    Enter the Court
-                  </a>
-                </div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
-        </div>
-      </motion.nav>
-
-      {/* Hero content */}
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-14 pt-[140px] text-center">
-        <div className="flex w-full flex-col items-center">
-          <motion.p
-            className="mb-5 text-[12px] font-medium uppercase tracking-[0.32em] text-[#C8A24B]"
-            style={fontBody}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.05, ease: "easeOut" }}
-          >
-            Murshidabad · June 1757
-          </motion.p>
-
-          <motion.h1
-            className="mb-5 max-w-4xl text-5xl leading-[1.08] tracking-[-0.01em] text-[#F6EFE1] md:text-6xl lg:text-[68px]"
-            style={fontDisplay}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-          >
-            The Nawab&apos;s court
-            <br />
-            hides a <span className="italic text-[#C8A24B]">traitor.</span>
-          </motion.h1>
-
-          <motion.p
-            className="mb-8 max-w-[540px] leading-relaxed text-[#F6EFE1]/85 md:text-lg"
-            style={fontBody}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          >
-            A real-time social-deduction game set on the eve of the Battle of
-            Plassey. Every player holds a secret historical role — and most of
-            them are lying to you.
-          </motion.p>
-
-          <motion.div
-            className="flex flex-col items-center gap-4"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            style={fontBody}
-          >
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <PillLink href="/login" className="px-7 py-3 text-base">
-                Enter the Court
-              </PillLink>
-              <PillLink
-                href="/signup"
-                variant="dark"
-                className="border-white/20 bg-white/5 px-6 py-3 text-base backdrop-blur-sm"
-              >
-                Create an Account
-              </PillLink>
-            </div>
-            <span className="text-sm text-white/60">
-              No download · Free · Play as a guest
-            </span>
-          </motion.div>
-
-          {/* Stats strip — echoes the reference logo wall */}
-          <motion.div
-            className="mt-14 flex flex-wrap items-center justify-center gap-x-10 gap-y-6"
-            style={fontBody}
-            variants={statsContainer}
-            initial="hidden"
-            animate="show"
-          >
-            {STATS.map((stat) => (
-              <motion.div
-                key={stat.label}
-                variants={statsChild}
-                whileHover={{ scale: 1.06 }}
-                className="flex items-baseline gap-2.5"
-              >
-                <span
-                  className="text-[26px] leading-none text-[#F6EFE1]"
-                  style={fontDisplay}
+              <div className="mt-1 border-t border-[#e6e6e4] pt-3">
+                <a
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block rounded-[12px] px-3 py-2.5 text-[14px] font-medium text-[#5c5c5c] transition-colors hover:bg-[#f4f4f3]"
                 >
-                  {stat.figure}
-                </span>
-                <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/55">
-                  {stat.label}
-                </span>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+                  Sign in
+                </a>
+                <a
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-1 block rounded-full bg-[#ff5206] px-5 py-2.5 text-center text-[14px] font-medium text-white transition-colors hover:bg-[#e84700]"
+                >
+                  Enter the Court
+                </a>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.header>
+
+      {/* Hero — Supply product hero: chips, tight display type, CTA row */}
+      <div className="relative mx-auto max-w-6xl px-6 pb-14 pt-16 text-center md:pt-24">
+        <motion.div
+          className="mb-7 flex flex-wrap items-center justify-center gap-2"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05, ease: "easeOut" }}
+          style={fontSans}
+        >
+          {HERO_CHIPS.map((chip) => (
+            <span
+              key={chip}
+              className={ui.chip}
+              style={fontMono}
+            >
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#ff5206]" />
+              {chip}
+            </span>
+          ))}
+        </motion.div>
+
+        <motion.h1
+          className="mx-auto max-w-4xl text-[44px] font-medium leading-[1.04] tracking-[-0.03em] text-[#111] md:text-[64px] lg:text-[76px]"
+          style={fontSans}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.12, ease: "easeOut" }}
+        >
+          The Nawab&apos;s court hides a{" "}
+          <span className="text-[#ff5206]">traitor.</span>
+        </motion.h1>
+
+        <motion.p
+          className="mx-auto mt-6 max-w-[560px] text-[16px] font-light leading-relaxed text-[#5c5c5c] md:text-[17px]"
+          style={fontSans}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+        >
+          A real-time social-deduction game set on the eve of the Battle of
+          Plassey. Every player holds a secret historical role — and most of
+          them are lying to you.
+        </motion.p>
+
+        <motion.div
+          className="mt-9 flex flex-col items-center gap-3"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.28, ease: "easeOut" }}
+          style={fontSans}
+        >
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <PillLink href="/login" className="px-7 py-3 text-[15px]">
+              Enter the Court
+            </PillLink>
+            <PillLink
+              href="/signup"
+              variant="surface"
+              className="px-6 py-3 text-[15px]"
+            >
+              Create an Account
+            </PillLink>
+          </div>
+          <span
+            className="text-[11px] uppercase tracking-[0.14em] text-[#8a8a8a]"
+            style={fontMono}
+          >
+            No download · Play as a guest · Voice chat built in
+          </span>
+        </motion.div>
       </div>
 
-      {/* Scroll cue */}
+      {/* Preview card — Supply template-card framing around the table video */}
       <motion.div
-        aria-hidden
-        className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2"
+        className="mx-auto max-w-5xl px-6 pb-16"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+      >
+        <div className="rounded-[20px] border border-[#e6e6e4] bg-white p-2 shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.04),0_24px_48px_-28px_rgba(0,0,0,0.22)]">
+          <div className="relative overflow-hidden rounded-[14px] bg-[#111]">
+            <video
+              ref={videoRef}
+              className="aspect-video w-full object-cover"
+              src={VIDEO_SRC}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+            />
+          </div>
+          <div
+            className="flex flex-wrap items-center justify-between gap-3 px-3 py-2.5"
+            style={fontSans}
+          >
+            <span
+              className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#8a8a8a]"
+              style={fontMono}
+            >
+              The court in session — live table
+            </span>
+            <span className="flex flex-wrap items-center gap-2">
+              <span className={ui.chip} style={fontMono}>
+                5 rounds
+              </span>
+              <span className={ui.chip} style={fontMono}>
+                Secret roles
+              </span>
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Meta strip — Supply footer meta rhythm */}
+      <motion.div
+        className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-10 gap-y-4 px-6 pb-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.4, duration: 0.8 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
+        style={fontSans}
       >
-        <div className="h-10 w-px overflow-hidden bg-white/15">
-          <motion.div
-            className="h-1/2 w-px bg-[#C8A24B]"
-            animate={{ y: [-20, 40] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
+        {META.map((stat) => (
+          <span key={stat.label} className="flex items-baseline gap-2.5">
+            <span
+              className="text-[18px] font-medium tracking-[-0.02em] text-[#111]"
+              style={fontSans}
+            >
+              {stat.figure}
+            </span>
+            <span
+              className="text-[10px] uppercase tracking-[0.18em] text-[#8a8a8a]"
+              style={fontMono}
+            >
+              {stat.label}
+            </span>
+          </span>
+        ))}
       </motion.div>
     </section>
   );

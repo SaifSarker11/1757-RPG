@@ -1,5 +1,5 @@
 import { Reveal } from "./Reveal";
-import { fontBody, fontDisplay } from "./fonts";
+import { fontMono, fontSans, ui } from "./fonts";
 
 const STEPS = [
   {
@@ -36,44 +36,42 @@ const STEPS = [
 
 export function HowToPlay() {
   return (
-    <section id="how" className="w-full bg-[#FAE2C7] py-24 md:py-32">
+    <section id="how" className="w-full py-16 md:py-24">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal>
-          <p
-            className="mb-4 text-[12px] font-medium uppercase tracking-[0.3em] text-[#B08A3C]"
-            style={fontBody}
-          >
-            How a round unfolds
-          </p>
-          <h2
-            className="max-w-2xl text-4xl leading-[1.1] text-[#2E2010] md:text-5xl"
-            style={fontDisplay}
-          >
-            Five rounds. Six moves.{" "}
-            <span className="italic text-[#B08A3C]">One liar.</span>
-          </h2>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className={`${ui.label} mb-4`} style={fontMono}>
+                How a round unfolds
+              </p>
+              <h2 className="max-w-2xl text-[32px] font-medium leading-[1.12] tracking-[-0.02em] text-[#111] md:text-[44px]" style={fontSans}>
+                Five rounds. Six moves.{" "}
+                <span className="text-[#ff5206]">One liar.</span>
+              </h2>
+            </div>
+            <span
+              className="rounded-full border border-[#e6e6e4] bg-white px-3.5 py-1.5 text-[11px] uppercase tracking-[0.14em] text-[#5c5c5c]"
+              style={fontMono}
+            >
+              06 steps · host timer 30–300s
+            </span>
+          </div>
         </Reveal>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {STEPS.map((step, i) => (
-            <Reveal key={step.number} delay={i * 90}>
-              <div className="h-full rounded-3xl border border-[#2E2010]/10 bg-[#FFF6E6]/80 p-7 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1.5">
+            <Reveal key={step.number} delay={i * 70}>
+              <div className={`${ui.card} ${ui.cardHover} h-full p-7`} style={fontSans}>
                 <span
-                  className="block text-[15px] italic text-[#B08A3C]"
-                  style={fontDisplay}
+                  className="text-[12px] font-medium tracking-[0.18em] text-[#ff5206]"
+                  style={fontMono}
                 >
                   {step.number}
                 </span>
-                <h3
-                  className="mt-3 text-[24px] leading-tight text-[#2E2010]"
-                  style={fontDisplay}
-                >
+                <h3 className="mt-4 text-[19px] font-medium leading-snug tracking-[-0.01em] text-[#111]" style={fontSans}>
                   {step.title}
                 </h3>
-                <p
-                  className="mt-3 text-[15px] font-light leading-relaxed text-[#2E2010]/70"
-                  style={fontBody}
-                >
+                <p className="mt-2.5 text-[14px] font-light leading-relaxed text-[#5c5c5c]" style={fontSans}>
                   {step.text}
                 </p>
               </div>
