@@ -23,65 +23,58 @@ interface RoleCardProps {
 export function RoleCard({ view, playerNames = {} }: RoleCardProps) {
   const { me, vision, reveals, myVoteWeight } = view;
 
-  const teamBorder =
+  const teamColor =
     me.team === "GREEN"
-      ? "border-emerald-500/40"
+      ? "text-success border-success"
       : me.team === "RED"
-        ? "border-red-500/40"
-        : "border-amber-500/40";
+        ? "text-error border-error"
+        : "text-warning border-warning";
 
   const teamBadge =
     me.team === "GREEN"
-      ? "bg-emerald-950/70 text-emerald-300 border-emerald-500/40"
+      ? "badge-success text-success-content"
       : me.team === "RED"
-        ? "bg-red-950/70 text-red-300 border-red-500/40"
-        : "bg-amber-950/70 text-amber-300 border-amber-500/40";
+        ? "badge-error text-error-content"
+        : "badge-warning text-warning-content";
 
   return (
-    <div className={`p-5 rounded-2xl council-panel border ${teamBorder} flex flex-col gap-4`}>
-      <div className="flex items-start justify-between border-b border-white/10 pb-3 gap-3">
+    <div className={`p-4 border-4 bg-base-100 pixel-card flex flex-col gap-3 ${teamColor}`}>
+      <div className="flex items-center justify-between border-b-2 border-base-300 pb-2">
         <div>
-          <span className="text-[10px] font-mono-code uppercase tracking-[0.2em] text-[#9E9587] block">
-            Secret Dossier
+          <span className="text-xs uppercase font-pixel tracking-wide block opacity-70">
+            YOUR ASSIGNED ROLE
           </span>
-          <h2 className="font-display text-2xl font-bold tracking-wide text-[#F2ECE1] mt-0.5">
-            {roleName(me.role)}
-          </h2>
+          <h2 className="text-xl font-historical font-black tracking-wider uppercase">{me.role}</h2>
         </div>
-        <span className={`px-2.5 py-1 rounded-lg border text-[10px] font-mono-code uppercase tracking-wider font-semibold ${teamBadge}`}>
+        <span className={`badge font-pixel uppercase font-bold py-2 px-3 text-xs ${teamBadge}`}>
           {me.team}
         </span>
       </div>
 
-      <div className="text-xs space-y-2">
-        <div className="flex justify-between items-center">
-          <span className="text-[#9E9587]">Seat Position</span>
-          <span className="font-mono-code font-semibold text-[#F2ECE1]">Seat #{me.seat + 1}</span>
+      <div className="text-xs font-sans space-y-1">
+        <div className="flex justify-between font-pixel">
+          <span className="opacity-70">Seat Number:</span>
+          <span className="font-bold">Seat #{me.seat + 1}</span>
         </div>
         {myVoteWeight > 1 && (
-          <div className="flex justify-between items-center text-[#C8A252]">
-            <span>Ballot Weight</span>
-            <span className="font-mono-code font-semibold">{myVoteWeight}x Vote</span>
+          <div className="flex justify-between font-pixel text-primary font-bold">
+            <span>Ballot Weight:</span>
+            <span>{myVoteWeight}x Vote</span>
           </div>
         )}
       </div>
 
       {/* Secret Visions / Information */}
       {vision.length > 0 && (
-        <div className="p-3.5 rounded-xl bg-white/[0.03] border border-[#C8A252]/20 text-xs space-y-2">
-          <span className="text-[10px] font-mono-code uppercase tracking-[0.18em] text-[#C8A252] block">
-            Secret Intelligence
-          </span>
-          <ul className="space-y-1.5">
+        <div className="mt-2 p-2 bg-base-200 border-2 border-base-300 text-xs">
+          <span className="font-pixel font-bold text-primary block mb-1">SECRET INTEL / VISIONS:</span>
+          <ul className="space-y-1 font-mono">
             {vision.map((entry) => (
-              <li key={entry.playerId} className="flex justify-between items-center gap-2">
-                <span className="text-[#F2ECE1]/85 truncate">
-                  <span className="font-mono-code text-[#9E9587] mr-1">#{entry.seat + 1}</span>
-                  {playerNames[entry.playerId] ?? `Player ${entry.playerId.slice(0, 6)}`}
+              <li key={entry.playerId} className="flex justify-between items-center">
+                <span>
+                  #{entry.seat + 1} {playerNames[entry.playerId] ?? `Player ${entry.playerId.slice(0, 6)}`}:
                 </span>
-                <span className="font-mono-code text-[11px] font-semibold text-[#C8A252] shrink-0">
-                  {visionText(entry.label)}
-                </span>
+                <span className="font-bold text-accent">{visionText(entry.label)}</span>
               </li>
             ))}
           </ul>
@@ -90,20 +83,15 @@ export function RoleCard({ view, playerNames = {} }: RoleCardProps) {
 
       {/* Private Reveals (e.g. De Bussy) */}
       {reveals.length > 0 && (
-        <div className="p-3.5 rounded-xl bg-amber-950/25 border border-amber-500/30 text-xs space-y-2">
-          <span className="text-[10px] font-mono-code uppercase tracking-[0.18em] text-amber-300 block">
-            Revealed Identities
-          </span>
-          <ul className="space-y-1.5">
+        <div className="mt-1 p-2 bg-base-300 border border-base-content/20 text-xs">
+          <span className="font-pixel font-bold text-warning block mb-1">REVEALED PLAYERS:</span>
+          <ul className="space-y-1 font-mono">
             {reveals.map((entry) => (
-              <li key={entry.playerId} className="flex justify-between items-center gap-2">
-                <span className="text-[#F2ECE1]/85 truncate">
-                  <span className="font-mono-code text-[#9E9587] mr-1">#{entry.seat + 1}</span>
-                  {playerNames[entry.playerId] ?? `Player ${entry.playerId.slice(0, 6)}`}
+              <li key={entry.playerId} className="flex justify-between items-center">
+                <span>
+                  #{entry.seat + 1} {playerNames[entry.playerId] ?? `Player ${entry.playerId.slice(0, 6)}`}:
                 </span>
-                <span className="font-mono-code text-[11px] font-semibold text-amber-200 shrink-0">
-                  {roleName(entry.role)}
-                </span>
+                <span className="font-bold">{roleName(entry.role)}</span>
               </li>
             ))}
           </ul>

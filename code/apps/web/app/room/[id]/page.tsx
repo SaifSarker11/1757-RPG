@@ -601,12 +601,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
   if (isPending || !session) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0B0A08] text-[#C8A252]">
-        <div className="text-center space-y-3">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border border-[#C8A252]/30 border-t-[#C8A252]" />
-          <p className="font-display text-xl tracking-[0.2em] uppercase text-[#F2ECE1]/80">
-            Entering the Secretariat...
-          </p>
+      <div className="flex min-h-screen items-center justify-center bg-stone-900 text-amber-500 font-retro">
+        <div className="text-center font-sans">
+          <span className="loading loading-spinner loading-lg text-amber-500 mb-4"></span>
+          <p className="text-2xl font-bold tracking-widest">UNROLLING OLD SCROLLS...</p>
         </div>
       </div>
     );
@@ -617,14 +615,13 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     : CHARACTER_ROLES;
 
   return (
-    <main className="relative min-h-screen bg-[#0B0A08] candlelight-bg text-[#F2ECE1] px-4 py-5 md:px-6 md:py-6 flex flex-col items-center">
-      <div aria-hidden className="grain-overlay" />
-
+    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center scanlines">
+      
       {/* Phase Transition text overlay */}
       {phaseTransitionText && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] pointer-events-none">
-          <div className="w-full bg-[#14120E]/95 py-10 text-center border-y border-[#C8A252]/40 shadow-[0_0_80px_rgba(200,162,82,0.18)]">
-            <h2 className="font-display text-3xl md:text-5xl font-bold tracking-[0.18em] text-[#C8A252] uppercase">
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[100] animate-fade-in pointer-events-none">
+          <div className="w-full bg-primary py-8 text-center border-y-8 border-double border-primary-content glow-primary transform scale-y-100 transition-all duration-300">
+            <h2 className="text-3xl md:text-5xl font-historical font-extrabold tracking-widest text-primary-content uppercase font-pixel drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
               {phaseTransitionText}
             </h2>
           </div>
@@ -632,31 +629,17 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       )}
 
       {/* Decorative Game Header */}
-      <header className="relative z-10 council-panel rounded-2xl w-full max-w-7xl px-5 py-3.5 mb-6 flex flex-col lg:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#C8A252]/40 bg-[#C8A252]/10 font-display text-lg font-bold text-[#C8A252]">
-            17
-          </div>
-          <div>
-            <span className="font-display text-xl md:text-2xl font-bold tracking-wide text-[#F2ECE1]">
-              Battle of Plassey
-            </span>
-            <span className="hidden sm:inline-block ml-2.5 text-[11px] font-mono-code uppercase tracking-[0.2em] text-[#C8A252]/80">
-              1757
-            </span>
-          </div>
+      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-7xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex-1">
+          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-2.5">
-          <button
+        <div className="flex-none flex flex-wrap items-center justify-center gap-3">
+          <button 
             onClick={toggleSound}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
-              soundEnabled
-                ? "border-[#C8A252]/50 bg-[#C8A252]/15 text-[#F2ECE1]"
-                : "border-white/10 bg-white/5 text-[#9E9587] hover:text-[#F2ECE1]"
-            }`}
+            className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
           >
-            {soundEnabled ? "SFX On" : "SFX Off"}
+            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
           </button>
 
           <MusicControl />
@@ -670,13 +653,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               onClick={handleTogglePause}
               disabled={actionLoading}
               title={isPaused ? "Restart the timer for everyone" : "Freeze the timer for everyone"}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
-                isPaused
-                  ? "border-emerald-500/50 bg-emerald-950/50 text-emerald-200"
-                  : "border-sky-500/40 bg-sky-950/40 text-sky-200"
-              }`}
+              className={`btn btn-sm rounded-none border-2 font-pixel ${isPaused ? "btn-success" : "btn-info"}`}
             >
-              {isPaused ? "Resume" : "Pause"}
+              {isPaused ? "RESUME ▶" : "PAUSE ⏸"}
             </button>
           )}
 
@@ -685,41 +664,29 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               onClick={handleSkip}
               disabled={actionLoading}
               title="End the current timer now"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium border border-amber-500/40 bg-amber-950/40 text-amber-200 hover:bg-amber-900/50 transition-all cursor-pointer"
+              className="btn btn-warning btn-sm rounded-none border-2 font-pixel"
             >
-              Skip
+              SKIP ⏭
             </button>
           )}
 
           {isCustomRoom && !playerView && (
-            <span className="px-2.5 py-1 rounded-lg border border-[#C8A252]/40 bg-[#C8A252]/15 text-[10px] font-mono-code uppercase tracking-wider text-[#C8A252]">
-              Royal Decree
-            </span>
+            <span className="badge badge-secondary rounded-none font-pixel text-[9px] py-3">ROYAL DECREE</span>
           )}
 
-          <span className="px-3 py-1.5 rounded-lg border border-white/10 bg-white/[0.04] text-xs font-mono-code text-[#F2ECE1]">
-            Code: <span className="text-[#C8A252] font-semibold">{roomData?.code ?? roomId.slice(0, 6)}</span>
+          <span className="bg-neutral text-neutral-content px-3 py-1.5 border border-base-300 text-xs font-pixel">
+            Code: {roomData?.code ?? roomId.slice(0, 6)}
           </span>
 
           {/* Theme Dropdown */}
           <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium border border-white/10 bg-white/5 text-[#9E9587] hover:text-[#F2ECE1] transition-all cursor-pointer capitalize"
-            >
-              {currentTheme}
+            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
+              Theme: {currentTheme}
             </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-[#161410] rounded-xl z-20 w-48 p-1.5 shadow-2xl border border-[#C8A252]/25 max-h-60 overflow-y-auto mt-2"
-            >
+            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
               {THEMES.map((themeName) => (
                 <li key={themeName}>
-                  <button
-                    onClick={() => changeTheme(themeName)}
-                    className="capitalize text-xs text-[#F2ECE1]/85 hover:bg-[#C8A252]/15 hover:text-[#C8A252] rounded-lg"
-                  >
+                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
                     {themeName}
                   </button>
                 </li>
@@ -729,29 +696,29 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
           <button
             onClick={() => { gameAudio.playClick(); setShowInfoModal(true); }}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium border border-[#C8A252]/40 bg-[#C8A252]/10 text-[#C8A252] hover:bg-[#C8A252]/20 transition-all cursor-pointer"
+            className="btn btn-primary btn-sm rounded-none border-2 font-pixel"
           >
-            Roles &amp; Rules
+            INFO CODES
           </button>
 
           <button
             onClick={handleLeaveRoom}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 transition-all cursor-pointer"
+            className="btn btn-error btn-sm rounded-none border-2 font-pixel"
           >
-            Leave
+            LEAVE
           </button>
         </div>
-      </header>
+      </div>
 
       {isPaused && (
-        <div className="relative z-10 rounded-xl border border-sky-500/40 bg-sky-950/40 px-4 py-2.5 text-xs text-sky-200 w-full max-w-7xl mb-4 text-center">
-          The host has paused the council. Timers are frozen until resumed.
+        <div className="alert alert-info text-xs font-pixel py-2 rounded-none border-2 border-info w-full max-w-7xl mb-4 justify-center">
+          <span>⏸ THE HOST HAS PAUSED THE COUNCIL. TIMERS ARE FROZEN AND NO ONE CAN ACT UNTIL IT RESUMES.</span>
         </div>
       )}
 
       {gameError && (
-        <div className="relative z-10 rounded-xl border border-red-500/40 bg-red-950/40 px-4 py-2.5 text-xs text-red-200 w-full max-w-7xl mb-4">
-          {gameError}
+        <div className="alert alert-error text-xs font-pixel py-2 rounded-none border-2 border-error w-full max-w-7xl mb-4">
+          <span>{gameError}</span>
         </div>
       )}
 
@@ -761,7 +728,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           <RoundTracker view={playerView} />
         </div>
       ) : (
-        <div className="bg-base-100 border border-primary p-3 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mb-6 council-panel rounded-2xl font-mono-code text-xs gap-4">
+        <div className="bg-base-100 border-4 border-primary p-3 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mb-6 pixel-card font-pixel text-xs gap-4">
           <span className="text-secondary font-bold uppercase tracking-wider">CHAMBER STATUS:</span>
           <span className="text-base-content/80 font-sans">
             Council convening. Awaiting start of round by host.
@@ -774,19 +741,19 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         
         {/* COLUMN 1: Virtual Council Tent (Circular Game Table) */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <div className="bg-base-100 border border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] council-panel rounded-2xl">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] pixel-card">
             
             <h2 className="text-xl font-historical font-extrabold text-primary uppercase tracking-widest border-b-2 border-dashed pb-2 mb-4 w-full text-center border-base-content/20">
               The Nawab's Secretariat Tent
             </h2>
 
             {/* Simulated 2D Oval Council Table */}
-            <div className="relative w-full aspect-[4/3] max-w-md md:max-w-xl mx-auto flex items-center justify-center min-h-[300px] border border-dashed border-amber-900/20 bg-amber-950/5 p-4 rounded-xl">
+            <div className="relative w-full aspect-[4/3] max-w-md md:max-w-xl mx-auto flex items-center justify-center min-h-[300px] border-4 border-dashed border-amber-900/20 bg-amber-950/5 p-4 rounded-none">
               
               {/* Inner Round Table Graphic */}
-              <div className="absolute w-[50%] h-[50%] border border-double border-amber-800/40 rounded-full flex flex-col items-center justify-center text-center p-4 bg-amber-900/10">
-                <span className="text-[10px] font-mono-code text-amber-700/60 uppercase">Secretariat</span>
-                <span className="text-[8px] font-mono-code text-stone-500/70 uppercase mt-0.5">Plassey 1757</span>
+              <div className="absolute w-[50%] h-[50%] border-4 border-double border-amber-800/40 rounded-full flex flex-col items-center justify-center text-center p-4 bg-amber-900/10">
+                <span className="text-[10px] font-pixel text-amber-700/60 uppercase">Secretariat</span>
+                <span className="text-[8px] font-pixel text-stone-500/70 uppercase mt-0.5">Plassey 1757</span>
               </div>
 
               {/* Render Players as seats around the council table */}
@@ -822,7 +789,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                           );
                         }
                       }}
-                      className={`w-14 h-14 border flex flex-col items-center justify-center text-center bg-base-100 shadow-md relative rounded-xl transition-all ${
+                      className={`w-14 h-14 border-4 flex flex-col items-center justify-center text-center bg-base-100 shadow-md relative rounded-none transition-all ${
                         isSelected ? "border-primary scale-110 glow-primary" :
                         isOnProposedBoard ? "border-accent scale-105" :
                         isLeader ? "border-secondary scale-105 animate-pulse" :
@@ -835,13 +802,13 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
                       {/* Vote state badge */}
                       {isOnProposedBoard && (
-                        <span className="absolute -top-3.5 bg-accent text-accent-content border border-base-300 text-[7px] font-mono-code px-1 uppercase">
+                        <span className="absolute -top-3.5 bg-accent text-accent-content border border-base-300 text-[7px] font-pixel px-1 uppercase">
                           BOARD
                         </span>
                       )}
 
                       {isLeader && (
-                        <span className="absolute -top-3.5 bg-secondary text-secondary-content border border-base-300 text-[7px] font-mono-code px-1 uppercase">
+                        <span className="absolute -top-3.5 bg-secondary text-secondary-content border border-base-300 text-[7px] font-pixel px-1 uppercase">
                           LEADER
                         </span>
                       )}
@@ -865,11 +832,11 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                       })()}
 
                       {/* Connection marker */}
-                      <span className={`absolute bottom-0 right-0 w-3 h-3 border border-base-100 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
+                      <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-base-100 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
                     </div>
 
                     {/* Character Tag label */}
-                    <span className="bg-base-300 border border-base-content/10 px-1 py-0.5 mt-1 font-mono-code text-[8px] max-w-[80px] truncate text-center uppercase text-base-content font-bold">
+                    <span className="bg-base-300 border border-base-content/10 px-1 py-0.5 mt-1 font-pixel text-[8px] max-w-[80px] truncate text-center uppercase text-base-content font-bold">
                       {p.name}
                     </span>
                   </div>
@@ -879,12 +846,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             
             {/* Private Role HUD Card embedded inside table */}
             {myRoleInfo && (
-              <div className="w-full bg-base-200 border border-primary/20 p-3 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-mono-code">
+              <div className="w-full bg-base-200 border-2 border-primary/20 p-3 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-pixel">
                 <div className="text-center sm:text-left">
                   <span className="text-[8px] text-base-content/65 block uppercase tracking-wider">Your Secret Seal:</span>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-sm font-historical font-extrabold uppercase text-primary">{myRoleInfo.role.replace("_", " ")}</span>
-                    <span className={`badge badge-sm rounded-xl border text-[8px] uppercase ${
+                    <span className={`badge badge-sm rounded-none border text-[8px] uppercase ${
                       myRoleInfo.team === "green" ? "bg-emerald-950 text-emerald-200" :
                       myRoleInfo.team === "red" ? "bg-rose-950 text-rose-200" : "bg-amber-950 text-amber-200"
                     }`}>
@@ -900,7 +867,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                       {myRoleInfo.visiblePlayers.map((vp: any, idx: number) => {
                         const targetPlayer = players.find((pl) => pl.userId === vp.userId);
                         return (
-                          <span key={idx} className="badge badge-outline rounded-xl text-[8px] uppercase py-1 px-1.5">
+                          <span key={idx} className="badge badge-outline rounded-none text-[8px] uppercase py-1 px-1.5">
                             {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="text-amber-500 font-bold ml-1">{vp.role.replace("_", " ")}</span>
                           </span>
                         );
@@ -958,9 +925,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               />
             </>
           ) : (
-            <div className="bg-base-100 border border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 council-panel rounded-2xl flex flex-col justify-between min-h-[200px]">
+            <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 pixel-card flex flex-col justify-between min-h-[200px]">
               <div>
-                <h3 className="font-mono-code text-[10px] text-secondary uppercase border-b-2 border-dashed pb-1.5 mb-2 border-base-content/20">
+                <h3 className="font-pixel text-[10px] text-secondary uppercase border-b-2 border-dashed pb-1.5 mb-2 border-base-content/20">
                   Secretariat Directives
                 </h3>
               </div>
@@ -972,12 +939,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                   <button
                     onClick={handleStartGame}
                     disabled={players.length < 6 || actionLoading}
-                    className="btn btn-sm btn-success rounded-xl border font-mono-code rounded-xl transition-all active:scale-[0.98]"
+                    className="btn btn-sm btn-success rounded-none border-2 font-pixel pixel-btn"
                   >
                     {actionLoading ? "STARTING..." : "START MATCH"}
                   </button>
                 ) : (
-                  <div className="alert alert-info rounded-xl border py-1 px-3 text-[10px] font-mono-code text-center">
+                  <div className="alert alert-info rounded-none border-2 py-1 px-3 text-[10px] font-pixel text-center">
                     <span>Waiting for Host to begin...</span>
                   </div>
                 )}
@@ -986,10 +953,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           )}
 
           {/* Right Tab Console (Chat vs Log Chronicle) */}
-          <div className="bg-base-100 border border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 flex flex-col h-[320px] justify-between council-panel rounded-2xl">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 flex flex-col h-[320px] justify-between pixel-card">
             
             {/* Tab Bar */}
-            <div className="flex border-b-2 border-base-content/25 mb-3 font-mono-code text-[10px]">
+            <div className="flex border-b-2 border-base-content/25 mb-3 font-pixel text-[10px]">
               <button 
                 onClick={() => { gameAudio.playClick(); setRightSidebarTab("chat"); }}
                 className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "chat" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
@@ -1020,7 +987,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               <div className="flex-1 flex flex-col justify-between overflow-hidden">
                 <div className="flex-1 overflow-y-auto space-y-2.5 pr-1 mb-2">
                   {messages.length === 0 ? (
-                    <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-mono-code">
+                    <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-pixel">
                       <span className="text-[9px]">No logs dispatched yet.</span>
                     </div>
                   ) : (
@@ -1028,8 +995,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                       const isOwn = msg.userId === session.user.id;
                       return (
                         <div key={msg.id} className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}>
-                          <span className="text-[8px] font-mono-code font-bold text-base-content/60 mb-0.5">{msg.username}</span>
-                          <div className={`px-2.5 py-1 rounded-xl text-xs break-words max-w-[85%] border font-mono ${
+                          <span className="text-[8px] font-pixel font-bold text-base-content/60 mb-0.5">{msg.username}</span>
+                          <div className={`px-2.5 py-1 rounded-none text-xs break-words max-w-[85%] border font-mono ${
                             isOwn 
                               ? "bg-primary text-primary-content border-primary" 
                               : "bg-base-200 text-base-content border-base-300"
@@ -1049,19 +1016,19 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Dispatch scroll..."
-                    className="input input-bordered flex-1 text-xs font-mono-code bg-base-200 rounded-xl border border-base-content/20 p-1.5"
+                    className="input input-bordered flex-1 text-xs font-pixel bg-base-200 rounded-none border border-base-content/20 p-1.5"
                   />
                   <button
                     type="submit"
                     disabled={!inputText.trim()}
-                    className="btn btn-primary btn-xs rounded-xl border font-mono-code"
+                    className="btn btn-primary btn-xs rounded-none border font-pixel"
                   >
                     SEND
                   </button>
                 </form>
               </div>
             ) : (
-              <div className="flex-1 overflow-y-auto font-sans text-xs space-y-1.5 pr-1 leading-relaxed">
+              <div className="flex-1 overflow-y-auto font-retro text-xs space-y-1.5 pr-1 leading-relaxed">
                 {playerView ? (
                   <NominationHistoryCard
                     nominations={playerView.game.nominations}
@@ -1069,7 +1036,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                     playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
                   />
                 ) : voteLogs.length === 0 ? (
-                  <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-mono-code">
+                  <div className="flex h-full flex-col items-center justify-center text-center opacity-50 font-pixel">
                     <span className="text-[9px]">No historical decisions recorded.</span>
                   </div>
                 ) : (

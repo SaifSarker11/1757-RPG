@@ -43,20 +43,20 @@ export function ActionPanel({
   const otherPlayers = game.players.filter((p) => p.id !== view.me.id);
 
   return (
-    <div className="bg-base-100 border border-base-content/20 p-5 council-panel rounded-2xl flex flex-col gap-4">
+    <div className="bg-base-100 border-4 border-base-content/20 p-5 pixel-card flex flex-col gap-4">
       <div className="border-b-2 border-base-300 pb-2">
         <h3 className="text-xl font-historical font-bold text-primary uppercase">
           Council Actions
         </h3>
         <span className="text-xs text-base-content/70 font-sans">
-          Phase: <span className="font-mono-code font-bold text-base-content">{game.phase}</span>
+          Phase: <span className="font-pixel font-bold text-base-content">{game.phase}</span>
         </span>
       </div>
 
       {/* 1. SELECTION: Leader nominates ministers */}
       {pending.nominate && (
         <div className="flex flex-col gap-3">
-          <p className="text-xs font-mono-code text-warning">
+          <p className="text-xs font-pixel text-warning">
             YOU ARE THE LEADER. Select exactly {pending.nominate.teamSize} ministers:
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -68,7 +68,7 @@ export function ActionPanel({
                   key={p.id}
                   type="button"
                   onClick={() => toggleMinister(p.id, pending.nominate!.teamSize)}
-                  className={`btn btn-sm rounded-xl font-mono-code border text-xs ${
+                  className={`btn btn-sm rounded-none font-pixel border-2 text-xs ${
                     isSelected
                       ? "btn-accent text-accent-content border-accent"
                       : "btn-outline"
@@ -85,7 +85,7 @@ export function ActionPanel({
               loading || selectedMinisters.length !== pending.nominate.teamSize
             }
             onClick={() => onNominate(selectedMinisters)}
-            className="btn btn-primary rounded-xl font-mono-code border rounded-xl transition-all active:scale-[0.98] mt-2"
+            className="btn btn-primary rounded-none font-pixel border-2 pixel-btn mt-2"
           >
             CONFIRM NOMINATION ({selectedMinisters.length}/{pending.nominate.teamSize})
           </button>
@@ -95,7 +95,7 @@ export function ActionPanel({
       {/* 2. BALLOT: Approval Vote */}
       {pending.vote && (
         <div className="flex flex-col gap-3">
-          <p className="text-xs font-mono-code text-info">
+          <p className="text-xs font-pixel text-info">
             VOTE ON THE PROPOSED MINISTERS:
           </p>
           <div className="flex gap-4">
@@ -103,7 +103,7 @@ export function ActionPanel({
               type="button"
               disabled={loading}
               onClick={() => onCastVote("APPROVE")}
-              className="btn btn-success flex-1 rounded-xl font-mono-code border rounded-xl transition-all active:scale-[0.98]"
+              className="btn btn-success flex-1 rounded-none font-pixel border-2 pixel-btn"
             >
               APPROVE (YEAH)
             </button>
@@ -111,7 +111,7 @@ export function ActionPanel({
               type="button"
               disabled={loading}
               onClick={() => onCastVote("REJECT")}
-              className="btn btn-error flex-1 rounded-xl font-mono-code border rounded-xl transition-all active:scale-[0.98]"
+              className="btn btn-error flex-1 rounded-none font-pixel border-2 pixel-btn"
             >
               REJECT (NAY)
             </button>
@@ -122,7 +122,7 @@ export function ActionPanel({
       {/* 3. RESOLUTION: Mission card play */}
       {pending.playCard && (
         <div className="flex flex-col gap-3">
-          <p className="text-xs font-mono-code text-warning">
+          <p className="text-xs font-pixel text-warning">
             SECRET MISSION RESOLUTION: Cast your secret card:
           </p>
           <div className="flex gap-4">
@@ -131,7 +131,7 @@ export function ActionPanel({
                 type="button"
                 disabled={loading}
                 onClick={() => onPlayCard("SUCCESS")}
-                className="btn btn-success flex-1 rounded-xl font-mono-code border rounded-xl transition-all active:scale-[0.98]"
+                className="btn btn-success flex-1 rounded-none font-pixel border-2 pixel-btn"
               >
                 PLAY SUCCESS
               </button>
@@ -141,7 +141,7 @@ export function ActionPanel({
                 type="button"
                 disabled={loading}
                 onClick={() => onPlayCard("SABOTAGE")}
-                className="btn btn-error flex-1 rounded-xl font-mono-code border rounded-xl transition-all active:scale-[0.98]"
+                className="btn btn-error flex-1 rounded-none font-pixel border-2 pixel-btn"
               >
                 PLAY SABOTAGE
               </button>
@@ -152,15 +152,15 @@ export function ActionPanel({
 
       {/* 4. DISCUSSION ABILITY: De Bussy Reveal */}
       {pending.deBussyReveal && (
-        <div className="flex flex-col gap-2 p-3 bg-base-200 border border-base-300">
-          <span className="font-mono-code text-xs font-bold text-accent">
+        <div className="flex flex-col gap-2 p-3 bg-base-200 border-2 border-base-300">
+          <span className="font-pixel text-xs font-bold text-accent">
             DE BUSSY SPECIAL ABILITY (ONCE PER MATCH):
           </span>
           <div className="flex gap-2">
             <select
               value={targetId}
               onChange={(e) => setTargetId(e.target.value)}
-              className="select select-bordered select-sm rounded-xl font-mono-code flex-1 border"
+              className="select select-bordered select-sm rounded-none font-pixel flex-1 border-2"
             >
               <option value="">Select target player...</option>
               {otherPlayers.map((p) => (
@@ -176,7 +176,7 @@ export function ActionPanel({
                 onDeBussyReveal(targetId);
                 setTargetId("");
               }}
-              className="btn btn-accent btn-sm rounded-xl font-mono-code border"
+              className="btn btn-accent btn-sm rounded-none font-pixel border-2"
             >
               MUTUAL REVEAL
             </button>
@@ -186,15 +186,15 @@ export function ActionPanel({
 
       {/* 5. DISCUSSION ABILITY: Jean Law Lock */}
       {pending.jeanLawLock && (
-        <div className="flex flex-col gap-2 p-3 bg-base-200 border border-base-300">
-          <span className="font-mono-code text-xs font-bold text-error">
+        <div className="flex flex-col gap-2 p-3 bg-base-200 border-2 border-base-300">
+          <span className="font-pixel text-xs font-bold text-error">
             JEAN LAW CURSE / LOCK (ONCE PER MATCH):
           </span>
           <div className="flex gap-2">
             <select
               value={targetId}
               onChange={(e) => setTargetId(e.target.value)}
-              className="select select-bordered select-sm rounded-xl font-mono-code flex-1 border"
+              className="select select-bordered select-sm rounded-none font-pixel flex-1 border-2"
             >
               <option value="">Select target player to curse...</option>
               {otherPlayers.map((p) => (
@@ -210,7 +210,7 @@ export function ActionPanel({
                 onJeanLawLock(targetId);
                 setTargetId("");
               }}
-              className="btn btn-error btn-sm rounded-xl font-mono-code border"
+              className="btn btn-error btn-sm rounded-none font-pixel border-2"
             >
               CURSE TARGET
             </button>
@@ -220,15 +220,15 @@ export function ActionPanel({
 
       {/* 6. ENDGAME: Mir Jafar / Jagat Seth Guess */}
       {pending.guess && (
-        <div className="flex flex-col gap-2 p-3 bg-error/10 border border-error">
-          <span className="font-mono-code text-xs font-bold text-error">
+        <div className="flex flex-col gap-2 p-3 bg-error/10 border-2 border-error">
+          <span className="font-pixel text-xs font-bold text-error">
             ENDGAME ASSASSINATION GUESS ({pending.guess.replace(/_/g, " ")}):
           </span>
           <div className="flex gap-2">
             <select
               value={targetId}
               onChange={(e) => setTargetId(e.target.value)}
-              className="select select-bordered select-sm rounded-xl font-mono-code flex-1 border"
+              className="select select-bordered select-sm rounded-none font-pixel flex-1 border-2"
             >
               <option value="">Identify target conspirator...</option>
               {otherPlayers.map((p) => (
@@ -244,7 +244,7 @@ export function ActionPanel({
                 onGuess(targetId);
                 setTargetId("");
               }}
-              className="btn btn-error btn-sm rounded-xl font-mono-code border"
+              className="btn btn-error btn-sm rounded-none font-pixel border-2"
             >
               CONFIRM GUESS
             </button>

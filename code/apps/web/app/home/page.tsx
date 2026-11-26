@@ -207,75 +207,48 @@ export default function HomePage() {
 
   if (isPending || !session) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#0B0A08] text-[#C8A252]">
-        <div className="text-center space-y-3">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#C8A252]/30 border-t-[#C8A252]" />
-          <p className="font-display text-xl tracking-[0.2em] uppercase text-[#F2ECE1]/80">
-            Convening the Council...
-          </p>
+      <main className="flex min-h-screen items-center justify-center bg-stone-900 text-amber-500 font-retro">
+        <div className="text-center font-sans">
+          <span className="loading loading-spinner loading-lg text-amber-500 mb-4"></span>
+          <p className="text-2xl font-bold tracking-widest font-retro">UNROLLING OLD SCROLLS...</p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="relative min-h-screen bg-[#0B0A08] candlelight-bg text-[#F2ECE1] px-4 py-6 md:px-8 md:py-8 flex flex-col items-center">
-      <div aria-hidden className="grain-overlay" />
-
-      {/* Top Navigation Bar */}
-      <header className="relative z-10 w-full max-w-6xl mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl council-panel px-5 py-3.5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#C8A252]/40 bg-[#C8A252]/10 font-display text-lg font-bold text-[#C8A252]">
-            17
-          </div>
-          <div>
-            <span className="font-display text-xl md:text-2xl font-bold tracking-wide text-[#F2ECE1]">
-              Battle of Plassey
-            </span>
-            <span className="hidden sm:inline-block ml-2.5 text-[11px] font-mono-code uppercase tracking-[0.2em] text-[#C8A252]/80">
-              1757 · Secretariat
-            </span>
-          </div>
+    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center scanlines">
+      
+      {/* Navbar Banner in 2D Indie style */}
+      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-5xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex-1">
+          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-2.5">
-          <button
+        <div className="flex-none flex items-center gap-3">
+          {/* Sound Toggle */}
+          <button 
             onClick={toggleSound}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
-              soundEnabled
-                ? "border-[#C8A252]/50 bg-[#C8A252]/15 text-[#F2ECE1]"
-                : "border-white/10 bg-white/5 text-[#9E9587] hover:text-[#F2ECE1]"
-            }`}
+            className={`btn btn-sm btn-outline border-2 rounded-none font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
           >
-            {soundEnabled ? "SFX On" : "SFX Off"}
+            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
           </button>
 
           <MusicControl />
 
-          <div className="hidden md:flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-[#F2ECE1]">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            <span>{session.user.name}</span>
-          </div>
+          <span className="text-xs font-pixel uppercase bg-neutral text-neutral-content px-3 py-1.5 border border-base-300">
+            {session.user.name}
+          </span>
 
           {/* Theme Dropdown */}
           <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="px-3 py-1.5 rounded-lg text-xs font-medium border border-white/10 bg-white/5 text-[#9E9587] hover:text-[#F2ECE1] hover:border-white/20 transition-all cursor-pointer capitalize"
-            >
-              {currentTheme}
+            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
+              Theme: {currentTheme}
             </div>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu bg-[#161410] rounded-xl z-20 w-48 p-1.5 shadow-2xl border border-[#C8A252]/25 max-h-60 overflow-y-auto mt-2"
-            >
+            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
               {THEMES.map((themeName) => (
                 <li key={themeName}>
-                  <button
-                    onClick={() => changeTheme(themeName)}
-                    className="capitalize text-xs text-[#F2ECE1]/85 hover:bg-[#C8A252]/15 hover:text-[#C8A252] rounded-lg"
-                  >
+                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
                     {themeName}
                   </button>
                 </li>
@@ -285,59 +258,48 @@ export default function HomePage() {
 
           <button
             onClick={handleSignOut}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500/20 transition-all cursor-pointer"
+            className="btn btn-error btn-sm rounded-none border-2 font-pixel"
           >
-            Sign Out
+            Leave
           </button>
         </div>
-      </header>
+      </div>
 
-      <div className="relative z-10 w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-stretch">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-stretch">
+        
         {/* LEFT COLUMN: Controls Dashboard (7 Columns) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          <section className="council-panel rounded-2xl p-6 md:p-7 flex flex-col gap-6 flex-1 justify-between">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col gap-6 flex-1 justify-between pixel-card">
+            
             <div>
-              <div className="flex items-center justify-between border-b border-[#C8A252]/20 pb-3 mb-3">
-                <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-wide text-[#F2ECE1]">
-                  Lobby Secretary
-                </h2>
-                <span className="text-[10px] font-mono-code uppercase tracking-[0.2em] text-[#C8A252]">
-                  War Room
-                </span>
-              </div>
-              <p className="text-sm leading-relaxed text-[#9E9587]">
-                Welcome, commander. Initialize a new secretariat chamber or enter an active council session using a 6-character registry code.
+              <h2 className="text-2xl font-historical font-extrabold uppercase tracking-wide border-b-4 border-double pb-2 mb-4 text-primary">Lobby Secretary</h2>
+              <p className="text-sm font-sans leading-relaxed text-base-content/85">
+                Welcome, commander. Choose to initialize a new secretariat chamber or enter an active council session using the room registry code below.
               </p>
             </div>
 
             {error && (
-              <div className="rounded-xl border border-red-500/40 bg-red-950/40 px-4 py-3 text-xs text-red-200">
-                {error}
+              <div className="alert alert-error text-xs font-pixel py-3 rounded-none border-2 border-error">
+                <span>{error}</span>
               </div>
             )}
 
             {/* Action 1: Create a Room */}
-            <div className="council-panel-subtle rounded-xl p-5 space-y-4">
-              <div>
-                <h3 className="font-display text-xl font-semibold text-[#F2ECE1]">
-                  Create Chamber
-                </h3>
-                <p className="text-xs text-[#9E9587] mt-0.5">
-                  Configure ruleset and seat capacity (6–15 players).
-                </p>
-              </div>
+            <div className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
+              <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Create Chamber</h3>
+              <p className="text-xs text-base-content/75 mb-4 font-sans">Initialize a new secure game room. Choose the rules and the maximum capacity limit (6-15 players).</p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="radiogroup" aria-label="Room mode">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" role="radiogroup" aria-label="Room mode">
                 {([
                   {
                     mode: "STANDARD",
                     title: "Standard Council",
-                    blurb: "Classic Plassey rules: all characters in play, random deal, fixed timers.",
+                    blurb: "The usual rules: every character in play, roles dealt at random, fixed timers.",
                   },
                   {
                     mode: "CUSTOM",
                     title: "Royal Decree",
-                    blurb: "Custom rules: per-round timers, character selection, host-assigned roles & pause.",
+                    blurb: "Custom rules: set each round's timer, pick the characters, fix who plays whom, and pause or skip timers as host.",
                   },
                 ] as const).map((option) => {
                   const selected = roomMode === option.mode;
@@ -351,191 +313,147 @@ export default function HomePage() {
                         gameAudio.playClick();
                         setRoomMode(option.mode);
                       }}
-                      className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
+                      className={`text-left p-3 border-2 rounded-none transition-colors ${
                         selected
-                          ? "border-[#C8A252] bg-[#C8A252]/10 shadow-[0_0_20px_-6px_rgba(200,162,82,0.35)]"
-                          : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                          ? "border-primary bg-primary/10 shadow-[3px_3px_0px_0px_var(--color-primary)]"
+                          : "border-base-content/15 bg-base-100 hover:border-base-content/40"
                       }`}
                     >
-                      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#F2ECE1]">
-                        <span
-                          className={`h-2.5 w-2.5 rounded-full border transition-colors ${
-                            selected ? "bg-[#C8A252] border-[#C8A252]" : "border-white/40"
-                          }`}
-                        />
+                      <span className="flex items-center gap-2 font-pixel text-xs font-bold uppercase">
+                        <span className={`w-3 h-3 border-2 ${selected ? "bg-primary border-primary" : "border-base-content/40"}`} />
                         {option.title}
                       </span>
-                      <span className="block text-xs text-[#9E9587] mt-1.5 leading-relaxed">
-                        {option.blurb}
-                      </span>
+                      <span className="block text-[11px] font-sans text-base-content/70 mt-1 leading-snug">{option.blurb}</span>
                     </button>
                   );
                 })}
               </div>
-
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 pt-1">
-                <div className="flex-1">
-                  <label className="block text-[11px] font-mono-code uppercase tracking-wider text-[#9E9587] mb-1.5">
-                    Max Capacity (6–15)
-                  </label>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+                <div className="form-control flex-1">
+                  <span className="label-text font-pixel font-bold mb-1">Max Capacity</span>
                   <input
                     type="number"
                     min={6}
                     max={15}
                     value={maxPlayers}
                     onChange={(e) => setMaxPlayers(parseInt(e.target.value, 10))}
-                    className="w-full rounded-xl border border-white/15 bg-[#0B0A08]/80 px-3.5 py-2.5 text-sm font-mono-code text-[#F2ECE1] focus:border-[#C8A252] focus:outline-none focus:ring-1 focus:ring-[#C8A252]/40"
+                    className="input input-bordered w-full font-pixel bg-base-100 rounded-none border-2"
                   />
                 </div>
-
+                
                 <button
                   onClick={handleCreateRoom}
                   disabled={actionLoading}
-                  className="px-5 py-2.5 rounded-xl bg-[#C8A252] text-[#0B0A08] font-semibold text-xs uppercase tracking-wider hover:bg-[#D6B366] active:scale-[0.98] disabled:opacity-50 transition-all cursor-pointer shadow-lg shadow-[#C8A252]/15"
+                  className="btn btn-primary rounded-none font-pixel border-2 pixel-btn"
                 >
-                  {actionLoading ? "Creating..." : roomMode === "CUSTOM" ? "New Royal Decree" : "New Chamber"}
+                  {actionLoading ? "CREATING..." : roomMode === "CUSTOM" ? "NEW CUSTOM ROOM" : "NEW ROOM"}
                 </button>
               </div>
             </div>
 
             {/* Action 2: Join by Room Code */}
-            <form onSubmit={handleJoinRoomByCode} className="council-panel-subtle rounded-xl p-5 space-y-4">
-              <div>
-                <h3 className="font-display text-xl font-semibold text-[#F2ECE1]">
-                  Enter Chamber
-                </h3>
-                <p className="text-xs text-[#9E9587] mt-0.5">
-                  Enter the 6-character registry code or paste a room ID.
-                </p>
-              </div>
-
+            <form onSubmit={handleJoinRoomByCode} className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
+              <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Enter Chamber</h3>
+              <p className="text-xs text-base-content/75 mb-4 font-sans">Input the 6-character uppercase registry code or paste the full room ID directly.</p>
+              
               <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
-                <div className="flex-1">
-                  <label className="block text-[11px] font-mono-code uppercase tracking-wider text-[#9E9587] mb-1.5">
-                    Registry Code
-                  </label>
+                <div className="form-control flex-1">
+                  <span className="label-text font-pixel font-bold mb-1">Registry Code</span>
                   <input
                     type="text"
                     placeholder="e.g. A1B2C3"
                     value={joinCode}
                     onChange={(e) => setJoinCode(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-white/15 bg-[#0B0A08]/80 px-3.5 py-2.5 text-sm font-mono-code uppercase tracking-widest text-[#F2ECE1] placeholder:text-[#9E9587]/40 focus:border-[#C8A252] focus:outline-none focus:ring-1 focus:ring-[#C8A252]/40"
+                    className="input input-bordered w-full font-pixel bg-base-100 rounded-none border-2"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={actionLoading || !joinCode.trim()}
-                  className="px-5 py-2.5 rounded-xl border border-[#C8A252]/50 bg-[#C8A252]/15 text-[#F2ECE1] font-semibold text-xs uppercase tracking-wider hover:bg-[#C8A252]/25 active:scale-[0.98] disabled:opacity-40 transition-all cursor-pointer"
+                  className="btn btn-accent rounded-none font-pixel border-2 pixel-btn"
                 >
-                  {actionLoading ? "Joining..." : "Join Chamber"}
+                  {actionLoading ? "JOINING..." : "JOIN CHAMBER"}
                 </button>
               </div>
             </form>
-          </section>
+
+          </div>
         </div>
 
         {/* RIGHT COLUMN: Profile Settings & Stats (5 Columns) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <section className="council-panel rounded-2xl p-6 md:p-7 flex flex-col justify-between flex-1">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col justify-between pixel-card">
             <div>
-              <div className="flex items-center justify-between border-b border-[#C8A252]/20 pb-3 mb-3">
-                <h3 className="font-display text-2xl font-semibold text-[#F2ECE1]">
-                  Dossier &amp; Profile
-                </h3>
-                <span className="text-[10px] font-mono-code uppercase tracking-[0.2em] text-[#9E9587]">
-                  Courtier
-                </span>
-              </div>
-              <p className="text-xs text-[#9E9587] mb-5 leading-relaxed">
-                Customize your display name and unique conspirator handle.
+              <h3 className="text-xl font-historical font-bold text-primary border-b-4 border-double pb-2 mb-4 uppercase">Profile Settings</h3>
+              <p className="text-xs text-base-content/70 mb-4 font-sans">
+                Customize your identity. You can change your display name and set a unique conspirator handle.
               </p>
-
-              {userStats && (
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <div className="council-panel-subtle rounded-xl p-3.5">
-                    <span className="text-[10px] font-mono-code uppercase tracking-wider text-[#9E9587] block">
-                      Level
-                    </span>
-                    <span className="font-display text-2xl font-bold text-[#C8A252]">
-                      {userStats.level}
-                    </span>
-                  </div>
-                  <div className="council-panel-subtle rounded-xl p-3.5">
-                    <span className="text-[10px] font-mono-code uppercase tracking-wider text-[#9E9587] block">
-                      Total XP
-                    </span>
-                    <span className="font-display text-2xl font-bold text-[#F2ECE1]">
-                      {userStats.xp}
-                    </span>
-                  </div>
-                  <div className="council-panel-subtle rounded-xl p-3.5">
-                    <span className="text-[10px] font-mono-code uppercase tracking-wider text-[#9E9587] block">
-                      Matches
-                    </span>
-                    <span className="text-sm font-semibold text-[#F2ECE1] mt-1 block">
-                      {userStats.matchesPlayed}{" "}
-                      <span className="text-emerald-400 text-xs font-mono-code">
-                        ({userStats.matchesWon}W)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="council-panel-subtle rounded-xl p-3.5">
-                    <span className="text-[10px] font-mono-code uppercase tracking-wider text-[#9E9587] block">
-                      Win Rate
-                    </span>
-                    <span className="font-display text-2xl font-bold text-emerald-400">
-                      {userStats.winRate}%
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {profileMessage && (
-                <div className="rounded-xl border border-[#C8A252]/40 bg-[#C8A252]/10 px-4 py-2.5 text-xs text-[#F2ECE1] mb-4">
-                  {profileMessage}
-                </div>
-              )}
             </div>
 
+            {userStats && (
+              <div className="grid grid-cols-2 gap-2 p-3 bg-base-200 border-2 border-base-300 font-pixel text-xs mb-4">
+                <div>
+                  <span className="text-base-content/60 block">LEVEL</span>
+                  <span className="text-base font-bold text-primary">{userStats.level}</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">TOTAL XP</span>
+                  <span className="text-base font-bold">{userStats.xp}</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">MATCHES</span>
+                  <span className="font-bold">{userStats.matchesPlayed} ({userStats.matchesWon}W)</span>
+                </div>
+                <div>
+                  <span className="text-base-content/60 block">WIN RATE</span>
+                  <span className="font-bold text-accent">{userStats.winRate}%</span>
+                </div>
+              </div>
+            )}
+
+            {profileMessage && (
+              <div className="alert alert-info text-xs font-pixel py-2 rounded-none border-2 border-info mb-4">
+                <span>{profileMessage}</span>
+              </div>
+            )}
+
             <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-mono-code uppercase tracking-wider text-[#9E9587] mb-1.5">
-                  Display Name
-                </label>
+              <div className="form-control">
+                <span className="label-text font-pixel font-bold mb-1">Display Name</span>
                 <input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-[#0B0A08]/80 px-3.5 py-2.5 text-sm text-[#F2ECE1] focus:border-[#C8A252] focus:outline-none focus:ring-1 focus:ring-[#C8A252]/40"
+                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
                   required
                 />
               </div>
 
-              <div>
-                <label className="block text-[11px] font-mono-code uppercase tracking-wider text-[#9E9587] mb-1.5">
-                  Handle / Username
-                </label>
+              <div className="form-control">
+                <span className="label-text font-pixel font-bold mb-1">Handle / Username</span>
                 <input
                   type="text"
                   placeholder="e.g. siraj1757"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full rounded-xl border border-white/15 bg-[#0B0A08]/80 px-3.5 py-2.5 text-sm font-mono-code text-[#F2ECE1] placeholder:text-[#9E9587]/40 focus:border-[#C8A252] focus:outline-none focus:ring-1 focus:ring-[#C8A252]/40"
+                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={actionLoading || !displayName.trim()}
-                className="w-full py-2.5 rounded-xl bg-white/10 border border-white/15 text-[#F2ECE1] font-semibold text-xs uppercase tracking-wider hover:bg-[#C8A252] hover:text-[#0B0A08] hover:border-[#C8A252] active:scale-[0.98] disabled:opacity-40 transition-all cursor-pointer"
+                className="btn btn-primary w-full rounded-none font-pixel border-2 pixel-btn"
               >
-                {actionLoading ? "Saving..." : "Save Profile"}
+                {actionLoading ? "SAVING..." : "SAVE PROFILE"}
               </button>
             </form>
-          </section>
+          </div>
         </div>
+
       </div>
     </main>
   );

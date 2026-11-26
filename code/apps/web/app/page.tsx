@@ -3,8 +3,6 @@ import { HowToPlay } from "@/components/landing/HowToPlay";
 import { Factions } from "@/components/landing/Factions";
 import { RolesGrid } from "@/components/landing/RolesGrid";
 import { ClosingCta } from "@/components/landing/ClosingCta";
-import { PlasseyPreloader } from "@/components/landing/PlasseyPreloader";
-import { PlasseyCursor } from "@/components/landing/PlasseyCursor";
 import { fontSans, inter } from "@/components/landing/fonts";
 
 /**
@@ -24,8 +22,6 @@ export default function Home() {
     >
       {/* Fine grain over everything — Supply's fractal-noise texture */}
       <div aria-hidden className="grain-overlay" />
-      <PlasseyPreloader />
-      <PlasseyCursor />
       <LandingHero />
       <HowToPlay />
       <Factions />

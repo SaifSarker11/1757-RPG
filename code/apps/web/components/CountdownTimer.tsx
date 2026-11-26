@@ -35,11 +35,9 @@ export function CountdownTimer({ endsAt, pausedRemainingMs = null, onExpire, cla
 
   if (pausedRemainingMs !== null) {
     return (
-      <div
-        className={`px-3.5 py-1.5 rounded-xl border border-sky-500/40 bg-sky-950/40 text-sky-200 inline-flex items-center gap-2 ${className}`}
-      >
-        <span className="text-[10px] font-mono-code uppercase tracking-widest">Paused</span>
-        <span className="text-sm font-mono-code font-semibold">{Math.ceil(pausedRemainingMs / 1000)}s</span>
+      <div className={`font-pixel font-bold px-3 py-1 border-2 inline-flex items-center gap-2 bg-info text-info-content border-info ${className}`}>
+        <span className="text-xs uppercase tracking-wider">PAUSED:</span>
+        <span className="text-sm font-mono">{Math.ceil(pausedRemainingMs / 1000)}s</span>
       </div>
     );
   }
@@ -50,16 +48,14 @@ export function CountdownTimer({ endsAt, pausedRemainingMs = null, onExpire, cla
 
   return (
     <div
-      className={`px-3.5 py-1.5 rounded-xl border inline-flex items-center gap-2 transition-colors ${
+      className={`font-pixel font-bold px-3 py-1 border-2 inline-flex items-center gap-2 ${
         isUrgent
-          ? "border-red-500/60 bg-red-950/60 text-red-200 animate-pulse"
-          : "border-[#C8A252]/30 bg-[#161410] text-[#F2ECE1]"
+          ? "bg-error text-error-content border-error animate-pulse"
+          : "bg-base-200 text-base-content border-base-300"
       } ${className}`}
     >
-      <span className="text-[10px] font-mono-code uppercase tracking-widest text-[#9E9587]">Deadline</span>
-      <span className={`text-sm font-mono-code font-semibold ${isUrgent ? "text-red-300" : "text-[#C8A252]"}`}>
-        {secondsRemaining}s
-      </span>
+      <span className="text-xs uppercase tracking-wider">DEADLINE:</span>
+      <span className="text-sm font-mono">{secondsRemaining}s</span>
     </div>
   );
 }
