@@ -10,16 +10,40 @@
 
 <table>
   <tr>
-    <td width="50%"><img src="doc/screenshots/redesign/home-factions.jpg" alt="Factions"><br><sub><b>Landing:</b> the two sides, how a round works and the endgame.</sub></td>
-    <td width="50%"><img src="doc/screenshots/redesign/characters-grid.jpg" alt="Characters"><br><sub><b>Characters:</b> all 17 roles with painted portraits, grouped by faction.</sub></td>
+    <td width="50%"><img src="doc/screenshots/redesign/login.jpg" alt="Sign in"><br><sub><b>Sign in</b>: play as a guest in one tap, or use email.</sub></td>
+    <td><img src="doc/screenshots/redesign/signup.jpg" alt="Sign up"><br><sub><b>Sign up</b>: keep your level, XP and win rate.</sub></td>
   </tr>
   <tr>
-    <td><img src="doc/screenshots/redesign/rules.jpg" alt="Rules"><br><sub><b>Rulebook:</b> goals, phases, ballots, missions, endgame and Royal Decree.</sub></td>
-    <td><img src="doc/screenshots/redesign/login.jpg" alt="Sign in"><br><sub><b>Sign in:</b> one tap to play as a guest, or use email.</sub></td>
+    <td><img src="doc/screenshots/redesign/characters-grid.jpg" alt="Characters"><br><sub><b>Characters</b>: all 18 roles, including Robert Clive.</sub></td>
+    <td><img src="doc/screenshots/redesign/rules.jpg" alt="Rules"><br><sub><b>Rulebook</b>.</sub></td>
   </tr>
   <tr>
-    <td><img src="doc/screenshots/redesign/signup.jpg" alt="Sign up"><br><sub><b>Create an account</b> to keep level, XP and win rate.</sub></td>
-    <td align="center"><img src="doc/screenshots/redesign/mobile.jpg" alt="Mobile" width="45%"><br><sub><b>Mobile.</b></sub></td>
+    <td width="50%"><img src="doc/screenshots/game/dashboard.jpg" alt="<b>Dashboard</b> after sign-in: create a room or join by code."><br><sub><b>Dashboard</b> after sign-in: create a room or join by code.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/create-room.jpg" alt="<b>Room creation</b>: Standard Council or Royal Decree."><br><sub><b>Room creation</b>: Standard Council or Royal Decree.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/game/decree-settings.jpg" alt="<b>Royal Decree</b>: the host picks seats and roles."><br><sub><b>Royal Decree</b>: the host picks seats and roles.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/lobby-host.jpg" alt="<b>Room creator</b> view: room code, players, Start Match."><br><sub><b>Room creator</b> view: room code, players, Start Match.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/game/lobby-joiner.jpg" alt="<b>Joining player</b> view of the same room."><br><sub><b>Joining player</b> view of the same room.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/role-reveal.jpg" alt="<b>Character reveal</b>: portrait, name and side (Nawab's Loyalists)."><br><sub><b>Character reveal</b>: portrait, name and side (Nawab's Loyalists).</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/game/role-reveal-eic.jpg" alt="<b>Character reveal</b> for the East India Company."><br><sub><b>Character reveal</b> for the East India Company.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/host-controls.jpg" alt="<b>Discussion</b> with host controls."><br><sub><b>Discussion</b> with host controls.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/game/nominate.jpg" alt="<b>Leader</b> nominates ministers."><br><sub><b>Leader</b> nominates ministers.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/ballot.jpg" alt="<b>Voting</b>: approve or reject the ministers."><br><sub><b>Voting</b>: approve or reject the ministers.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/game/mission.jpg" alt="<b>Mission</b>: play a loyal or traitor card."><br><sub><b>Mission</b>: play a loyal or traitor card.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/mir-madan-guess.jpg" alt="<b>Identifying Mir Madan</b>: Mir Jafar's endgame guess."><br><sub><b>Identifying Mir Madan</b>: Mir Jafar's endgame guess.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/game/red-win.jpg" alt="<b>East India Company wins</b>: Mir Jafar found Mir Madan."><br><sub><b>East India Company wins</b>: Mir Jafar found Mir Madan.</sub></td>
+    <td width="50%"><img src="doc/screenshots/game/green-win.jpg" alt="<b>Nawab's Loyalists win</b> (the Company loses)."><br><sub><b>Nawab's Loyalists win</b> (the Company loses).</sub></td>
   </tr>
 </table>
 
@@ -154,7 +178,7 @@ Every app reads the one `code/.env` file. The variables are:
 | `DATABASE_URL` | Neon **pooled** connection (host contains `-pooler`) |
 | `DIRECT_URL` | Neon **direct** connection, used by the Prisma CLI |
 | `BETTER_AUTH_SECRET` | session signing (`npx @better-auth/cli secret`) |
-| `BETTER_AUTH_URL`, `WEB_URL`, `ADMIN_URL`, `API_URL` | app origins (defaults in `.env.example` are for local; production uses `https://one757-rpg.onrender.com` and `https://1757-web-rpg.vercel.app`) |
+| `BETTER_AUTH_URL`, `WEB_URL`, `ADMIN_URL`, `API_URL` | app origins (production uses `https://one757-rpg.onrender.com` and `https://1757-web-rpg.vercel.app`) |
 | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`, `EXPO_PUBLIC_API_URL` | where clients find the API |
 | `REDIS_URL` | optional: without it, live games are kept in memory |
 | `PORT`, `NODE_ENV`, `COOKIE_DOMAIN` | optional runtime settings |
@@ -162,7 +186,7 @@ Every app reads the one `code/.env` file. The variables are:
 ```bash
 # 3. (Optional) start Redis in Docker
 docker compose up -d redis
-#    then set REDIS_URL="redis://localhost:6379" in .env
+#    then set REDIS_URL in .env
 
 # 4. Generate the Prisma client and push the schema to your database
 pnpm db:generate
@@ -172,12 +196,10 @@ pnpm db:push
 pnpm dev
 ```
 
-| App | Local | Live |
-|---|---|---|
-| Web (the game) | http://localhost:3000 | https://1757-web-rpg.vercel.app |
-| API | http://localhost:3001 (health: `/health`) | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
-| Admin | http://localhost:3002 | not deployed yet |
-| Mobile (Expo / Metro) | http://localhost:8081 | — |
+| App | Live address |
+|---|---|
+| Web (the game) | https://1757-web-rpg.vercel.app |
+| API | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
 
 To run only the game, use `pnpm dev --filter=web --filter=api`. If a port is stuck on Windows, run `pnpm dev:kill`.
 

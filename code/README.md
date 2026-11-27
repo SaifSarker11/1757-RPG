@@ -41,11 +41,10 @@ pnpm db:push
 pnpm dev
 ```
 
-| Service | URL |
+| Service | Live address |
 |---|---|
-| API | http://localhost:3001 (live: https://one757-rpg.onrender.com) |
-| Web | http://localhost:3000 (live: https://1757-web-rpg.vercel.app) |
-| Admin | http://localhost:3002 |
+| API | https://one757-rpg.onrender.com |
+| Web | https://1757-web-rpg.vercel.app |
 
 ## Quick Start (Docker)
 
@@ -60,7 +59,7 @@ docker compose up -d
 pnpm dev --filter=web --filter=admin
 ```
 
-The API health endpoint is available at `http://localhost:3001/health`.
+The live API health endpoint is https://one757-rpg.onrender.com/health.
 
 ## Environment Variables
 
