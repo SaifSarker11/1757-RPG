@@ -334,3 +334,8 @@ input:-webkit-autofill:focus {
   to { opacity: 1; transform: none; filter: none; clip-path: inset(0); }
 }
 @media (prefers-reduced-motion: reduce) { .battle-recap { animation: none; } }
+
+/* Headings, labels and highlights read in champagne; red is reserved for CTAs, active badges and urgent states. */
+.text-primary, .eyebrow, .burger + *, h1, h2, h3 { color: #f9d4af; }
+.text-secondary { color: color-mix(in oklab, #f9d4af 72%, transparent); }
+.burger span { background: #f9d4af; }
