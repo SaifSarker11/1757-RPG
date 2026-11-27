@@ -15,6 +15,16 @@ const apiUrl = (process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http:
 const nextConfig: NextConfig = {
   // Hide the Next.js dev badge overlay.
   devIndicators: false,
+  // The container image (code/Dockerfile.web) asks for a self-contained
+  // server bundle: only the dependencies the build actually traced end up in
+  // the runtime stage. Vercel builds without this flag and keeps its own
+  // output format, so the two hosts never interfere.
+  // outputFileTracingRoot pins the bundle's layout to the monorepo root, so
+  // the server always lands at apps/web/server.js instead of mirroring the
+  // absolute path of whatever machine built it.
+  ...(process.env.NEXT_STANDALONE === "1"
+    ? { output: "standalone" as const, outputFileTracingRoot: monorepoRoot }
+    : {}),
   async rewrites() {
     return [
       {

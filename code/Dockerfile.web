@@ -1,0 +1,97 @@
+# =============================================================================
+# 1757-RPG Web — Production Dockerfile (multi-stage)
+# Serves the game client. The browser only ever talks to this origin: the
+# Next.js rewrite proxy in next.config.ts forwards /api/* and /rooms* to the
+# game server, so auth cookies stay same-origin.
+#
+# Build-time values (ARG) are baked into the client bundle. They carry the
+# production defaults so the image builds anywhere; override with
+# `--build-arg NAME=value` to point the client somewhere else.
+#
+#   NEXT_PUBLIC_WS_URL   where the browser opens its live Socket.IO connection
+#   NEXT_PUBLIC_SITE_URL canonical URL of this site, for social share previews
+#   API_URL              the game server that /api/* and /rooms* are proxied to
+#
+# API_URL has to be known at build time: the standalone server reads its route
+# table from the build output, so the proxy target is frozen into the image.
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Stage 1: Install dependencies and build the web app
+# ---------------------------------------------------------------------------
+FROM node:20-alpine AS builder
+
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+
+WORKDIR /app
+
+# Copy every workspace manifest first (layer caching), so the frozen lockfile
+# resolves against the same importer set as the repository.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY packages/db/package.json packages/db/
+COPY packages/auth/package.json packages/auth/
+COPY packages/config/package.json packages/config/
+COPY packages/game-engine/package.json packages/game-engine/
+COPY packages/types/package.json packages/types/
+COPY packages/eslint-config/package.json packages/eslint-config/
+COPY packages/typescript-config/package.json packages/typescript-config/
+COPY packages/ui/package.json packages/ui/
+COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
+COPY apps/admin/package.json apps/admin/
+COPY apps/mobile/package.json apps/mobile/
+
+RUN pnpm install --frozen-lockfile
+
+# Copy full source after install (maximises cache hits)
+COPY . .
+
+# Where the client opens its live Socket.IO connection, and the canonical URL
+# used for social share previews. Both are inlined at build time.
+ARG NEXT_PUBLIC_WS_URL=https://one757-rpg.onrender.com
+ARG NEXT_PUBLIC_SITE_URL=https://1757-web-rpg.onrender.com
+ARG API_URL=https://one757-rpg.onrender.com
+ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV API_URL=$API_URL
+
+# Emit a self-contained server bundle instead of the default .next output.
+ENV NEXT_STANDALONE=1
+
+# prisma.config.ts requires DIRECT_URL, but generate never connects. A
+# placeholder keeps real credentials out of the build; the runtime stage
+# below does not inherit it.
+ENV DIRECT_URL="postgresql://build:build@localhost:5432/build"
+RUN pnpm turbo run build --filter=web...
+
+# ---------------------------------------------------------------------------
+# Stage 2: Minimal production image
+# ---------------------------------------------------------------------------
+FROM node:20-alpine AS runtime
+
+# Non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+# The standalone bundle mirrors the monorepo layout: apps/web/server.js plus
+# only the dependencies the build actually traced.
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
+
+ENV NODE_ENV=production
+# Render injects PORT; this is the fallback for any other host.
+ENV PORT=3000
+# The standalone server binds HOSTNAME; inside a container it must be all
+# interfaces, not the container's own name.
+ENV HOSTNAME=0.0.0.0
+
+EXPOSE 3000
+
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget -qO- "http://localhost:${PORT:-3000}/" || exit 1
+
+CMD ["node", "apps/web/server.js"]

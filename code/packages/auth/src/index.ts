@@ -22,6 +22,8 @@ export const auth = betterAuth({
     "https://1757-web-rpg.vercel.app",
     "https://1757-admin-rpg.vercel.app",
     "https://*-saifsarker11s-projects.vercel.app",
+    // The game's own Render deployment (the site served from Render itself).
+    "https://1757-web.onrender.com",
     ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
     ...(process.env.NODE_ENV === "production"
       ? []

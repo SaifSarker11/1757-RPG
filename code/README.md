@@ -102,14 +102,28 @@ All apps load variables from a single root `.env` file (see [`.env.example`](.en
 
 ## Deployment
 
-### Render (API)
+### Render (API and the game site)
 
-The API deploys to [Render](https://render.com) as a Docker web service.
+[`render.yaml`](../render.yaml) is a Render Blueprint declaring two Docker web
+services: **1757-api** (the game server, `code/Dockerfile`) and **1757-web**
+(the game site itself, `code/Dockerfile.web`).
 
-1. Connect the repo on the Render dashboard.
-2. Render auto-detects `render.yaml` and creates the service.
-3. Set `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL`, `WEB_URL`, `ADMIN_URL`, and `BETTER_AUTH_URL` in the Render environment.
-4. Pushes to `main` trigger automatic deploys via CI.
+1. Connect the repo on the Render dashboard (**New → Blueprint**), or re-apply
+   the existing blueprint so Render picks up the second service.
+2. On **1757-api**, set `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL`, `WEB_URL`,
+   `ADMIN_URL`, `BETTER_AUTH_URL` and `ADMIN_USER_IDS` in the environment.
+3. **1757-web** needs no environment: the API address, the live-connection
+   address and the site URL are baked in from the `ARG` defaults at the top of
+   `code/Dockerfile.web` — the standalone server reads its route table from the
+   build output, so Render's env vars cannot change them.
+4. Pushes to `main` trigger automatic deploys of both services.
+
+The Render site is a second copy of the same game against the same database, so
+rooms appear on both addresses. Its origin,
+`https://1757-web.onrender.com`, is listed in
+`code/apps/api/src/lib/origins.ts` (covered by `origins.test.ts`) and in
+`code/packages/auth/src/index.ts`; rename the service and you must add the new
+address to both, or to the API's `EXTRA_ALLOWED_ORIGINS`.
 
 > **Cold-start note:** On the Render free/starter plan, the API service spins down after inactivity. The first request after a cold start may take 15-30 seconds. The web client shows a "Waking server…" indicator during this time.
 

@@ -134,7 +134,7 @@ The game engine (`packages/game-engine`) is a pure function, `reduce(state, acti
 /code/                        all source code (Turborepo + pnpm monorepo)
 /doc/                         SRS, design, presentation, final report, screenshots
 README.md                     this file
-render.yaml                   Render Blueprint for the API
+render.yaml                   Render Blueprint: the API and the game site
 .github/workflows/ci.yml      CI: install, typecheck, test, build
 ```
 
@@ -209,6 +209,7 @@ pnpm dev
 | App | Live address |
 |---|---|
 | Web (the game) | https://1757-web-rpg.vercel.app |
+| Web (the game), served from Render | https://1757-web.onrender.com — once the blueprint below is applied |
 | API | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
 | Admin dashboard | https://1757-admin-rpg.vercel.app |
 
@@ -235,13 +236,40 @@ Manual test scripts are in [`code/docs/manual-testing.md`](code/docs/manual-test
 | Part | Where | How |
 |---|---|---|
 | API | **Render** | Docker image from `code/Dockerfile`, declared in [`render.yaml`](render.yaml) |
-| Web and admin | **Vercel** | Git integration or CI, one project per app (Root Directory `code/apps/web` / `code/apps/admin`) |
+| Web (the game) | **Vercel** | Git integration or CI, one project per app (Root Directory `code/apps/web` / `code/apps/admin`) |
+| Web (the game), second copy | **Render** | Docker image from `code/Dockerfile.web`, declared in [`render.yaml`](render.yaml) |
 | CI | **GitHub Actions** | [`ci.yml`](.github/workflows/ci.yml): install, Prisma generate, typecheck, test, build; pushes to `main` also trigger the Render and Vercel deploys |
+
+### Running the game on Render
+
+[`render.yaml`](render.yaml) is a Render Blueprint: it declares both services,
+so one apply creates them.
+
+1. In the [Render dashboard](https://dashboard.render.com), choose **New →
+   Blueprint** and pick this repository. Render reads `render.yaml` and creates
+   **1757-api** and **1757-web**.
+2. On **1757-api**, fill in the values marked `sync: false`: `DATABASE_URL`,
+   `DIRECT_URL`, `REDIS_URL`, `WEB_URL`, `ADMIN_URL`, `BETTER_AUTH_URL`,
+   `ADMIN_USER_IDS`.
+3. **1757-web** needs nothing. The game-server address, the live-connection
+   address and the site's own URL are compiled into the image from the `ARG`
+   defaults at the top of [`code/Dockerfile.web`](code/Dockerfile.web), because
+   the packaged server reads its route table from the build output.
+4. Both redeploy automatically when `main` changes.
+
+The Render site is a second, independent copy of the same game: it talks to the
+same API and the same database, so a room created on either address shows up on
+both. Sign-in works there because `https://1757-web.onrender.com` is on the
+server's trusted-origin list
+([`code/apps/api/src/lib/origins.ts`](code/apps/api/src/lib/origins.ts));
+renaming the service means adding the new address there, or to the API's
+`EXTRA_ALLOWED_ORIGINS`.
 
 ```bash
 cd code
 pnpm build                                   # build every app
 docker build -t 1757-api -f Dockerfile .     # build the API image
+docker build -t 1757-web -f Dockerfile.web . # build the game site image
 ```
 
 See [`code/docs/deployment.md`](code/docs/deployment.md) for environment variables per platform.

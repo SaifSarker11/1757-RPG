@@ -26,45 +26,9 @@ import { createSocketTransport } from "./realtime/transport.js";
 import { createDisconnectTracker } from "./realtime/disconnectTracker.js";
 import { registerUserRoutes } from "./users/routes.js";
 import { registerAdminRoutes } from "./admin/routes.js";
+import { isAllowedOrigin } from "./lib/origins.js";
 
 const app = Fastify({ logger: true, trustProxy: true, bodyLimit: 64 * 1024 });
-
-const isProd = process.env.NODE_ENV === "production";
-const allowedOrigins = [
-  process.env.WEB_URL,
-  process.env.ADMIN_URL,
-  "https://1757-web-rpg.vercel.app",
-  "https://1757-admin-rpg.vercel.app",
-  "https://*-saifsarker11s-projects.vercel.app",
-  ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
-  ...(isProd ? [] : ["http://localhost:3000", "http://localhost:3002"]),
-]
-  .map((o) => o?.trim().replace(/\/+$/, ""))
-  .filter((o): o is string => Boolean(o));
-
-/** Exact match, or a "*" wildcard that only spans one DNS label's characters (no dots). */
-function matchesOrigin(pattern: string, origin: string): boolean {
-  if (!pattern.includes("*")) return pattern === origin;
-  const re = new RegExp(
-    "^" + pattern.split("*").map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[a-z0-9-]+") + "$"
-  );
-  return re.test(origin);
-}
-
-function isDevLanOrigin(origin: string): boolean {
-  return /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(
-    origin
-  );
-}
-
-/** Same rule for HTTP and sockets: the configured apps, plus LAN addresses in development. */
-function isAllowedOrigin(origin: string | undefined): boolean {
-  if (!origin) return true;
-  if (allowedOrigins.some((allowed) => matchesOrigin(allowed, origin))) return true;
-  // Only explicit origins pass (WEB_URL, ADMIN_URL, EXTRA_ALLOWED_ORIGINS). Trusting every
-  // *.vercel.app site let anyone host a page there and make credentialed requests.
-  return !isProd && isDevLanOrigin(origin);
-}
 
 await app.register(cors, {
   origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),

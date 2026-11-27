@@ -1,6 +1,8 @@
 # =============================================================================
 # Render Blueprint — https://render.com/docs/blueprint-spec
-# Declares the API web service and its environment for one-click deploys.
+# Declares the API and web services and their environment for one-click
+# deploys. Both build from Dockerfiles in /code; env vars marked `sync: false`
+# are set by hand in the dashboard the first time.
 # =============================================================================
 
 services:
@@ -43,3 +45,32 @@ services:
         sync: false
       - key: EXTRA_ALLOWED_ORIGINS  # optional extra web origins (comma-separated)
         sync: false
+
+  # ---------------------------------------------------------------------------
+  # The game itself, served from Render. A second copy of the site next to the
+  # Vercel one — both talk to the API above and share the same database.
+  # The browser only ever calls this origin: next.config.ts rewrites /api/* and
+  # /rooms* to the API, so the session cookie stays same-origin.
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: 1757-web
+    runtime: docker
+    dockerfilePath: ./code/Dockerfile.web
+    dockerContext: ./code
+    buildFilter:
+      paths:
+        - code/apps/web/**
+        - code/packages/game-engine/**
+        - code/Dockerfile.web
+        - code/pnpm-lock.yaml
+    region: singapore
+    plan: free                     # switch to starter to avoid cold starts
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # The API address, the live-connection address and this site's canonical
+      # URL are compiled into the image, so they live as ARG defaults at the top
+      # of code/Dockerfile.web rather than here — Render does not pass service
+      # env vars into a Docker build. Change them there and redeploy.
