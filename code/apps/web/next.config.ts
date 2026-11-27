@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         source: "/api/:path*",
         destination: `${apiUrl}/api/:path*`,
       },
+      // Bare /rooms needs its own rule: "/rooms/:path*" forwards it as "/rooms/",
+      // which Fastify treats as a different (missing) route — room creation 404'd.
+      {
+        source: "/rooms",
+        destination: `${apiUrl}/rooms`,
+      },
       {
         source: "/rooms/:path*",
         destination: `${apiUrl}/rooms/:path*`,
