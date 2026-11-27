@@ -104,27 +104,27 @@ export default function HomePage() {
 
   if (isPending || !session) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-background text-foreground/60 font-mono text-sm">
+      <main className="flex min-h-screen items-center justify-center bg-ink text-champagne/60 font-mono text-sm">
         Authenticating admin session...
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground font-sans p-6 md:p-10">
+    <main className="min-h-screen bg-ink text-champagne font-sans p-6 md:p-10">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Top Header */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-cream/20 gap-4">
+        <header className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-bronze gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-gold animate-pulse" />
-              <h1 className="text-2xl font-black font-mono tracking-tight text-foreground">
+              <span className="w-2.5 h-2.5 rounded-full bg-royal animate-pulse" />
+              <h1 className="text-2xl font-black font-mono tracking-tight text-champagne">
                 1757 RPG — ADMIN CONTROL CONSOLE
               </h1>
             </div>
-            <p className="text-xs text-foreground/70 mt-1 font-mono">
-              Signed in as <span className="text-foreground font-bold">{session.user.name}</span> ({session.user.email})
+            <p className="text-xs text-champagne/70 mt-1 font-mono">
+              Signed in as <span className="text-champagne font-bold">{session.user.name}</span> ({session.user.email})
             </p>
           </div>
 
@@ -133,14 +133,14 @@ export default function HomePage() {
               type="button"
               onClick={fetchAdminData}
               disabled={loading}
-              className="px-3 py-1.5 rounded bg-surface border border-gold/35 text-xs font-mono hover:bg-gold/10 text-foreground"
+              className="px-3 py-1.5 rounded bg-gradient-to-br from-crimson/80 to-bronze/60 border border-bronze text-xs font-mono hover:bg-crimson text-champagne/90"
             >
               {loading ? "Refreshing..." : "↻ Refresh"}
             </button>
             <button
               type="button"
               onClick={handleSignOut}
-              className="px-3 py-1.5 rounded bg-cream/10 border border-cream/35 text-xs font-mono text-royal hover:bg-cream"
+              className="px-3 py-1.5 rounded bg-crimson/60 border border-royal text-xs font-mono text-champagne hover:bg-royal"
             >
               Sign Out
             </button>
@@ -148,20 +148,20 @@ export default function HomePage() {
         </header>
 
         {feedback && (
-          <div className="p-3 bg-surface border border-gold/35 text-xs font-mono text-foreground rounded">
+          <div className="p-3 bg-gradient-to-br from-crimson/80 to-bronze/60 border border-bronze text-xs font-mono text-champagne/90 rounded">
             {feedback}
           </div>
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex gap-2 border-b border-cream/20 pb-px font-mono text-xs">
+        <div className="flex gap-2 border-b border-bronze pb-px font-mono text-xs">
           <button
             type="button"
             onClick={() => setActiveTab("overview")}
             className={`px-4 py-2 border-b-2 font-bold uppercase transition-colors ${
               activeTab === "overview"
-                ? "border-gold text-gold"
-                : "border-transparent text-foreground/60 hover:text-foreground"
+                ? "border-champagne text-champagne"
+                : "border-transparent text-champagne/60 hover:text-champagne/90"
             }`}
           >
             Telemetry Overview
@@ -171,8 +171,8 @@ export default function HomePage() {
             onClick={() => setActiveTab("matches")}
             className={`px-4 py-2 border-b-2 font-bold uppercase transition-colors ${
               activeTab === "matches"
-                ? "border-gold text-gold"
-                : "border-transparent text-foreground/60 hover:text-foreground"
+                ? "border-champagne text-champagne"
+                : "border-transparent text-champagne/60 hover:text-champagne/90"
             }`}
           >
             Match Logs ({matchesTotal})
@@ -182,8 +182,8 @@ export default function HomePage() {
             onClick={() => setActiveTab("users")}
             className={`px-4 py-2 border-b-2 font-bold uppercase transition-colors ${
               activeTab === "users"
-                ? "border-gold text-gold"
-                : "border-transparent text-foreground/60 hover:text-foreground"
+                ? "border-champagne text-champagne"
+                : "border-transparent text-champagne/60 hover:text-champagne/90"
             }`}
           >
             User Directory ({usersTotal})
@@ -196,7 +196,7 @@ export default function HomePage() {
             {overview ? (
               <TelemetryGrid overview={overview} />
             ) : (
-              <div className="bg-surface border border-cream/20 p-8 rounded-lg text-center text-foreground/60 font-mono text-sm">
+              <div className="bg-gradient-to-br from-crimson/80 to-bronze/60 border border-bronze p-8 rounded-lg text-center text-champagne/60 font-mono text-sm">
                 No telemetry statistics calculated yet. Complete a match to view data.
               </div>
             )}

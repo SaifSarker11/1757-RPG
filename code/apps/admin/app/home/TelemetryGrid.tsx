@@ -13,16 +13,16 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, subtitle, badge }: MetricCardProps) {
   const badgeClasses = {
-    green: "bg-gold/15 text-gold border-gold/40",
-    red: "bg-cream/10 text-cream border-cream/35",
-    amber: "bg-gold/15 text-gold border-gold/40",
-    neutral: "bg-gold/15 text-foreground border-gold/35",
+    green: "bg-bronze/40 text-champagne border-champagne/50",
+    red: "bg-crimson/60 text-royal border-royal",
+    amber: "bg-bronze/40 text-champagne border-bronze",
+    neutral: "bg-bronze/50 text-champagne/90 border-bronze",
   }[badge?.variant ?? "neutral"];
 
   return (
-    <div className="bg-surface/80 border border-cream/20 p-5 rounded-lg flex flex-col justify-between">
+    <div className="bg-gradient-to-br from-crimson to-bronze border border-bronze p-5 rounded-lg flex flex-col justify-between">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs uppercase font-mono tracking-wider text-foreground/70">{title}</span>
+        <span className="text-xs uppercase font-mono tracking-wider text-champagne/70">{title}</span>
         {badge && (
           <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${badgeClasses}`}>
             {badge.text}
@@ -30,8 +30,8 @@ function MetricCard({ title, value, subtitle, badge }: MetricCardProps) {
         )}
       </div>
       <div>
-        <div className="text-3xl font-black tracking-tight text-foreground">{value}</div>
-        {subtitle && <p className="text-xs text-foreground/60 mt-1 font-sans">{subtitle}</p>}
+        <div className="text-3xl font-black tracking-tight text-champagne">{value}</div>
+        {subtitle && <p className="text-xs text-champagne/60 mt-1 font-sans">{subtitle}</p>}
       </div>
     </div>
   );

@@ -157,9 +157,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem("daisyui-theme", "plassey");
-    setCurrentTheme("plassey");
-    document.documentElement.setAttribute("data-theme", "plassey");
+    const savedTheme = "plassey";
+    localStorage.setItem("daisyui-theme", savedTheme);
+    setCurrentTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
     setSoundEnabled(gameAudio.isEnabled());
   }, []);
 
@@ -597,9 +598,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
   if (isPending || !session) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-base-100 text-primary font-retro">
+      <div className="flex min-h-screen items-center justify-center bg-base-100 text-base-content font-retro">
         <div className="text-center font-sans">
-          <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
+          <span className="loading loading-spinner loading-lg text-accent mb-4"></span>
           <p className="text-2xl font-bold tracking-widest">UNROLLING OLD SCROLLS...</p>
         </div>
       </div>
@@ -744,12 +745,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             </h2>
 
             {/* Simulated 2D Oval Council Table */}
-            <div className="relative w-full aspect-[4/3] max-w-md md:max-w-xl mx-auto flex items-center justify-center min-h-[300px] border-4 border-dashed border-primary/30 bg-primary/5 p-4 rounded-none">
+            <div className="relative w-full aspect-[4/3] max-w-md md:max-w-xl mx-auto flex items-center justify-center min-h-[300px] border-4 border-dashed border-secondary/40 bg-base-200/40 p-4 rounded-none">
               
               {/* Inner Round Table Graphic */}
-              <div className="absolute w-[50%] h-[50%] border-4 border-double border-primary/45 rounded-full flex flex-col items-center justify-center text-center p-4 bg-primary/10">
-                <span className="text-[10px] font-pixel text-primary uppercase">Secretariat</span>
-                <span className="text-[8px] font-pixel text-base-content/70 uppercase mt-0.5">Plassey 1757</span>
+              <div className="absolute w-[50%] h-[50%] border-4 border-double border-secondary rounded-full flex flex-col items-center justify-center text-center p-4 bg-base-300/20">
+                <span className="text-[10px] font-pixel text-base-content/60 uppercase">Secretariat</span>
+                <span className="text-[8px] font-pixel text-base-content/50 uppercase mt-0.5">Plassey 1757</span>
               </div>
 
               {/* Render Players as seats around the council table */}
@@ -848,8 +849,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-sm font-historical font-extrabold uppercase text-primary">{myRoleInfo.role.replace("_", " ")}</span>
                     <span className={`badge badge-sm rounded-none border text-[8px] uppercase ${
-                      myRoleInfo.team === "green" ? "bg-primary text-primary-content" :
-                      myRoleInfo.team === "red" ? "bg-base-100 text-base-content border-primary" : "bg-secondary text-secondary-content"
+                      myRoleInfo.team === "green" ? "bg-base-content text-base-100" :
+                      myRoleInfo.team === "red" ? "bg-accent text-accent-content" : "bg-secondary text-secondary-content"
                     }`}>
                       {myRoleInfo.team} Team
                     </span>
@@ -864,7 +865,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                         const targetPlayer = players.find((pl) => pl.userId === vp.userId);
                         return (
                           <span key={idx} className="badge badge-outline rounded-none text-[8px] uppercase py-1 px-1.5">
-                            {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="text-primary font-bold ml-1">{vp.role.replace("_", " ")}</span>
+                            {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="text-base-content font-bold ml-1">{vp.role.replace("_", " ")}</span>
                           </span>
                         );
                       })}
@@ -1046,7 +1047,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                       <span>
                         📜 Round {log.round}: {log.type === "approval" ? "Board Propose" : "Resolution Complete"}
                       </span>
-                      <span className={`font-bold uppercase ${log.approved || log.winner === "green" ? "text-primary" : "text-secondary"}`}>
+                      <span className={`font-bold uppercase ${log.approved || log.winner === "green" ? "text-base-content" : "text-accent"}`}>
                         {log.type === "approval" ? (log.approved ? "APPROVED" : "REJECTED") : `WIN: ${log.winner}`}
                       </span>
                     </div>

@@ -36,9 +36,10 @@ export default function HomePage() {
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("daisyui-theme", "plassey");
-    setCurrentTheme("plassey");
-    document.documentElement.setAttribute("data-theme", "plassey");
+    const savedTheme = "plassey";
+    localStorage.setItem("daisyui-theme", savedTheme);
+    setCurrentTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
     setSoundEnabled(gameAudio.isEnabled());
   }, []);
 
@@ -201,9 +202,9 @@ export default function HomePage() {
 
   if (isPending || !session) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-base-100 text-primary font-retro">
+      <main className="flex min-h-screen items-center justify-center bg-base-100 text-base-content font-retro">
         <div className="text-center font-sans">
-          <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
+          <span className="loading loading-spinner loading-lg text-accent mb-4"></span>
           <p className="text-2xl font-bold tracking-widest font-retro">UNROLLING OLD SCROLLS...</p>
         </div>
       </main>

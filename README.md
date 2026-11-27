@@ -83,7 +83,15 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 
 ## Look and feel
 
-- **Palette (strict):** Royal Blue `#4169E1`, Antique / Warm Gold `#D4B249`, and Soft Cream / Off-White `#F2E7DE` — trustworthy, bold and editorial, with gradients blended only from these three colours.
+- **Palette (strict, five colours only):**
+  | Colour | Hex | Used for |
+  |---|---|---|
+  | Warm Champagne Gold | `#f9d4af` | headings, body text, highlights, active borders |
+  | Rich Espresso Bronze | `#55362a` | secondary surfaces, card borders, muted accents |
+  | Deep Royal Crimson | `#4f0505` | elevated cards, section gradients, hover states |
+  | Obsidian Black | `#111111` | page background, modals |
+  | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
+- **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
 - **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
 - **Transitions on every page:** public pages open with the battle painting lifting away; in-game screens (lobby → end of match) use a Prägen Hätlen-style veil with a bracketed `[000]→[100]` counter, gradient hairline and blur-in, plus bracketed section labels.
 
