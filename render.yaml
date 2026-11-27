@@ -15,7 +15,7 @@ services:
       paths:
         - code/**
     region: singapore
-    plan: starter
+    plan: free                     # switch to starter to avoid cold starts
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -38,4 +38,8 @@ services:
       - key: REDIS_URL
         sync: false
       - key: COOKIE_DOMAIN
+        sync: false
+      - key: ADMIN_USER_IDS         # comma-separated user IDs allowed into the admin console
+        sync: false
+      - key: EXTRA_ALLOWED_ORIGINS  # optional extra web origins (comma-separated)
         sync: false

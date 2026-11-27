@@ -1,4 +1,10 @@
-import type { FastifyInstance, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+
+function adminIds(): Set<string> {
+  return new Set(
+    (process.env.ADMIN_USER_IDS ?? "").split(",").map((id) => id.trim()).filter(Boolean)
+  );
+}
 import { db } from "@repo/db";
 import { createRequireUser, currentUser, type SessionResolver } from "../lib/session.js";
 import {
@@ -14,7 +20,17 @@ export interface AdminRouteDeps {
 }
 
 export async function registerAdminRoutes(app: FastifyInstance, deps: AdminRouteDeps) {
-  const requireUser = createRequireUser(deps.resolveSession);
+  const requireSignedIn = createRequireUser(deps.resolveSession);
+  // Admin access is an explicit allowlist of user IDs (ADMIN_USER_IDS, comma separated).
+  // Being signed in is NOT enough: guests and regular players get 403.
+  const requireUser = async (request: FastifyRequest, reply: FastifyReply) => {
+    await requireSignedIn.call(app, request, reply);
+    if (reply.sent) return;
+    const user = request.sessionUser;
+    if (!user || user.isAnonymous || !adminIds().has(user.id)) {
+      return reply.status(403).send({ error: "Forbidden", code: "FORBIDDEN", success: false });
+    }
+  };
 
   // GET /api/admin/overview - Overall game & system telemetry
   app.get("/api/admin/overview", { preHandler: requireUser }, async (request, reply) => {

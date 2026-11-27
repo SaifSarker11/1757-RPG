@@ -11,19 +11,13 @@ const API_URL =
     ? ""
     : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
 
-const THEMES = [
-  "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave",
-  "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua",
-  "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula",
-  "cmyk", "autumn", "business", "acid", "lemon", "night", "coffee", "winter",
-  "dim", "nord", "sunset"
-];
+const THEMES = ["plassey", "retro", "dark", "light", "cupcake", "synthwave", "forest"];
 
 export default function HomePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  const [currentTheme, setCurrentTheme] = useState("retro");
+  const [currentTheme, setCurrentTheme] = useState("plassey");
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [userStats, setUserStats] = useState<{
@@ -42,7 +36,7 @@ export default function HomePage() {
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("daisyui-theme") || "retro";
+    const savedTheme = localStorage.getItem("daisyui-theme") || "plassey";
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
     setSoundEnabled(gameAudio.isEnabled());

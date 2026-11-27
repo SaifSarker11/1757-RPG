@@ -60,7 +60,7 @@ export default function InfoModal({ open, onClose, roles }: InfoModalProps) {
             <h3 className="text-lg font-pixel font-bold text-secondary mb-2">Settings</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
               <li>Sound Effects: {gameAudio.isEnabled() ? "ON" : "OFF"}</li>
-              <li>Theme: {localStorage.getItem("daisyui-theme") ?? "retro"}</li>
+              <li>Theme: {localStorage.getItem("daisyui-theme") ?? "plassey"}</li>
             </ul>
           </section>
         </div>

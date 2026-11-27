@@ -14,6 +14,8 @@
     "EXPO_PUBLIC_API_URL",
     "COOKIE_DOMAIN",
     "REDIS_URL",
+    "ADMIN_USER_IDS",
+    "EXTRA_ALLOWED_ORIGINS",
     "NODE_ENV"
   ],
   "tasks": {

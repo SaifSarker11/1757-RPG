@@ -21,6 +21,7 @@ const db = vi.hoisted(() => ({
 
 vi.mock("@repo/db", () => ({ db }));
 
+process.env.ADMIN_USER_IDS = "admin-1";
 const { registerAdminRoutes } = await import("./routes.js");
 
 const adminUser: SessionUser = { id: "admin-1", name: "Administrator", isAnonymous: false };
@@ -40,6 +41,18 @@ describe("Admin Route Authentication", () => {
     const app = await buildApp(null);
     const res = await app.inject({ method: "GET", url: "/api/admin/overview" });
     expect(res.statusCode).toBe(401);
+  });
+
+  it("rejects signed-in users who are not on the admin allowlist with 403", async () => {
+    const app = await buildApp({ id: "player-9", name: "Player", isAnonymous: false });
+    const res = await app.inject({ method: "GET", url: "/api/admin/overview" });
+    expect(res.statusCode).toBe(403);
+  });
+
+  it("rejects guests even if their id is allowlisted", async () => {
+    const app = await buildApp({ id: "admin-1", name: "Guest", isAnonymous: true });
+    const res = await app.inject({ method: "GET", url: "/api/admin/users" });
+    expect(res.statusCode).toBe(403);
   });
 });
 

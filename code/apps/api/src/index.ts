@@ -27,12 +27,17 @@ import { createDisconnectTracker } from "./realtime/disconnectTracker.js";
 import { registerUserRoutes } from "./users/routes.js";
 import { registerAdminRoutes } from "./admin/routes.js";
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: true, trustProxy: true, bodyLimit: 64 * 1024 });
 
+const isProd = process.env.NODE_ENV === "production";
 const allowedOrigins = [
-  process.env.WEB_URL ?? "http://localhost:3000",
-  process.env.ADMIN_URL ?? "http://localhost:3002",
-];
+  process.env.WEB_URL,
+  process.env.ADMIN_URL,
+  ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
+  ...(isProd ? [] : ["http://localhost:3000", "http://localhost:3002"]),
+]
+  .map((o) => o?.trim().replace(/\/+$/, ""))
+  .filter((o): o is string => Boolean(o));
 
 function isDevLanOrigin(origin: string): boolean {
   return /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(
@@ -44,8 +49,9 @@ function isDevLanOrigin(origin: string): boolean {
 function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) return true;
   if (allowedOrigins.includes(origin)) return true;
-  if (/\.vercel\.app$/.test(new URL(origin).hostname)) return true;
-  return process.env.NODE_ENV !== "production" && isDevLanOrigin(origin);
+  // Only explicit origins pass (WEB_URL, ADMIN_URL, EXTRA_ALLOWED_ORIGINS). Trusting every
+  // *.vercel.app site let anyone host a page there and make credentialed requests.
+  return !isProd && isDevLanOrigin(origin);
 }
 
 await app.register(cors, {
@@ -149,10 +155,6 @@ app.get("/health", async (request, reply) => {
     services: {
       database: dbStatus,
       redis: process.env.REDIS_URL ? "configured" : "memory_fallback",
-    },
-    memory: {
-      rssMb: Math.round(process.memoryUsage().rss / (1024 * 1024)),
-      heapUsedMb: Math.round(process.memoryUsage().heapUsed / (1024 * 1024)),
     },
   });
 });

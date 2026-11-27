@@ -44,13 +44,7 @@ const API_URL =
     ? ""
     : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
 
-const THEMES = [
-  "light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave",
-  "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua",
-  "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula",
-  "cmyk", "autumn", "business", "acid", "lemon", "night", "coffee", "winter",
-  "dim", "nord", "sunset"
-];
+const THEMES = ["plassey", "retro", "dark", "light", "cupcake", "synthwave", "forest"];
 
 function getTeamSizeForRound(roundNumber: number, playerCount: number): number {
   const sizes: Record<number, number[]> = {
@@ -59,11 +53,12 @@ function getTeamSizeForRound(roundNumber: number, playerCount: number): number {
     8:  [3, 4, 4, 5, 5],
     9:  [3, 4, 4, 5, 5],
     10: [3, 4, 4, 5, 5],
-    11: [3, 4, 5, 5, 6],
-    12: [4, 5, 5, 6, 6],
-    13: [4, 5, 6, 6, 7],
-    14: [4, 6, 6, 7, 7],
-    15: [5, 6, 7, 7, 8]
+    // Must match packages/game-engine/src/config/gameConfig.ts (COMPOSITION).
+    11: [3, 4, 5, 6, 6],
+    12: [3, 4, 5, 6, 6],
+    13: [4, 5, 5, 6, 7],
+    14: [4, 5, 5, 6, 7],
+    15: [4, 5, 6, 6, 7]
   };
   const roundIndex = roundNumber - 1;
   const playerSizes = sizes[playerCount] ?? sizes[6];
@@ -99,7 +94,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   // Theme selector state
-  const [currentTheme, setCurrentTheme] = useState("retro");
+  const [currentTheme, setCurrentTheme] = useState("plassey");
 
   // Game States (Authoritative Server View)
   const [playerView, setPlayerView] = useState<PlayerView | null>(null);
@@ -161,7 +156,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("daisyui-theme") || "retro";
+    const savedTheme = localStorage.getItem("daisyui-theme") || "plassey";
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
     setSoundEnabled(gameAudio.isEnabled());

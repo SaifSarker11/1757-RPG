@@ -4,42 +4,36 @@ import { anonymous, bearer } from "better-auth/plugins";
 import { db } from "@repo/db";
 import { generateGuestName } from "./guestName.js";
 
+if (process.env.NODE_ENV === "production" && (process.env.BETTER_AUTH_SECRET ?? "").length < 32) {
+  throw new Error("BETTER_AUTH_SECRET must be a random string of at least 32 characters in production");
+}
+
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3001",
-  trustedOrigins: async (request) => {
-    const origin = request?.headers?.get?.("origin") ?? (request?.headers && "origin" in request.headers ? (request.headers as any).origin : null);
-    const configured = [
-      process.env.WEB_URL,
-      process.env.ADMIN_URL,
-      process.env.BETTER_AUTH_URL,
-      "http://localhost:3000",
-      "http://localhost:3002",
-      "http://localhost:3001",
-    ].filter((url): url is string => Boolean(url));
-
-    if (origin && typeof origin === "string") {
-      if (configured.includes(origin)) return [origin];
-      try {
-        const { hostname } = new URL(origin);
-        if (hostname.endsWith(".vercel.app") || hostname === "vercel.app") {
-          return [origin];
-        }
-      } catch {
-        // invalid origin url
-      }
-    }
-    return configured;
-  },
+  // Only explicit origins are trusted. The old *.vercel.app wildcard plus disabled
+  // origin/CSRF checks let any third-party site act on a signed-in player's behalf.
+  trustedOrigins: [
+    process.env.WEB_URL,
+    process.env.ADMIN_URL,
+    process.env.BETTER_AUTH_URL,
+    ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
+    ...(process.env.NODE_ENV === "production"
+      ? []
+      : ["http://localhost:3000", "http://localhost:3002", "http://localhost:3001"]),
+  ]
+    .map((url) => url?.trim().replace(/\/+$/, ""))
+    .filter((url): url is string => Boolean(url)),
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
   },
+  rateLimit: { enabled: true, window: 60, max: 30 },
   advanced: {
-    disableOriginCheck: true,
-    disableCSRFCheck: true,
     ...(process.env.COOKIE_DOMAIN
       ? {
           crossSubDomainCookies: {
@@ -49,7 +43,8 @@ export const auth = betterAuth({
         }
       : {}),
     defaultCookieAttributes: {
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      // Auth runs same-origin through the web app's rewrite proxy, so "lax" works and blocks CSRF.
+      sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
     },
