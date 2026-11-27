@@ -17,6 +17,10 @@ export const auth = betterAuth({
     process.env.WEB_URL,
     process.env.ADMIN_URL,
     process.env.BETTER_AUTH_URL,
+    // The game's own Vercel deployments: production alias plus every preview/branch URL
+    // under the owner's team scope (only that Vercel team can create these hostnames).
+    "https://1757-web.vercel.app",
+    "https://*-saifsarker11s-projects.vercel.app",
     ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
     ...(process.env.NODE_ENV === "production"
       ? []
