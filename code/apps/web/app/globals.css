@@ -45,7 +45,7 @@
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display-serif), Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --color-loyal: #f9d4af;
+  --color-loyal: #2f9e5b;
   --color-traitor: #e01e1e;
   --color-banker: #f9d4af;
   --color-ink: #111111;
@@ -339,3 +339,12 @@ input:-webkit-autofill:focus {
 .text-primary, .eyebrow, .burger + *, h1, h2, h3 { color: #f9d4af; }
 .text-secondary { color: color-mix(in oklab, #f9d4af 72%, transparent); }
 .burger span { background: #f9d4af; }
+
+/* Loyalist cards: emerald, never red */
+.court-card--loyal { background: linear-gradient(180deg, #111111 0%, #0f2a1c 60%, #14532d 100%); border-color: color-mix(in oklab, #2f9e5b 35%, transparent); }
+.court-card--loyal .eyebrow { color: #4fc07f; }
+.court-card--loyal .card-fade { --tw-gradient-from: #0f2a1c; }
+/* epic.net-style layered panel sweep */
+.page-panel { position: fixed; inset: 0; z-index: 91; pointer-events: none; background: linear-gradient(180deg, #4f0505, #111111); clip-path: inset(100% 0 0 0); }
+.page-panel--b { z-index: 92; background: linear-gradient(180deg, #55362a, #4f0505); }
+@media (prefers-reduced-motion: reduce) { .page-panel { display: none; } }

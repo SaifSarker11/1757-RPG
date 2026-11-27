@@ -21,6 +21,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const scene = useRef<HTMLDivElement>(null);
   const veil = useRef<HTMLDivElement>(null);
   const count = useRef<HTMLSpanElement>(null);
+  const panels = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -37,11 +38,15 @@ export default function Template({ children }: { children: React.ReactNode }) {
         .set(veil.current, { display: "none" })
         .addLabel("land", 1.1);
     } else {
-      tl.fromTo(scene.current, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 }, 0)
-        .fromTo(scene.current!.querySelector("img"), { scale: 1.08 }, { scale: 1, duration: 1.3, ease: "expo.out" }, 0)
-        .to(scene.current, { clipPath: "inset(0 0 100% 0)", duration: 0.8, ease: "expo.inOut" }, 0.9)
+      const [pa, pb] = panels.current?.children ?? [];
+      tl.to(pa!, { clipPath: "inset(0% 0 0 0)", duration: 0.55, ease: "power4.inOut" }, 0)
+        .to(pb!, { clipPath: "inset(0% 0 0 0)", duration: 0.55, ease: "power4.inOut" }, 0.08)
+        .set(scene.current, { autoAlpha: 1 }, 0.6)
+        .to([pb!, pa!], { clipPath: "inset(0 0 100% 0)", duration: 0.7, ease: "power4.inOut", stagger: 0.08 }, 0.65)
+        .fromTo(scene.current!.querySelector("img"), { scale: 1.12 }, { scale: 1, duration: 1.6, ease: "expo.out" }, 0.6)
+        .to(scene.current, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "power4.inOut" }, 1.5)
         .set(scene.current, { display: "none" })
-        .addLabel("land", 1.25);
+        .addLabel("land", 1.9);
       tl.fromTo(bar.current, { scaleX: 0, autoAlpha: 1 }, { scaleX: 1, duration: 0.7, ease: "expo.inOut" }, "land")
         .to(bar.current, { autoAlpha: 0, duration: 0.3 }, ">-0.05");
     }
@@ -66,6 +71,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
         </div>
       ) : (
         <>
+          <div ref={panels} aria-hidden><div className="page-panel" /><div className="page-panel page-panel--b" /></div>
           <div ref={scene} aria-hidden className="page-scene"><img src="/images/transition-battle.jpg" alt="" /></div>
           <div ref={bar} aria-hidden className="page-progress" />
         </>

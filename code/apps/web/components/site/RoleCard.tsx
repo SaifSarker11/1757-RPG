@@ -11,7 +11,7 @@ export function CourtCard({ role, large = false }: { role: CourtRole; large?: bo
   const t = TEAM_STYLE[role.team];
   const initials = role.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
   return (
-    <article className="card-lift hairline group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-base-200">
+    <article className={`card-lift hairline group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-base-200 ${role.team === "GREEN" ? "court-card--loyal" : ""}`}>
       <div className={`relative ${large ? "aspect-[4/5]" : "aspect-square"} overflow-hidden`}>
         {role.portrait ? (
           <Image
@@ -26,7 +26,7 @@ export function CourtCard({ role, large = false }: { role: CourtRole; large?: bo
             <span className="font-display text-7xl font-semibold opacity-40">{initials}</span>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-base-200 via-base-200/10 to-transparent" />
+        <div className={`absolute inset-0 bg-gradient-to-t ${role.team === "GREEN" ? "from-[#0f2a1c] via-[#0f2a1c]/10" : "from-base-200 via-base-200/10"} to-transparent`} />
         <span className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] backdrop-blur ${t.chip}`}>
           {t.label}
         </span>

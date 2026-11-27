@@ -6,7 +6,7 @@ export interface Track {
   id: string;
   /** Name shown in the game. */
   name: string;
-  /** Original title and artist, for the CC BY credit (see public/music/CREDITS.md). */
+  /** Track title and source (see public/music/CREDITS.md). */
   title: string;
   artist: string;
   src: string;
@@ -16,27 +16,27 @@ export const TRACKS: readonly Track[] = [
   {
     id: "court",
     name: "Court of Murshidabad",
-    title: "Relax Ay Sitar",
-    artist: "Antti Luode",
+    title: "Whispers in the Palace",
+    artist: "Original 1757 score",
     src: "/music/court-of-murshidabad.mp3",
   },
   {
     id: "council",
     name: "Council in Session",
-    title: "Sitar and simple beats",
-    artist: "Antti Luode",
+    title: "The Council Divides",
+    artist: "Original 1757 score",
     src: "/music/council-in-session.mp3",
   },
   {
     id: "plassey",
     name: "Eve of Plassey",
-    title: "The fury of Sitar",
-    artist: "Antti Luode",
+    title: "Storm over the Mango Grove",
+    artist: "Original 1757 score",
     src: "/music/eve-of-plassey.mp3",
   },
 ];
 
-export const MUSIC_LICENSE = { name: "CC BY 3.0", url: "https://creativecommons.org/licenses/by/3.0/" };
+export const MUSIC_LICENSE = { name: "composed for 1757", url: "" };
 
 export interface MusicState {
   /** Chosen track, or null when the player turned music off. */

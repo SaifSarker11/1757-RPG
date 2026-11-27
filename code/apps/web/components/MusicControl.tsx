@@ -82,10 +82,7 @@ export function MusicControl() {
 
         {current && (
           <p className="font-sans text-[9px] text-base-content/60 leading-snug border-t border-dashed border-base-content/20 pt-1.5">
-            “{current.title}” by {current.artist},{" "}
-            <a href={MUSIC_LICENSE.url} target="_blank" rel="noreferrer" className="link">
-              {MUSIC_LICENSE.name}
-            </a>
+            “{current.title}”, {MUSIC_LICENSE.name}
           </p>
         )}
       </div>
