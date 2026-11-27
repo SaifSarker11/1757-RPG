@@ -4,7 +4,6 @@
 
 [![CI/CD](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml/badge.svg)](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml)
 
-**Play:** [1757-web-rpg.vercel.app](https://1757-web-rpg.vercel.app) · **API:** [one757-rpg.onrender.com](https://one757-rpg.onrender.com/health) · **Admin:** [1757-admin-rpg.vercel.app](https://1757-admin-rpg.vercel.app)
 
 ![1757 home page](doc/screenshots/redesign/home.jpg)
 
