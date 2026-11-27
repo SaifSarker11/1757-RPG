@@ -114,7 +114,7 @@ cp .env.docker .env
 docker compose up -d
 
 # Verify health
-curl http://localhost:3001/health
+curl https://one757-rpg.onrender.com/health   # or http://localhost:3001/health locally
 ```
 
 Services started:

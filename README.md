@@ -4,6 +4,27 @@
 
 [![CI/CD](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml/badge.svg)](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml)
 
+**Play:** [1757-web-git-main-saifsarker11s-projects.vercel.app](https://1757-web-git-main-saifsarker11s-projects.vercel.app) · **API:** [one757-rpg.onrender.com](https://one757-rpg.onrender.com/health)
+
+![1757 home page](doc/screenshots/redesign/home.jpg)
+
+<table>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/redesign/home-factions.jpg" alt="Factions"><br><sub><b>Landing:</b> the two sides, how a round works and the endgame.</sub></td>
+    <td width="50%"><img src="doc/screenshots/redesign/characters-grid.jpg" alt="Characters"><br><sub><b>Characters:</b> all 17 roles with painted portraits, grouped by faction.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="doc/screenshots/redesign/rules.jpg" alt="Rules"><br><sub><b>Rulebook:</b> goals, phases, ballots, missions, endgame and Royal Decree.</sub></td>
+    <td><img src="doc/screenshots/redesign/login.jpg" alt="Sign in"><br><sub><b>Sign in:</b> one tap to play as a guest, or use email.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="doc/screenshots/redesign/signup.jpg" alt="Sign up"><br><sub><b>Create an account</b> to keep level, XP and win rate.</sub></td>
+    <td align="center"><img src="doc/screenshots/redesign/mobile.jpg" alt="Mobile" width="45%"><br><sub><b>Mobile.</b></sub></td>
+  </tr>
+</table>
+
+### In the game
+
 <table>
   <tr>
     <td width="50%"><img src="doc/screenshots/01-lobby-and-profile.png" alt="Lobby and profile"><br><sub><b>Lobby and profile:</b> create or join by code, pick Standard Council or Royal Decree, track level, XP and win rate.</sub></td>
@@ -153,7 +174,7 @@ Every app reads the one `code/.env` file. The variables are:
 | `DATABASE_URL` | Neon **pooled** connection (host contains `-pooler`) |
 | `DIRECT_URL` | Neon **direct** connection, used by the Prisma CLI |
 | `BETTER_AUTH_SECRET` | session signing (`npx @better-auth/cli secret`) |
-| `BETTER_AUTH_URL`, `WEB_URL`, `ADMIN_URL`, `API_URL` | app origins (defaults in `.env.example` are correct for local) |
+| `BETTER_AUTH_URL`, `WEB_URL`, `ADMIN_URL`, `API_URL` | app origins (defaults in `.env.example` are for local; production uses `https://one757-rpg.onrender.com` and `https://1757-web-git-main-saifsarker11s-projects.vercel.app`) |
 | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`, `EXPO_PUBLIC_API_URL` | where clients find the API |
 | `REDIS_URL` | optional: without it, live games are kept in memory |
 | `PORT`, `NODE_ENV`, `COOKIE_DOMAIN` | optional runtime settings |
@@ -171,12 +192,12 @@ pnpm db:push
 pnpm dev
 ```
 
-| App | URL |
-|---|---|
-| Web (the game) | http://localhost:3000 |
-| API | http://localhost:3001 (health: `/health`) |
-| Admin | http://localhost:3002 |
-| Mobile (Expo / Metro) | http://localhost:8081 |
+| App | Local | Live |
+|---|---|---|
+| Web (the game) | http://localhost:3000 | https://1757-web-git-main-saifsarker11s-projects.vercel.app |
+| API | http://localhost:3001 (health: `/health`) | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
+| Admin | http://localhost:3002 | not deployed yet |
+| Mobile (Expo / Metro) | http://localhost:8081 | — |
 
 To run only the game, use `pnpm dev --filter=web --filter=api`. If a port is stuck on Windows, run `pnpm dev:kill`.
 

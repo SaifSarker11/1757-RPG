@@ -43,8 +43,8 @@ pnpm dev
 
 | Service | URL |
 |---|---|
-| API | http://localhost:3001 |
-| Web | http://localhost:3000 |
+| API | http://localhost:3001 (live: https://one757-rpg.onrender.com) |
+| Web | http://localhost:3000 (live: https://1757-web-git-main-saifsarker11s-projects.vercel.app) |
 | Admin | http://localhost:3002 |
 
 ## Quick Start (Docker)
