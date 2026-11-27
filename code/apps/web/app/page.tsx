@@ -86,7 +86,7 @@ export default function Landing() {
               <p className="eyebrow">The court</p>
               <h2 className="font-display mt-4 max-w-2xl text-5xl font-semibold md:text-6xl">Every seat hides a story.</h2>
             </div>
-            <Link href="/characters" className="btn btn-outline rounded-full">All 18 characters →</Link>
+            <Link href="/characters" className="btn btn-outline rounded-full">All 20 characters →</Link>
           </div>
           <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((r) => <CourtCard key={r.id} role={r} large />)}

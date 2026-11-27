@@ -3,9 +3,9 @@ import { ALL_NAMED_ROLES } from "../src/config/gameConfig.js";
 import { ROLE_CATALOG, dependencyClosure, teamOf } from "../src/roles/catalog.js";
 
 describe("ROLE_CATALOG", () => {
-  it("has 7 Green, 8 Red and 1 Gold named role", () => {
+  it("has 9 Green, 8 Red and 1 Gold named role", () => {
     const teams = ALL_NAMED_ROLES.map(teamOf);
-    expect(teams.filter((t) => t === "GREEN")).toHaveLength(7);
+    expect(teams.filter((t) => t === "GREEN")).toHaveLength(9);
     expect(teams.filter((t) => t === "RED")).toHaveLength(8);
     expect(teams.filter((t) => t === "GOLD")).toHaveLength(1);
   });
@@ -55,5 +55,14 @@ describe("Robert Clive", () => {
     expect(ROLE_CATALOG.ROBERT_CLIVE.team).toBe("RED");
     expect(ROLE_CATALOG.ROBERT_CLIVE.requires).toEqual([]);
     expect(BALLOT_WEIGHTS.ROBERT_CLIVE).toBe(2);
+  });
+});
+
+describe("Vanguard officers", () => {
+  it("are Green and require Mir Madan", () => {
+    for (const id of ["NAUWE_SINGH_HAZARI", "BAHADUR_KHAN"] as const) {
+      expect(ROLE_CATALOG[id].team).toBe("GREEN");
+      expect(ROLE_CATALOG[id].requires).toEqual(["MIR_MADAN"]);
+    }
   });
 });

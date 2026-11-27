@@ -106,7 +106,6 @@ jobs:
   deploy-admin:
     needs: ci
     runs-on: ubuntu-latest
-    # Optional: enable by adding the ADMIN_VERCEL_PROJECT_ID repo secret.
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
@@ -114,17 +113,34 @@ jobs:
       - name: Install Vercel CLI
         run: npm i -g vercel@latest
 
+      - name: Create or find the admin Vercel project
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then echo "VERCEL_TOKEN not set, skipping"; exit 0; fi
+          api="https://api.vercel.com"; q="teamId=$VERCEL_ORG_ID"; auth="Authorization: Bearer $VERCEL_TOKEN"
+          id=$(curl -s -H "$auth" "$api/v9/projects/1757-admin?$q" | jq -r '.id // empty')
+          if [ -z "$id" ]; then
+            id=$(curl -s -X POST -H "$auth" -H "Content-Type: application/json" "$api/v10/projects?$q" \
+              -d '{"name":"1757-admin","framework":"nextjs","rootDirectory":"code/apps/admin"}' | jq -r '.id')
+          fi
+          echo "Admin project: $id"
+          curl -s -X POST -H "$auth" -H "Content-Type: application/json" "$api/v10/projects/$id/env?$q&upsert=true" \
+            -d '{"key":"API_URL","value":"https://one757-rpg.onrender.com","type":"plain","target":["production","preview"]}' >/dev/null
+          curl -s -X PATCH -H "$auth" -H "Content-Type: application/json" "$api/v9/projects/$id?$q" \
+            -d '{"ssoProtection":null}' >/dev/null
+          curl -s -X POST -H "$auth" -H "Content-Type: application/json" "$api/v10/projects/$id/domains?$q" \
+            -d '{"name":"1757-admin-rpg.vercel.app"}' | jq -c '{name, error}'
+          echo "VERCEL_PROJECT_ID=$id" >> "$GITHUB_ENV"
+
       - name: Deploy admin (apps/admin) to Vercel
-        # Run from the repo root: the Vercel project's Root Directory setting
-        # (code/apps/admin) is applied on top of the current folder.
         working-directory: .
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.ADMIN_VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "ADMIN_VERCEL_PROJECT_ID not set — skipping admin deploy"
-            exit 0
-          fi
-          vercel --prod --yes --token="$VERCEL_TOKEN"
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then echo "skipping admin deploy"; exit 0; fi
+          url=$(vercel --prod --yes --token="$VERCEL_TOKEN")
+          echo "Deployed: $url"
+          vercel promote "$url" --yes --token="$VERCEL_TOKEN" || echo "Already the production deployment."

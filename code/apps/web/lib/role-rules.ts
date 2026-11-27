@@ -21,6 +21,8 @@ export const ROLE_INFO: Readonly<Record<RoleId, { name: string; team: Team; requ
   SAINT_FRASY: { name: "Saint Frais", team: "GREEN", requires: [] },
   DE_BUSSY: { name: "de Bussy", team: "GREEN", requires: [] },
   RAJA_RAMNARAIN: { name: "Raja Ramnarain", team: "GREEN", requires: [] },
+  NAUWE_SINGH_HAZARI: { name: "Nauwe Singh Hazari", team: "GREEN", requires: ["MIR_MADAN"] },
+  BAHADUR_KHAN: { name: "Bahadur Khan", team: "GREEN", requires: ["MIR_MADAN"] },
   MIR_JAFAR: { name: "Mir Jafar", team: "RED", requires: ["MIR_MADAN"] },
   UMICHAD: { name: "Umichad", team: "RED", requires: [] },
   JEAN_LAW: { name: "Jean Law", team: "RED", requires: [] },

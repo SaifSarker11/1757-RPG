@@ -4,7 +4,7 @@
 
 [![CI/CD](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml/badge.svg)](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml)
 
-**Play:** [1757-web-rpg.vercel.app](https://1757-web-rpg.vercel.app) · **API:** [one757-rpg.onrender.com](https://one757-rpg.onrender.com/health)
+**Play:** [1757-web-rpg.vercel.app](https://1757-web-rpg.vercel.app) · **API:** [one757-rpg.onrender.com](https://one757-rpg.onrender.com/health) · **Admin:** [1757-admin-rpg.vercel.app](https://1757-admin-rpg.vercel.app)
 
 ![1757 home page](doc/screenshots/redesign/home.jpg)
 
@@ -14,7 +14,7 @@
     <td><img src="doc/screenshots/redesign/signup.jpg" alt="Sign up"><br><sub><b>Sign up</b>: keep your level, XP and win rate.</sub></td>
   </tr>
   <tr>
-    <td><img src="doc/screenshots/redesign/characters-grid.jpg" alt="Characters"><br><sub><b>Characters</b>: all 18 roles, including Robert Clive.</sub></td>
+    <td><img src="doc/screenshots/redesign/characters-grid.jpg" alt="Characters"><br><sub><b>Characters</b>: all 20 roles, including Robert Clive.</sub></td>
     <td><img src="doc/screenshots/redesign/rules.jpg" alt="Rules"><br><sub><b>Rulebook</b>.</sub></td>
   </tr>
   <tr>
@@ -200,6 +200,7 @@ pnpm dev
 |---|---|
 | Web (the game) | https://1757-web-rpg.vercel.app |
 | API | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
+| Admin dashboard | https://1757-admin-rpg.vercel.app |
 
 To run only the game, use `pnpm dev --filter=web --filter=api`. If a port is stuck on Windows, run `pnpm dev:kill`.
 

@@ -12,7 +12,9 @@ import { MatchesTable } from "./MatchesTable";
 import { TelemetryGrid } from "./TelemetryGrid";
 import { UsersTable } from "./UsersTable";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+// Same-origin: next.config rewrites /api/* to the game server, so the
+// session cookie set on this domain is sent with admin requests.
+const API_URL = "";
 
 export default function HomePage() {
   const router = useRouter();

@@ -45,6 +45,7 @@ pnpm dev
 |---|---|
 | API | https://one757-rpg.onrender.com |
 | Web | https://1757-web-rpg.vercel.app |
+| Admin | https://1757-admin-rpg.vercel.app |
 
 ## Quick Start (Docker)
 

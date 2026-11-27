@@ -50,6 +50,13 @@ export function computeVision(state: GameState, viewer: PlayerState): VisionEntr
             .map((p) => entry(p, { kind: "RED" }))
         : [];
       break;
+    case "NAUWE_SINGH_HAZARI":
+    case "BAHADUR_KHAN":
+      // Vanguard officers under Mir Madan: they know their commander.
+      entries = withRoles(others, ["MIR_MADAN"]).map((p) =>
+        entry(p, { kind: "ROLE", role: "MIR_MADAN" })
+      );
+      break;
     case "MOHON_LAL":
       entries = withRoles(others, ["MIR_MADAN", "GHASHETI_BEGUM"]).map((p) =>
         entry(p, { kind: "SUSPECT" })

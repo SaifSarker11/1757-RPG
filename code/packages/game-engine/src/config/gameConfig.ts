@@ -130,6 +130,8 @@ export const ALL_NAMED_ROLES: readonly NamedRoleId[] = [
   "LUTFUNNESA",
   "MIR_MADAN",
   "MOHON_LAL",
+  "NAUWE_SINGH_HAZARI",
+  "BAHADUR_KHAN",
   "SAINT_FRASY",
   "DE_BUSSY",
   "RAJA_RAMNARAIN",

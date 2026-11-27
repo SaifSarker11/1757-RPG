@@ -26,6 +26,7 @@ function isAllowed(viewer: PlayerState, target: PlayerState, label: VisionLabel,
       if (viewer.role === "NAWAB_SIRAJ") return label.role === "LUTFUNNESA" && (r === "LUTFUNNESA" || r === "TARA_BAI");
       if (viewer.role === "LUTFUNNESA") return label.role === "NAWAB_SIRAJ" && (r === "NAWAB_SIRAJ" || r === "TARA_BAI");
       if (viewer.role === "RAJA_RAMNARAIN") return label.role === "NAWAB_SIRAJ" && r === "NAWAB_SIRAJ";
+      if (viewer.role === "NAUWE_SINGH_HAZARI" || viewer.role === "BAHADUR_KHAN") return label.role === "MIR_MADAN" && r === "MIR_MADAN";
       return false;
     case "RED":
       if (target.team !== "RED" || r === "RAI_DURLABH") return false;
@@ -86,7 +87,15 @@ describe("viewFor leak test", { timeout: 60_000 }, () => {
           const shouldSee = (["ROLE", "RED", "SUSPECT"] as const).some((kind) => {
             const label: VisionLabel =
               kind === "ROLE"
-                ? { kind, role: viewer.role === "NAWAB_SIRAJ" ? "LUTFUNNESA" : "NAWAB_SIRAJ" }
+                ? {
+                    kind,
+                    role:
+                      viewer.role === "NAWAB_SIRAJ"
+                        ? "LUTFUNNESA"
+                        : viewer.role === "NAUWE_SINGH_HAZARI" || viewer.role === "BAHADUR_KHAN"
+                          ? "MIR_MADAN"
+                          : "NAWAB_SIRAJ",
+                  }
                 : { kind };
             return isAllowed(viewer, target, label, state);
           });
