@@ -7,6 +7,7 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
 - **Palette (strict):** cream `#f9d4af`, walnut `#55362a`, red `#e01e1e`, oxblood `#4f0505`, ink `#111111` — blended with soft gradients on every surface.
 - **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
 - **Transitions on every page:** public pages open with the battle painting lifting away; in-game screens (lobby → end of match) use a Prägen Hätlen-style veil with a bracketed `[000]→[100]` counter, gradient hairline and blur-in, plus bracketed section labels.
+- **Battle recap:** every match ends with a full-width report covering the winner and reason, round scores, ministers, all ballots and votes, mission cards, Mir Madan's reveal, Jagat Seth's gamble, and every player's final identity and result.
 
 ## Architecture
 

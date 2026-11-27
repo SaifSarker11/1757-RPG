@@ -45,6 +45,9 @@
     <td width="50%"><img src="doc/screenshots/game/red-win.jpg" alt="<b>East India Company wins</b>: Mir Jafar found Mir Madan."><br><sub><b>East India Company wins</b>: Mir Jafar found Mir Madan.</sub></td>
     <td width="50%"><img src="doc/screenshots/game/green-win.jpg" alt="<b>Nawab's Loyalists win</b> (the Company loses)."><br><sub><b>Nawab's Loyalists win</b> (the Company loses).</sub></td>
   </tr>
+  <tr>
+    <td colspan="2"><img src="doc/screenshots/game/battle-recap.jpg" alt="Full battle recap with round scores, ministers, ballots, mission cards, the Mir Madan reveal, and every player's result."><br><sub><b>Battle recap</b>: the complete match story — rounds, ministers, every ballot, mission cards, the Mir Madan reveal, final identities, and each player's win or loss.</sub></td>
+  </tr>
 </table>
 
 
@@ -93,6 +96,7 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 - **30-second reconnect grace:** drop out and rejoin without losing your seat.
 - **15 named roles plus 2 fillers** (Loyalist and EIC Spy), with role dependencies such as Mir Jafar ⇄ Mir Madan.
 - **Progression:** XP, levels, match history and win rate on your profile.
+- **Full battle recap:** winner and reason, round scores, ministers, every ballot and vote, mission cards, Mir Madan's reveal, Jagat Seth's gamble, and every player's final identity and win/loss result.
 - **Admin telemetry dashboard:** match analytics, player stats and user moderation.
 
 ## Tech stack
