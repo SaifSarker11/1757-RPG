@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Motion } from "@/components/site/Motion";
 
 const display = Cormorant_Garamond({
   variable: "--font-display-serif",
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       suppressHydrationWarning
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-base-100 text-base-content">{children}</body>
+      <body className="min-h-full flex flex-col bg-base-100 text-base-content"><Motion />
+        {children}
+      </body>
     </html>
   );
 }

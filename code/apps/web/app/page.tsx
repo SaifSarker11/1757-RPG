@@ -14,24 +14,24 @@ export default function Landing() {
       <SiteNav />
       <main>
         {/* Hero */}
-        <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+        <section className="hero relative flex min-h-[100svh] items-end overflow-hidden">
           <Image src="/images/hero-plassey.jpg" alt="The Battle of Plassey at dusk" fill priority sizes="100vw" className="ken-burns object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-base-100/60 to-base-100/10" />
           <div className="absolute inset-0 bg-gradient-to-r from-base-100/80 via-transparent to-transparent" />
           <div className="relative mx-auto w-full max-w-6xl px-6 pb-20 pt-40">
-            <p className="eyebrow rise">Bengal · 23 June 1757</p>
-            <h1 className="font-display rise mt-5 max-w-4xl text-6xl font-semibold leading-[0.95] tracking-tight md:text-8xl" style={{ animationDelay: "80ms" }}>
+            <p className="eyebrow rise" style={{ animationDelay: "350ms" }}>Bengal · 23 June 1757</p>
+            <h1 className="font-display rise mt-5 max-w-4xl text-6xl font-semibold leading-[0.95] tracking-tight md:text-8xl" style={{ animationDelay: "450ms" }}>
               The court is full of traitors.
               <span className="text-gilded block italic">Find them before Plassey.</span>
             </h1>
-            <p className="rise mt-7 max-w-xl text-lg opacity-75" style={{ animationDelay: "160ms" }}>
+            <p className="rise mt-7 max-w-xl text-lg opacity-75" style={{ animationDelay: "560ms" }}>
               A real-time social-deduction game for 6–15 players. Seventeen secret roles, five rounds, and one question: who sold Bengal to the Company?
             </p>
-            <div className="rise mt-10 flex flex-wrap gap-3" style={{ animationDelay: "240ms" }}>
+            <div className="rise mt-10 flex flex-wrap gap-3" style={{ animationDelay: "670ms" }}>
               <Link href="/login" className="btn btn-primary btn-lg lamp-glow rounded-full px-8">Gather your court</Link>
               <Link href="/rules" className="btn btn-ghost btn-lg frost rounded-full px-8">Read the rules</Link>
             </div>
-            <dl className="rise mt-16 grid max-w-2xl grid-cols-3 gap-6" style={{ animationDelay: "320ms" }}>
+            <dl className="rise mt-16 grid max-w-2xl grid-cols-3 gap-6" style={{ animationDelay: "780ms" }}>
               {[["6–15", "players"], ["17", "secret roles"], ["5", "rounds"]].map(([v, l]) => (
                 <div key={l} className="hairline border-l pl-4">
                   <dt className="font-display text-4xl font-semibold">{v}</dt>
