@@ -33,7 +33,7 @@ const isProd = process.env.NODE_ENV === "production";
 const allowedOrigins = [
   process.env.WEB_URL,
   process.env.ADMIN_URL,
-  "https://1757-web.vercel.app",
+  "https://1757-web-rpg.vercel.app",
   "https://*-saifsarker11s-projects.vercel.app",
   ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
   ...(isProd ? [] : ["http://localhost:3000", "http://localhost:3002"]),
