@@ -5,7 +5,7 @@ describe("origin policy", () => {
   it("accepts the game's own deployed origins", () => {
     expect(isAllowedOrigin("https://1757-web-rpg.vercel.app")).toBe(true);
     expect(isAllowedOrigin("https://1757-admin-rpg.vercel.app")).toBe(true);
-    expect(isAllowedOrigin("https://1757-web.onrender.com")).toBe(true);
+    expect(isAllowedOrigin("https://one757-web.onrender.com")).toBe(true);
   });
 
   it("accepts every preview URL of the owner's Vercel team", () => {

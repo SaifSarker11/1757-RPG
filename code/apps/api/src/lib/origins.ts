@@ -21,7 +21,7 @@ export const allowedOrigins: string[] = [
   "https://1757-admin-rpg.vercel.app",
   "https://*-saifsarker11s-projects.vercel.app",
   // The game's own Render deployment (the site served from Render itself).
-  "https://1757-web.onrender.com",
+  "https://one757-web.onrender.com",
   ...(process.env.EXTRA_ALLOWED_ORIGINS ?? "").split(","),
   ...(isProd ? [] : ["http://localhost:3000", "http://localhost:3002"]),
 ]

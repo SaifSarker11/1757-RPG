@@ -120,7 +120,7 @@ services: **1757-api** (the game server, `code/Dockerfile`) and **1757-web**
 
 The Render site is a second copy of the same game against the same database, so
 rooms appear on both addresses. Its origin,
-`https://1757-web.onrender.com`, is listed in
+`https://one757-web.onrender.com`, is listed in
 `code/apps/api/src/lib/origins.ts` (covered by `origins.test.ts`) and in
 `code/packages/auth/src/index.ts`; rename the service and you must add the new
 address to both, or to the API's `EXTRA_ALLOWED_ORIGINS`.

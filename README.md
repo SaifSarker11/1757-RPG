@@ -209,7 +209,7 @@ pnpm dev
 | App | Live address |
 |---|---|
 | Web (the game) | https://1757-web-rpg.vercel.app |
-| Web (the game), served from Render | https://1757-web.onrender.com — once the blueprint below is applied |
+| Web (the game), served from Render | https://one757-web.onrender.com |
 | API | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
 | Admin dashboard | https://1757-admin-rpg.vercel.app |
 
@@ -259,7 +259,7 @@ so one apply creates them.
 
 The Render site is a second, independent copy of the same game: it talks to the
 same API and the same database, so a room created on either address shows up on
-both. Sign-in works there because `https://1757-web.onrender.com` is on the
+both. Sign-in works there because `https://one757-web.onrender.com` is on the
 server's trusted-origin list
 ([`code/apps/api/src/lib/origins.ts`](code/apps/api/src/lib/origins.ts));
 renaming the service means adding the new address there, or to the API's

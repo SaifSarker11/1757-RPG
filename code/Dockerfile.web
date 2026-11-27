@@ -49,7 +49,7 @@ COPY . .
 # Where the client opens its live Socket.IO connection, and the canonical URL
 # used for social share previews. Both are inlined at build time.
 ARG NEXT_PUBLIC_WS_URL=https://one757-rpg.onrender.com
-ARG NEXT_PUBLIC_SITE_URL=https://1757-web-rpg.onrender.com
+ARG NEXT_PUBLIC_SITE_URL=https://one757-web.onrender.com
 ARG API_URL=https://one757-rpg.onrender.com
 ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
