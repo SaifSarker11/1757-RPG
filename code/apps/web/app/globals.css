@@ -105,7 +105,7 @@ html.lenis, html.lenis body { height: auto; }
   transform-origin: left center; transform: scaleX(0);
   background: linear-gradient(90deg, #4f0505, #e01e1e 60%, #f9d4af);
 }
-.page-scene { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; overflow: hidden; background: var(--color-base-100); clip-path: inset(0 0 0 0); }
+.page-scene { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 1; overflow: hidden; background: #111111 url(/images/transition-battle.jpg) center/cover; clip-path: inset(0 0 0 0); }
 .page-scene img { width: 100%; height: 100%; object-fit: cover; }
 a, button { transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), transform var(--duration-slow) var(--ease-out); }
 .btn:active { transform: scale(.97); }

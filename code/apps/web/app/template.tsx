@@ -4,78 +4,40 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 
-/** In-game screens (lobby through the end of a match) use the Prägen Hätlen-style veil. */
-const isGame = (p: string) => p.startsWith("/home") || p.startsWith("/room");
-
 /**
- * Re-mounts on every navigation, on every page.
- * - Public pages: the battle painting holds for a beat, lifts away, and the page rises out of a blur.
- * - Game pages: a dark-red veil with a bracketed mono counter [000]→[100], a gradient hairline,
- *   then the veil wipes up and the content resolves from blur.
+ * Re-mounts on every navigation. The Nawab-vs-Clive battle painting covers the screen from the
+ * very first frame (no empty page beforehand), slowly settles, then wipes up to reveal the page.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const game = isGame(pathname);
   const bar = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
-  const veil = useRef<HTMLDivElement>(null);
-  const count = useRef<HTMLSpanElement>(null);
-  const panels = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const tl = gsap.timeline();
-    tl.set(content.current, { autoAlpha: 0 });
-    if (game) {
-      const n = { v: 0 };
-      tl.to(n, {
-        v: 100, duration: 0.9, ease: "power2.inOut",
-        onUpdate: () => { if (count.current) count.current.textContent = String(Math.round(n.v)).padStart(3, "0"); },
-      }, 0)
-        .fromTo(veil.current!.querySelector(".pg-line"), { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "power2.inOut" }, 0)
-        .to(veil.current, { clipPath: "inset(0 0 100% 0)", duration: 0.75, ease: "expo.inOut" }, 0.95)
-        .set(veil.current, { display: "none" })
-        .addLabel("land", 1.1);
-    } else {
-      const [pa, pb] = panels.current?.children ?? [];
-      tl.to(pa!, { clipPath: "inset(0% 0 0 0)", duration: 0.55, ease: "power4.inOut" }, 0)
-        .to(pb!, { clipPath: "inset(0% 0 0 0)", duration: 0.55, ease: "power4.inOut" }, 0.08)
-        .set(scene.current, { autoAlpha: 1 }, 0.6)
-        .to([pb!, pa!], { clipPath: "inset(0 0 100% 0)", duration: 0.7, ease: "power4.inOut", stagger: 0.08 }, 0.65)
-        .fromTo(scene.current!.querySelector("img"), { scale: 1.12 }, { scale: 1, duration: 1.6, ease: "expo.out" }, 0.6)
-        .to(scene.current, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "power4.inOut" }, 1.5)
-        .set(scene.current, { display: "none" })
-        .addLabel("land", 1.9);
-      tl.fromTo(bar.current, { scaleX: 0, autoAlpha: 1 }, { scaleX: 1, duration: 0.7, ease: "expo.inOut" }, "land")
-        .to(bar.current, { autoAlpha: 0, duration: 0.3 }, ">-0.05");
-    }
-    tl.fromTo(
-      content.current,
-      { autoAlpha: 0, y: game ? 0 : 28, scale: game ? 1.02 : 1, filter: "blur(12px)" },
-      { autoAlpha: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.9, ease: "expo.out", clearProps: "all" },
-      "land+=0.1"
-    );
+    tl.fromTo(scene.current!.querySelector("img"), { scale: 1.1 }, { scale: 1, duration: 1.6, ease: "expo.out" }, 0)
+      .to(scene.current, { clipPath: "inset(0 0 100% 0)", duration: 0.85, ease: "power4.inOut" }, 1.0)
+      .set(scene.current, { display: "none" })
+      .fromTo(bar.current, { scaleX: 0, autoAlpha: 1 }, { scaleX: 1, duration: 0.6, ease: "expo.inOut" }, 1.2)
+      .to(bar.current, { autoAlpha: 0, duration: 0.3 }, ">-0.05")
+      .fromTo(
+        content.current,
+        { y: 28, filter: "blur(10px)" },
+        { y: 0, filter: "blur(0px)", duration: 0.9, ease: "expo.out", clearProps: "all" },
+        1.2
+      );
     return () => { tl.kill(); };
-  }, [game]);
+  }, [pathname]);
 
   return (
     <>
-      {game ? (
-        <div ref={veil} aria-hidden className="pg-veil">
-          <div className="flex flex-col items-center gap-3">
-            <span className="font-display text-5xl font-black text-primary">1757</span>
-            <span className="pg-count">[<span ref={count}>000</span>]</span>
-          </div>
-          <div className="pg-line" />
-        </div>
-      ) : (
-        <>
-          <div ref={panels} aria-hidden><div className="page-panel" /><div className="page-panel page-panel--b" /></div>
-          <div ref={scene} aria-hidden className="page-scene"><img src="/images/transition-battle.jpg" alt="" /></div>
-          <div ref={bar} aria-hidden className="page-progress" />
-        </>
-      )}
+      <link rel="preload" as="image" href="/images/transition-battle.jpg" />
+      <div ref={scene} aria-hidden className="page-scene">
+        <img src="/images/transition-battle.jpg" alt="" fetchPriority="high" decoding="sync" />
+      </div>
+      <div ref={bar} aria-hidden className="page-progress" />
       <div ref={content} className="flex flex-1 flex-col">{children}</div>
     </>
   );
