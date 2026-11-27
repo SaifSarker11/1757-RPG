@@ -736,7 +736,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* COLUMN 1: Virtual Council Tent (Circular Game Table) */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className={playerView?.game.phase === "POST_GAME" ? "hidden" : "lg:col-span-8 flex flex-col gap-6"}>
           <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] pixel-card">
             
             <h2 className="text-xl font-historical font-extrabold text-primary uppercase tracking-widest border-b-2 border-dashed pb-2 mb-4 w-full text-center border-base-content/20"><span className="bracket mr-3 align-middle text-xs opacity-60">02</span>
@@ -888,7 +888,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         </div>
 
         {/* COLUMN 2: Phase Actions, Logs & Chat Sidebar (4 Columns) */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
+        <div className={playerView?.game.phase === "POST_GAME" ? "lg:col-span-12 flex flex-col gap-6" : "lg:col-span-4 flex flex-col gap-6"}>
           
           {/* Authoritative Action Panel & Directives */}
           {playerView?.game.phase === "POST_GAME" ? (

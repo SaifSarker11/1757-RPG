@@ -263,3 +263,74 @@ input:-webkit-autofill:focus {
 .pg-plus { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid color-mix(in oklab, #f9d4af 40%, transparent); font-family: var(--font-mono); transition: transform .5s var(--ease-out), background .3s; }
 .pg-plus:hover { transform: rotate(90deg); background: #e01e1e; }
 @media (prefers-reduced-motion: reduce) { .pg-veil { display: none; } }
+
+/* --- Full battle recap --- */
+.battle-recap {
+  background:
+    radial-gradient(80% 30% at 50% 0%, color-mix(in oklab, #e01e1e 18%, transparent), transparent),
+    linear-gradient(155deg, #4f0505 0%, #111111 42%, #2a0a07 100%);
+  border: 1px solid color-mix(in oklab, #f9d4af 20%, transparent);
+  animation: recap-enter .9s var(--ease-out) both;
+}
+.battle-recap__hero {
+  background:
+    linear-gradient(180deg, color-mix(in oklab, #111111 12%, transparent), #111111),
+    radial-gradient(70% 100% at 50% 0%, #4f0505, transparent);
+}
+.battle-recap__hero::after {
+  content: "1757";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: clamp(10rem, 25vw, 22rem);
+  font-weight: 900;
+  line-height: 1;
+  color: color-mix(in oklab, #f9d4af 3.5%, transparent);
+  pointer-events: none;
+}
+.recap-result, .recap-fate, .recap-vote {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, #f9d4af 30%, transparent);
+  color: #f9d4af;
+  background: color-mix(in oklab, #55362a 35%, transparent);
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.recap-result { min-width: 7rem; padding: .55rem .8rem; }
+.recap-result--red, .recap-fate--lost, .recap-vote--reject {
+  border-color: color-mix(in oklab, #e01e1e 55%, transparent);
+  color: #f9d4af;
+  background: color-mix(in oklab, #4f0505 65%, transparent);
+}
+.recap-details::details-content { transition: content-visibility .3s allow-discrete; }
+.recap-details summary { list-style: none; }
+.recap-details summary::-webkit-details-marker { display: none; }
+.recap-details summary::after { content: " +"; color: #e01e1e; }
+.recap-details[open] summary::after { content: " −"; }
+.recap-vote { padding: .3rem .45rem; font-size: .55rem; letter-spacing: .04em; }
+.recap-reveal {
+  min-height: 10rem;
+  padding: 1.25rem;
+  border: 1px solid color-mix(in oklab, #f9d4af 15%, transparent);
+  background: linear-gradient(145deg, color-mix(in oklab, #55362a 25%, transparent), color-mix(in oklab, #111111 85%, transparent));
+}
+.recap-identity {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .8rem;
+  border: 1px solid color-mix(in oklab, #f9d4af 12%, transparent);
+  background: color-mix(in oklab, #111111 55%, transparent);
+}
+.recap-fate { padding: .35rem .5rem; }
+@keyframes recap-enter {
+  from { opacity: 0; transform: translateY(32px); filter: blur(10px); clip-path: inset(0 0 20% 0); }
+  to { opacity: 1; transform: none; filter: none; clip-path: inset(0); }
+}
+@media (prefers-reduced-motion: reduce) { .battle-recap { animation: none; } }
