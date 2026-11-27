@@ -18,15 +18,15 @@ export default function Landing() {
           <p className="eyebrow rise text-center" style={{ animationDelay: "150ms" }}>
             Bengal, 1757 · A kingdom is lost by the hands that betray it
           </p>
-          <h1 aria-label="Plassey" className="font-display mt-[8vw] px-3 text-center font-black uppercase leading-[0.8] tracking-[-0.03em] text-[19.5vw]">
+          <h1 aria-label="1757" className="font-display mt-[8vw] px-3 text-center font-black uppercase leading-[0.8] tracking-[-0.03em] text-[34vw]">
             <span className="display-tall letter-mask justify-center" aria-hidden="true">
-              {"PLASSEY".split("").map((c, i) => (
+              {"1757".split("").map((c, i) => (
                 <span key={i} className="letter" style={{ ["--i" as string]: i }}>{c}</span>
               ))}
             </span>
           </h1>
-          <div className="relative z-10 mx-auto -mt-[14vw] w-[min(88vw,780px)]" data-parallax>
-            <Image src="/images/hero-nawab.webp" alt="Nawab Siraj-ud-Daulah crowned in gold, ringed by swords, cannon and playing cards" width={900} height={900} priority className="art-in h-auto w-full" />
+          <div className="relative z-10 mx-auto -mt-[22vw] w-[min(88vw,780px)]" data-parallax>
+            <Image src="/images/hero-duel.webp" alt="Nawab Siraj-ud-Daulah and Robert Clive crossing swords amid cannon smoke" width={900} height={900} priority className="art-in h-auto w-full" />
           </div>
           <div className="relative z-20 mx-auto -mt-24 max-w-3xl px-6 pb-24 text-center">
             <div className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10 bg-gradient-to-t from-base-100 via-base-100/95 to-transparent" />

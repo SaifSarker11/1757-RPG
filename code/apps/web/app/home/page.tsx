@@ -266,7 +266,7 @@ export default function HomePage() {
           <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col gap-6 flex-1 justify-between pixel-card">
             
             <div>
-              <h2 className="text-2xl font-historical font-extrabold uppercase tracking-wide border-b-4 border-double pb-2 mb-4 text-primary">Lobby Secretary</h2>
+              <h2 className="text-2xl font-historical font-extrabold uppercase tracking-wide border-b-4 border-double pb-2 mb-4 text-primary"><span className="bracket mr-3 align-middle text-xs opacity-60">01</span>Lobby Secretary</h2>
               <p className="text-sm font-sans leading-relaxed text-base-content/85">
                 Welcome, commander. Choose to initialize a new secretariat chamber or enter an active council session using the room registry code below.
               </p>

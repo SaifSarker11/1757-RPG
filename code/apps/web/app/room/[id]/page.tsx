@@ -617,7 +617,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       {phaseTransitionText && (
         <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[100] animate-fade-in pointer-events-none">
           <div className="w-full bg-primary py-8 text-center border-y-8 border-double border-primary-content glow-primary transform scale-y-100 transition-all duration-300">
-            <h2 className="text-3xl md:text-5xl font-historical font-extrabold tracking-widest text-primary-content uppercase font-pixel drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+            <h2 className="text-3xl md:text-5xl font-historical font-extrabold tracking-widest text-primary-content uppercase font-pixel drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]"><span className="bracket mr-3 align-middle text-xs opacity-60">01</span>
               {phaseTransitionText}
             </h2>
           </div>
@@ -739,7 +739,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         <div className="lg:col-span-8 flex flex-col gap-6">
           <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] pixel-card">
             
-            <h2 className="text-xl font-historical font-extrabold text-primary uppercase tracking-widest border-b-2 border-dashed pb-2 mb-4 w-full text-center border-base-content/20">
+            <h2 className="text-xl font-historical font-extrabold text-primary uppercase tracking-widest border-b-2 border-dashed pb-2 mb-4 w-full text-center border-base-content/20"><span className="bracket mr-3 align-middle text-xs opacity-60">02</span>
               The Nawab's Secretariat Tent
             </h2>
 

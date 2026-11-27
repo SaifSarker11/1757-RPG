@@ -78,6 +78,12 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 - **Mir Jafar's steal:** if Green won on rounds, Mir Jafar gets one guess. Naming **Mir Madan** correctly steals the win for Red.
 - **Jagat Seth's gamble:** if Jagat Seth is in the game, he then names one player: **Mir Jafar** if Green is winning, **Rai Durlabh** if Red is winning. A correct guess wins the whole game for Jagat Seth alone.
 
+## Look and feel
+
+- **Palette (strict):** cream `#f9d4af`, walnut `#55362a`, red `#e01e1e`, oxblood `#4f0505`, ink `#111111` — blended with soft gradients on every surface.
+- **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
+- **Transitions on every page:** public pages open with the battle painting lifting away; in-game screens (lobby → end of match) use a Prägen Hätlen-style veil with a bracketed `[000]→[100]` counter, gradient hairline and blur-in, plus bracketed section labels.
+
 ## Features
 
 - **Play as a guest or with an account:** email/password or one-click anonymous guest, via Better Auth.
