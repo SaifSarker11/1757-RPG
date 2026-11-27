@@ -77,7 +77,11 @@ jobs:
             echo "Vercel secrets not set: use Vercel's Git integration instead. Skipping."
             exit 0
           fi
-          vercel --prod --yes --token="$VERCEL_TOKEN"
+          url=$(vercel --prod --yes --token="$VERCEL_TOKEN")
+          echo "Deployed $url"
+          # Promote explicitly: after an Instant Rollback, Vercel keeps the production domain
+          # pinned to the old deployment and new --prod builds no longer take it over.
+          vercel promote "$url" --yes --token="$VERCEL_TOKEN"
 
   deploy-admin:
     needs: ci
