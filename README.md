@@ -23,26 +23,6 @@
   </tr>
 </table>
 
-### In the game
-
-<table>
-  <tr>
-    <td width="50%"><img src="doc/screenshots/01-lobby-and-profile.png" alt="Lobby and profile"><br><sub><b>Lobby and profile:</b> create or join by code, pick Standard Council or Royal Decree, track level, XP and win rate.</sub></td>
-    <td width="50%"><img src="doc/screenshots/02-royal-decree-custom-rules.png" alt="Royal Decree custom rules"><br><sub><b>Royal Decree:</b> per-round discussion timers, allowed characters, host-assigned roles.</sub></td>
-  </tr>
-  <tr>
-    <td><img src="doc/screenshots/03-game-table.png" alt="Game table"><br><sub><b>The Nawab's Secretariat Tent:</b> six players seated, the leader's crown and online dots.</sub></td>
-    <td><img src="doc/screenshots/04-round-progress.png" alt="Round progress"><br><sub><b>Room header and round track:</b> room code, SFX/music/theme, rounds R1–R5 and the fail track.</sub></td>
-  </tr>
-  <tr>
-    <td><img src="doc/screenshots/05-ballot-history.png" alt="Ballot history"><br><sub><b>The Chronicle:</b> every ballot, with the leader, chosen ministers and each YEAH/NAY vote.</sub></td>
-    <td><img src="doc/screenshots/06-voice-chat.png" alt="Voice chat"><br><sub><b>Voice chat:</b> peer-to-peer audio with participants, mute and leave.</sub></td>
-  </tr>
-  <tr>
-    <td><img src="doc/screenshots/07-post-game-results.png" alt="Post-game results"><br><sub><b>Post-game:</b> the winning side, the reason, every role revealed and each player's result.</sub></td>
-    <td></td>
-  </tr>
-</table>
 
 ---
 
