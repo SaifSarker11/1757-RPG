@@ -4,7 +4,7 @@
 
 [![CI/CD](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml/badge.svg)](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml)
 
-**Play:** [1757-web-git-main-saifsarker11s-projects.vercel.app](https://1757-web-git-main-saifsarker11s-projects.vercel.app) · **API:** [one757-rpg.onrender.com](https://one757-rpg.onrender.com/health)
+**Play:** [1757-qhzp8mftw-saifsarker11s-projects.vercel.app](https://1757-qhzp8mftw-saifsarker11s-projects.vercel.app) · **API:** [one757-rpg.onrender.com](https://one757-rpg.onrender.com/health)
 
 ![1757 home page](doc/screenshots/redesign/home.jpg)
 
@@ -174,7 +174,7 @@ Every app reads the one `code/.env` file. The variables are:
 | `DATABASE_URL` | Neon **pooled** connection (host contains `-pooler`) |
 | `DIRECT_URL` | Neon **direct** connection, used by the Prisma CLI |
 | `BETTER_AUTH_SECRET` | session signing (`npx @better-auth/cli secret`) |
-| `BETTER_AUTH_URL`, `WEB_URL`, `ADMIN_URL`, `API_URL` | app origins (defaults in `.env.example` are for local; production uses `https://one757-rpg.onrender.com` and `https://1757-web-git-main-saifsarker11s-projects.vercel.app`) |
+| `BETTER_AUTH_URL`, `WEB_URL`, `ADMIN_URL`, `API_URL` | app origins (defaults in `.env.example` are for local; production uses `https://one757-rpg.onrender.com` and `https://1757-qhzp8mftw-saifsarker11s-projects.vercel.app`) |
 | `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL`, `EXPO_PUBLIC_API_URL` | where clients find the API |
 | `REDIS_URL` | optional: without it, live games are kept in memory |
 | `PORT`, `NODE_ENV`, `COOKIE_DOMAIN` | optional runtime settings |
@@ -194,7 +194,7 @@ pnpm dev
 
 | App | Local | Live |
 |---|---|---|
-| Web (the game) | http://localhost:3000 | https://1757-web-git-main-saifsarker11s-projects.vercel.app |
+| Web (the game) | http://localhost:3000 | https://1757-qhzp8mftw-saifsarker11s-projects.vercel.app |
 | API | http://localhost:3001 (health: `/health`) | https://one757-rpg.onrender.com (health: [`/health`](https://one757-rpg.onrender.com/health)) |
 | Admin | http://localhost:3002 | not deployed yet |
 | Mobile (Expo / Metro) | http://localhost:8081 | — |
