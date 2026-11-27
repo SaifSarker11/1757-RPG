@@ -42,6 +42,10 @@ export function Motion() {
     if (pathname.startsWith("/room") || pathname.startsWith("/home")) return;
 
     const ctx = gsap.context(() => {
+      // Hero art drifts up through the title as you scroll, like the Tabletales opener.
+      gsap.utils.toArray<HTMLElement>("[data-parallax]").forEach((el) => {
+        gsap.to(el, { yPercent: -18, ease: "none", scrollTrigger: { trigger: el, start: "top 60%", end: "bottom top", scrub: true } });
+      });
       const scoped = (sel: string) => gsap.utils.toArray<HTMLElement>(`main ${sel}`);
       const onView = (el: Element) => ({ trigger: el, start: "top 88%", once: true });
 

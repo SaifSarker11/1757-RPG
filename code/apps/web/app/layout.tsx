@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Geist_Mono, Hanken_Grotesk } from "next/font/google";
+import { Bodoni_Moda, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Motion } from "@/components/site/Motion";
 
-const display = Cormorant_Garamond({
+const display = Bodoni_Moda({
   variable: "--font-display-serif",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["500", "600", "700", "900"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-export const viewport: Viewport = { themeColor: "#14161f", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#00214a", colorScheme: "dark" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
