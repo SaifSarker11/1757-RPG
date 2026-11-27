@@ -36,17 +36,17 @@ export default function SignupPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6 rounded-xl border border-zinc-200 p-8 shadow-sm">
+      <div className="w-full max-w-md space-y-6 rounded-xl border border-gold/40 bg-surface p-8 shadow-sm">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">Admin sign up</h1>
-          <p className="text-sm text-zinc-500">Create an admin account.</p>
+          <p className="text-sm text-foreground/60">Create an admin account.</p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <label className="block space-y-1 text-sm">
             <span>Name</span>
             <input
-              className="w-full rounded-md border border-zinc-300 px-3 py-2"
+              className="w-full rounded-md border border-cream/35 px-3 py-2"
               value={name}
               onChange={(event) => setName(event.target.value)}
               required
@@ -56,7 +56,7 @@ export default function SignupPage() {
           <label className="block space-y-1 text-sm">
             <span>Email</span>
             <input
-              className="w-full rounded-md border border-zinc-300 px-3 py-2"
+              className="w-full rounded-md border border-cream/35 px-3 py-2"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -67,7 +67,7 @@ export default function SignupPage() {
           <label className="block space-y-1 text-sm">
             <span>Password</span>
             <input
-              className="w-full rounded-md border border-zinc-300 px-3 py-2"
+              className="w-full rounded-md border border-cream/35 px-3 py-2"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -76,10 +76,10 @@ export default function SignupPage() {
             />
           </label>
 
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? <p className="text-sm text-gold">{error}</p> : null}
 
           <button
-            className="w-full rounded-md bg-black px-4 py-2 text-white disabled:opacity-50"
+            className="w-full rounded-md bg-gold px-4 py-2 text-royal disabled:opacity-50"
             type="submit"
             disabled={loading}
           >
@@ -87,9 +87,9 @@ export default function SignupPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-zinc-500">
+        <p className="text-center text-sm text-foreground/60">
           Already have an account?{" "}
-          <a className="font-medium text-black underline" href="/login">
+          <a className="font-medium text-gold underline" href="/login">
             Sign in
           </a>
         </p>

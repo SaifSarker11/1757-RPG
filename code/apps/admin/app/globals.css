@@ -1,19 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #4169E1;
+  --foreground: #F2E7DE;
+  --gold: #D4B249;
+  --surface: color-mix(in oklab, #4169E1 88%, #D4B249);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-royal: #4169E1;
+  --color-gold: #D4B249;
+  --color-cream: #F2E7DE;
+  --color-surface: var(--surface);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(90% 60% at 100% 0%, color-mix(in oklab, #D4B249 20%, transparent), transparent),
+    linear-gradient(145deg, #4169E1, color-mix(in oklab, #4169E1 92%, #F2E7DE));
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: #D4B249;
+  color: #4169E1;
+}
+
+button, a, input {
+  transition: color .2s ease, background-color .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+button:active {
+  transform: translateY(1px);
 }

@@ -11,7 +11,7 @@ const API_URL =
     ? ""
     : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
 
-const THEMES = ["plassey", "retro", "dark", "light", "cupcake", "synthwave", "forest"];
+const THEMES = ["plassey"];
 
 export default function HomePage() {
   const router = useRouter();
@@ -36,9 +36,9 @@ export default function HomePage() {
   const [soundEnabled, setSoundEnabled] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("daisyui-theme") || "plassey";
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    localStorage.setItem("daisyui-theme", "plassey");
+    setCurrentTheme("plassey");
+    document.documentElement.setAttribute("data-theme", "plassey");
     setSoundEnabled(gameAudio.isEnabled());
   }, []);
 
@@ -201,9 +201,9 @@ export default function HomePage() {
 
   if (isPending || !session) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-stone-900 text-amber-500 font-retro">
+      <main className="flex min-h-screen items-center justify-center bg-base-100 text-primary font-retro">
         <div className="text-center font-sans">
-          <span className="loading loading-spinner loading-lg text-amber-500 mb-4"></span>
+          <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
           <p className="text-2xl font-bold tracking-widest font-retro">UNROLLING OLD SCROLLS...</p>
         </div>
       </main>
@@ -263,7 +263,7 @@ export default function HomePage() {
         
         {/* LEFT COLUMN: Controls Dashboard (7 Columns) */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col gap-6 flex-1 justify-between pixel-card">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_var(--color-ink)] p-6 flex flex-col gap-6 flex-1 justify-between pixel-card">
             
             <div>
               <h2 className="text-2xl font-historical font-extrabold uppercase tracking-wide border-b-4 border-double pb-2 mb-4 text-primary"><span className="bracket mr-3 align-middle text-xs opacity-60">01</span>Lobby Secretary</h2>
@@ -379,7 +379,7 @@ export default function HomePage() {
 
         {/* RIGHT COLUMN: Profile Settings & Stats (5 Columns) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-6 flex flex-col justify-between pixel-card">
+          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_var(--color-ink)] p-6 flex flex-col justify-between pixel-card">
             <div>
               <h3 className="text-xl font-historical font-bold text-primary border-b-4 border-double pb-2 mb-4 uppercase">Profile Settings</h3>
               <p className="text-xs text-base-content/70 mb-4 font-sans">

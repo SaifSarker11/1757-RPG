@@ -5,34 +5,34 @@
 }
 
 /* ---------------------------------------------------------------
-   "Plassey" — the 1757 house theme. Ink-night court, saffron
-   lamplight, emerald loyalists, crimson conspirators, banker gold.
+   "Plassey" — the 1757 house theme. Strict regal blue, antique
+   gold and soft cream; every shade is blended from these three.
    ---------------------------------------------------------------- */
 @plugin "daisyui/theme" {
   name: "plassey";
   default: true;
   prefersdark: true;
   color-scheme: dark;
-  --color-base-100: #111111;
-  --color-base-200: #4f0505;
-  --color-base-300: #55362a;
-  --color-base-content: #f9d4af;
-  --color-primary: #f9d4af;
-  --color-primary-content: #111111;
-  --color-secondary: #55362a;
-  --color-secondary-content: #f9d4af;
-  --color-accent: #e01e1e;
-  --color-accent-content: #f9d4af;
-  --color-neutral: #111111;
-  --color-neutral-content: #f9d4af;
-  --color-info: oklch(0.7 0.1 230);
-  --color-info-content: oklch(0.15 0.02 230);
-  --color-success: oklch(0.66 0.14 155);
-  --color-success-content: oklch(0.15 0.03 155);
-  --color-warning: #f9d4af;
-  --color-warning-content: #111111;
-  --color-error: #e01e1e;
-  --color-error-content: #f9d4af;
+  --color-base-100: #4169E1;
+  --color-base-200: #4169E1;
+  --color-base-300: #D4B249;
+  --color-base-content: #F2E7DE;
+  --color-primary: #D4B249;
+  --color-primary-content: #4169E1;
+  --color-secondary: #F2E7DE;
+  --color-secondary-content: #4169E1;
+  --color-accent: #D4B249;
+  --color-accent-content: #4169E1;
+  --color-neutral: #4169E1;
+  --color-neutral-content: #F2E7DE;
+  --color-info: #4169E1;
+  --color-info-content: #F2E7DE;
+  --color-success: #D4B249;
+  --color-success-content: #4169E1;
+  --color-warning: #D4B249;
+  --color-warning-content: #4169E1;
+  --color-error: #F2E7DE;
+  --color-error-content: #4169E1;
   --radius-selector: 1rem;
   --radius-field: 0.75rem;
   --radius-box: 1.25rem;
@@ -45,19 +45,19 @@
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display-serif), Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --color-loyal: oklch(0.66 0.14 155);
-  --color-traitor: #e01e1e;
-  --color-banker: #f9d4af;
-  --color-ink: #111111;
-  --color-parchment: #f9d4af;
+  --color-loyal: #D4B249;
+  --color-traitor: #F2E7DE;
+  --color-banker: #D4B249;
+  --color-ink: #4169E1;
+  --color-parchment: #F2E7DE;
 }
 
 body {
   font-family: var(--font-sans);
   background:
-    radial-gradient(120% 70% at 50% -10%, #4f0505 0%, transparent 60%),
-    radial-gradient(80% 60% at 100% 100%, color-mix(in oklab, #55362a 70%, transparent) 0%, transparent 70%),
-    linear-gradient(180deg, #111111 0%, #1a0d0b 50%, #111111 100%);
+    radial-gradient(120% 70% at 50% -10%, color-mix(in oklab, #D4B249 24%, transparent) 0%, transparent 62%),
+    radial-gradient(80% 60% at 100% 100%, color-mix(in oklab, #F2E7DE 12%, transparent) 0%, transparent 72%),
+    linear-gradient(180deg, #4169E1 0%, color-mix(in oklab, #4169E1 94%, #D4B249) 50%, #4169E1 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
@@ -74,7 +74,7 @@ body {
 }
 .hairline { border-color: color-mix(in oklab, var(--color-base-content) 10%, transparent); }
 .text-gilded {
-  background-image: linear-gradient(100deg, #f9d4af, #f9d4af 40%, #e01e1e 85%, #4f0505);
+  background-image: linear-gradient(100deg, #F2E7DE, #D4B249 48%, #F2E7DE 82%, #D4B249);
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent;
@@ -103,7 +103,7 @@ html.lenis, html.lenis body { height: auto; }
 .page-progress {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 2px; pointer-events: none;
   transform-origin: left center; transform: scaleX(0);
-  background: linear-gradient(90deg, #4f0505, #e01e1e 60%, #f9d4af);
+  background: linear-gradient(90deg, #4169E1, #D4B249 60%, #F2E7DE);
 }
 .page-scene { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 0; overflow: hidden; background: var(--color-base-100); clip-path: inset(0 0 0 0); }
 .page-scene img { width: 100%; height: 100%; object-fit: cover; }
@@ -140,8 +140,8 @@ a, button { transition: color var(--duration-fast) var(--ease-out), background-c
    as refined hairline surfaces with soft depth. */
 .pixel-border { border: 1px solid color-mix(in oklab, currentColor 35%, transparent); }
 .pixel-border-sm { border: 1px solid color-mix(in oklab, currentColor 25%, transparent); }
-.pixel-shadow { box-shadow: 0 10px 30px -14px color-mix(in oklab, black 70%, transparent); }
-.pixel-shadow-sm { box-shadow: 0 4px 14px -8px color-mix(in oklab, black 60%, transparent); }
+.pixel-shadow { box-shadow: 0 10px 30px -14px color-mix(in oklab, #4169E1 70%, transparent); }
+.pixel-shadow-sm { box-shadow: 0 4px 14px -8px color-mix(in oklab, #4169E1 60%, transparent); }
 .pixel-btn {
   border: 1px solid color-mix(in oklab, currentColor 30%, transparent);
   border-radius: 999px !important;
@@ -182,7 +182,7 @@ a, button { transition: color var(--duration-fast) var(--ease-out), background-c
   display: block;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.06) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background: linear-gradient(transparent 50%, color-mix(in oklab, #4169E1 7%, transparent) 50%);
   z-index: 10;
   background-size: 100% 4px, 6px 100%;
   pointer-events: none;
@@ -245,37 +245,37 @@ input:-webkit-autofill:focus {
 .burger:hover span:last-child { width: 1.25rem; }
 @media (prefers-reduced-motion: reduce) { .letter-mask .letter, .art-in { animation: none; } .menu-panel, .menu-panel .menu-link { transition: none; } }
 
-/* Smooth palette gradients: #f9d4af · #55362a · red · #4f0505 · #111111 */
-.bg-base-200 { background-image: linear-gradient(160deg, #4f0505 0%, #2a0a07 55%, #111111 100%); }
-.bg-base-300 { background-image: linear-gradient(160deg, #55362a 0%, #3a1f17 60%, #111111 100%); }
-.btn-primary { background-image: linear-gradient(135deg, #f9d4af 0%, #f9d4af 55%, #e9b893 100%); border: 0; box-shadow: 0 10px 30px -12px #e01e1e; }
-.btn-primary:hover { background-image: linear-gradient(135deg, #f9d4af, #e01e1e); color: #111111; }
-.text-red-glow { color: #e01e1e; text-shadow: 0 0 24px color-mix(in oklab, #e01e1e 50%, transparent); }
+/* Smooth gradients blended exclusively from the three house colours. */
+.bg-base-200 { background-image: linear-gradient(160deg, color-mix(in oklab, #4169E1 90%, #D4B249) 0%, #4169E1 58%, color-mix(in oklab, #4169E1 94%, #F2E7DE) 100%); }
+.bg-base-300 { background-image: linear-gradient(160deg, color-mix(in oklab, #4169E1 86%, #D4B249) 0%, #4169E1 100%); }
+.btn-primary { background-image: linear-gradient(135deg, #D4B249 0%, #D4B249 48%, #F2E7DE 100%); border: 0; box-shadow: 0 10px 30px -12px color-mix(in oklab, #D4B249 70%, transparent); }
+.btn-primary:hover { background-image: linear-gradient(135deg, #F2E7DE, #D4B249); color: #4169E1; }
+.text-red-glow { color: #D4B249; text-shadow: 0 0 24px color-mix(in oklab, #D4B249 50%, transparent); }
 
 /* --- Prägen Hätlen-style in-game transitions --- */
 .pg-veil { position: fixed; inset: 0; z-index: 95; pointer-events: none; display: grid; place-items: center;
-  background: radial-gradient(90% 70% at 50% 40%, #4f0505 0%, #111111 75%); clip-path: inset(0 0 0 0); }
-.pg-veil .pg-count { font-family: var(--font-mono); letter-spacing: .3em; font-size: .8rem; color: #f9d4af; }
-.pg-veil .pg-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; transform-origin: left; background: linear-gradient(90deg, #4f0505, #e01e1e, #f9d4af); }
+  background: radial-gradient(90% 70% at 50% 40%, color-mix(in oklab, #4169E1 78%, #D4B249) 0%, #4169E1 75%); clip-path: inset(0 0 0 0); }
+.pg-veil .pg-count { font-family: var(--font-mono); letter-spacing: .3em; font-size: .8rem; color: #F2E7DE; }
+.pg-veil .pg-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; transform-origin: left; background: linear-gradient(90deg, #4169E1, #D4B249, #F2E7DE); }
 .bracket { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; }
 .bracket::before { content: "["; opacity: .5; margin-right: .35em; }
 .bracket::after { content: "]"; opacity: .5; margin-left: .35em; }
-.pg-plus { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid color-mix(in oklab, #f9d4af 40%, transparent); font-family: var(--font-mono); transition: transform .5s var(--ease-out), background .3s; }
-.pg-plus:hover { transform: rotate(90deg); background: #e01e1e; }
+.pg-plus { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid color-mix(in oklab, #F2E7DE 40%, transparent); font-family: var(--font-mono); transition: transform .5s var(--ease-out), background .3s; }
+.pg-plus:hover { transform: rotate(90deg); background: #D4B249; color: #4169E1; }
 @media (prefers-reduced-motion: reduce) { .pg-veil { display: none; } }
 
 /* --- Full battle recap --- */
 .battle-recap {
   background:
-    radial-gradient(80% 30% at 50% 0%, color-mix(in oklab, #e01e1e 18%, transparent), transparent),
-    linear-gradient(155deg, #4f0505 0%, #111111 42%, #2a0a07 100%);
-  border: 1px solid color-mix(in oklab, #f9d4af 20%, transparent);
+    radial-gradient(80% 30% at 50% 0%, color-mix(in oklab, #D4B249 20%, transparent), transparent),
+    linear-gradient(155deg, color-mix(in oklab, #4169E1 88%, #D4B249) 0%, #4169E1 48%, color-mix(in oklab, #4169E1 92%, #F2E7DE) 100%);
+  border: 1px solid color-mix(in oklab, #F2E7DE 24%, transparent);
   animation: recap-enter .9s var(--ease-out) both;
 }
 .battle-recap__hero {
   background:
-    linear-gradient(180deg, color-mix(in oklab, #111111 12%, transparent), #111111),
-    radial-gradient(70% 100% at 50% 0%, #4f0505, transparent);
+    linear-gradient(180deg, color-mix(in oklab, #4169E1 12%, transparent), #4169E1),
+    radial-gradient(70% 100% at 50% 0%, color-mix(in oklab, #D4B249 45%, transparent), transparent);
 }
 .battle-recap__hero::after {
   content: "1757";
@@ -286,16 +286,16 @@ input:-webkit-autofill:focus {
   font-size: clamp(10rem, 25vw, 22rem);
   font-weight: 900;
   line-height: 1;
-  color: color-mix(in oklab, #f9d4af 3.5%, transparent);
+  color: color-mix(in oklab, #F2E7DE 5%, transparent);
   pointer-events: none;
 }
 .recap-result, .recap-fate, .recap-vote {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in oklab, #f9d4af 30%, transparent);
-  color: #f9d4af;
-  background: color-mix(in oklab, #55362a 35%, transparent);
+  border: 1px solid color-mix(in oklab, #F2E7DE 34%, transparent);
+  color: #F2E7DE;
+  background: color-mix(in oklab, #4169E1 72%, #D4B249);
   font-family: var(--font-mono);
   font-size: .6rem;
   letter-spacing: .12em;
@@ -304,29 +304,29 @@ input:-webkit-autofill:focus {
 }
 .recap-result { min-width: 7rem; padding: .55rem .8rem; }
 .recap-result--red, .recap-fate--lost, .recap-vote--reject {
-  border-color: color-mix(in oklab, #e01e1e 55%, transparent);
-  color: #f9d4af;
-  background: color-mix(in oklab, #4f0505 65%, transparent);
+  border-color: color-mix(in oklab, #D4B249 65%, transparent);
+  color: #4169E1;
+  background: #D4B249;
 }
 .recap-details::details-content { transition: content-visibility .3s allow-discrete; }
 .recap-details summary { list-style: none; }
 .recap-details summary::-webkit-details-marker { display: none; }
-.recap-details summary::after { content: " +"; color: #e01e1e; }
+.recap-details summary::after { content: " +"; color: #D4B249; }
 .recap-details[open] summary::after { content: " −"; }
 .recap-vote { padding: .3rem .45rem; font-size: .55rem; letter-spacing: .04em; }
 .recap-reveal {
   min-height: 10rem;
   padding: 1.25rem;
-  border: 1px solid color-mix(in oklab, #f9d4af 15%, transparent);
-  background: linear-gradient(145deg, color-mix(in oklab, #55362a 25%, transparent), color-mix(in oklab, #111111 85%, transparent));
+  border: 1px solid color-mix(in oklab, #F2E7DE 20%, transparent);
+  background: linear-gradient(145deg, color-mix(in oklab, #4169E1 75%, #D4B249), #4169E1);
 }
 .recap-identity {
   display: flex;
   align-items: center;
   gap: .8rem;
   padding: .8rem;
-  border: 1px solid color-mix(in oklab, #f9d4af 12%, transparent);
-  background: color-mix(in oklab, #111111 55%, transparent);
+  border: 1px solid color-mix(in oklab, #F2E7DE 18%, transparent);
+  background: color-mix(in oklab, #4169E1 74%, transparent);
 }
 .recap-fate { padding: .35rem .5rem; }
 @keyframes recap-enter {

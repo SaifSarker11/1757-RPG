@@ -27,7 +27,7 @@ export default function InfoModal({ open, onClose, roles }: InfoModalProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[200] pixel-modal">
+    <div className="fixed inset-0 bg-ink/80 flex items-center justify-center z-[200] pixel-modal">
       <div className="bg-base-200 border-4 border-primary p-6 max-w-lg w-full pixel-card">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-historical font-extrabold text-primary uppercase tracking-wider">

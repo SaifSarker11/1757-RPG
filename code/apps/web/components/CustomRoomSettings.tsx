@@ -16,9 +16,9 @@ import {
 
 const FILLERS: RoleId[] = ["LOYALIST", "EIC_SPY"];
 const TEAM_STYLE: Record<Team, string> = {
-  GREEN: "text-emerald-500",
-  RED: "text-rose-500",
-  GOLD: "text-amber-500",
+  GREEN: "text-loyal",
+  RED: "text-traitor",
+  GOLD: "text-banker",
 };
 
 export interface CustomRoomData {
@@ -175,7 +175,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
 
   if (!isHost) {
     return (
-      <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-4 pixel-card font-pixel text-[10px] space-y-3">
+      <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_var(--color-ink)] p-4 pixel-card font-pixel text-[10px] space-y-3">
         <h3 className="text-secondary uppercase border-b-2 border-dashed pb-1.5 border-base-content/20">
           Royal Decree · Custom Rules
         </h3>
@@ -208,7 +208,7 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
   }
 
   return (
-    <div className="bg-base-100 border-4 border-secondary/50 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.15)] p-5 pixel-card space-y-5">
+    <div className="bg-base-100 border-4 border-secondary/50 shadow-[6px_6px_0px_0px_var(--color-ink)] p-5 pixel-card space-y-5">
       <div className="flex items-center justify-between border-b-4 border-double pb-2">
         <h3 className="text-lg font-historical font-extrabold uppercase text-primary">Royal Decree</h3>
         <span className="badge badge-secondary rounded-none font-pixel text-[9px]">CUSTOM RULES</span>

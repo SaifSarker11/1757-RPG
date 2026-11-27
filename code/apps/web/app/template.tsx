@@ -10,7 +10,7 @@ const isGame = (p: string) => p.startsWith("/home") || p.startsWith("/room");
 /**
  * Re-mounts on every navigation, on every page.
  * - Public pages: the battle painting holds for a beat, lifts away, and the page rises out of a blur.
- * - Game pages: a dark-red veil with a bracketed mono counter [000]→[100], a gradient hairline,
+ * - Game pages: a regal-blue veil with a bracketed mono counter [000]→[100], a gradient hairline,
  *   then the veil wipes up and the content resolves from blur.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
