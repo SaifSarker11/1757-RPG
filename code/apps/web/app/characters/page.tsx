@@ -15,7 +15,7 @@ export default function CharactersPage() {
       <SiteNav />
       <main className="mx-auto w-full max-w-6xl px-6 pt-36">
         <p className="eyebrow">The court of Murshidabad</p>
-        <h1 className="font-display mt-4 max-w-3xl text-6xl font-semibold leading-tight md:text-7xl">Seventeen roles. <span className="italic text-gilded">Fifteen seats.</span></h1>
+        <h1 className="font-display mt-4 max-w-3xl text-6xl font-semibold leading-tight md:text-7xl">Eighteen roles. <span className="italic text-gilded">Fifteen seats.</span></h1>
         <p className="mt-6 max-w-xl opacity-70">Some roles bring others with them — Mir Jafar never sits without Mir Madan. In Royal Decree mode the host picks exactly who is dealt in.</p>
         {(["GREEN", "RED", "GOLD"] as Faction[]).map((f) => (
           <section key={f} className="mt-20">

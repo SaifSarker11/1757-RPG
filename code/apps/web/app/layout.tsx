@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: { default: "1757 — The Battle of Plassey", template: "%s · 1757" },
   description:
-    "A real-time social-deduction game set at the Battle of Plassey. 6–15 players, 17 secret roles, five rounds of trust and betrayal.",
+    "A real-time social-deduction game set at the Battle of Plassey. 6–15 players, 18 secret roles, five rounds of trust and betrayal.",
   openGraph: {
     title: "1757 — The Battle of Plassey",
     description: "Real-time social deduction in the Nawab's court. Who will betray Bengal?",

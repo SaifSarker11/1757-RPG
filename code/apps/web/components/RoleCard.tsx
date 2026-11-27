@@ -1,5 +1,7 @@
 import React from "react";
+import Image from "next/image";
 import type { PlayerView, VisionLabel } from "@/lib/game-types";
+import { SIDE_LABEL, courtEntry } from "@/components/RoleReveal";
 
 /** "YAR_LUTUF" → "Yar Lutuf". */
 function roleName(role: string): string {
@@ -39,16 +41,20 @@ export function RoleCard({ view, playerNames = {} }: RoleCardProps) {
 
   return (
     <div className={`p-4 border-4 bg-base-100 pixel-card flex flex-col gap-3 ${teamColor}`}>
-      <div className="flex items-center justify-between border-b-2 border-base-300 pb-2">
-        <div>
-          <span className="text-xs uppercase font-pixel tracking-wide block opacity-70">
-            YOUR ASSIGNED ROLE
+      <div className="flex items-center gap-4 border-b-2 border-base-300 pb-3">
+        {courtEntry(me.role)?.portrait && (
+          <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl border border-base-content/10">
+            <Image src={courtEntry(me.role)!.portrait!} alt="" fill sizes="64px" className="object-cover" />
+          </div>
+        )}
+        <div className="min-w-0">
+          <h2 className="font-display text-2xl font-semibold leading-tight">
+            {courtEntry(me.role)?.name ?? roleName(me.role)}
+          </h2>
+          <span className={`badge mt-1 font-medium py-2 px-3 text-xs ${teamBadge}`}>
+            {SIDE_LABEL[me.team] ?? me.team}
           </span>
-          <h2 className="text-xl font-historical font-black tracking-wider uppercase">{me.role}</h2>
         </div>
-        <span className={`badge font-pixel uppercase font-bold py-2 px-3 text-xs ${teamBadge}`}>
-          {me.team}
-        </span>
       </div>
 
       <div className="text-xs font-sans space-y-1">

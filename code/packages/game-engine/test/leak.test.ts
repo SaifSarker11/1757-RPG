@@ -139,7 +139,8 @@ describe("leak test with abilities used", { timeout: 60_000 }, () => {
       let state: GameState = { ...start, phase: "DISCUSSION" };
       const deBussy = state.players.find((p) => p.role === "DE_BUSSY");
       const jeanLaw = state.players.find((p) => p.role === "JEAN_LAW");
-      if (!deBussy || !jeanLaw) throw new Error("15 players should have the full cast");
+      // 16 named roles compete for 15 seats, so some deals leave one of them out.
+      if (!deBussy || !jeanLaw) continue;
 
       const pick = (exclude: string) => {
         const others = state.players.filter((p) => p.id !== exclude);

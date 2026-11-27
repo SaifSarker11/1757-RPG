@@ -33,6 +33,7 @@ export const ROLE_CATALOG: Readonly<Record<RoleId, RoleDefinition>> = {
     requires: ["NAWAB_SIRAJ", "LUTFUNNESA"],
   },
   RAI_DURLABH: { id: "RAI_DURLABH", team: "RED", name: "Rai Durlabh", requires: [] },
+  ROBERT_CLIVE: { id: "ROBERT_CLIVE", team: "RED", name: "Robert Clive", requires: [] },
   JAGAT_SETH: {
     id: "JAGAT_SETH",
     team: "GOLD",

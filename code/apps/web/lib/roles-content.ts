@@ -26,6 +26,7 @@ export const COURT: CourtRole[] = [
   { id: "YAR_LUTUF", name: "Yar Lutuf", team: "RED", title: "The Defector", power: "His ballot and mission votes count double.", portrait: "/images/roles/yarlutuf.jpg" },
   { id: "TARA_BAI", name: "Tara Bai", team: "RED", title: "The Impostor", power: "Poses as the Nawab's and the Begum's partner, confusing them both.", requires: ["Nawab Siraj ud-Daulah", "Lutfunnesa"], portrait: "/images/roles/tarabai.jpg" },
   { id: "RAI_DURLABH", name: "Rai Durlabh", team: "RED", title: "The Silent General", power: "Invisible to every vision power — only de Bussy's lock can reveal him.", portrait: "/images/roles/raidurlabh.jpg" },
+  { id: "ROBERT_CLIVE", name: "Robert Clive", team: "RED", title: "Commander of the Company", power: "Leads the East India Company's army. Knows his fellow conspirators, and his ballot vote counts double.", portrait: "/images/roles/robertclive.jpg" },
   { id: "JAGAT_SETH", name: "Jagat Seth", team: "GOLD", title: "The Banker of the World", power: "Dealt at 9+ players. In the endgame he names Mir Jafar (if Green leads) or Rai Durlabh (if Red leads). Right, and he wins alone.", requires: ["Mir Jafar", "Rai Durlabh"], portrait: "/images/roles/jagatseth.jpg" },
   { id: "LOYALIST", name: "Loyalist", team: "GREEN", title: "Filler", power: "No power — only your judgement. Fills Green seats.", portrait: "/images/roles/loyalist.jpg" },
   { id: "EIC_SPY", name: "EIC Spy", team: "RED", title: "Filler", power: "Knows the other spies. Fills Red seats.", portrait: "/images/roles/eicspy.jpg" },

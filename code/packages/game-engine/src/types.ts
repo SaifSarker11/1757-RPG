@@ -19,6 +19,7 @@ export type NamedRoleId =
   | "YAR_LUTUF"
   | "TARA_BAI"
   | "RAI_DURLABH"
+  | "ROBERT_CLIVE"
   | "JAGAT_SETH";
 
 export type FillerRoleId = "LOYALIST" | "EIC_SPY";

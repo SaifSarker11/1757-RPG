@@ -28,6 +28,7 @@ export const ROLE_INFO: Readonly<Record<RoleId, { name: string; team: Team; requ
   YAR_LUTUF: { name: "Yar Lutuf", team: "RED", requires: [] },
   TARA_BAI: { name: "Tara Bai", team: "RED", requires: ["NAWAB_SIRAJ", "LUTFUNNESA"] },
   RAI_DURLABH: { name: "Rai Durlabh", team: "RED", requires: [] },
+  ROBERT_CLIVE: { name: "Robert Clive", team: "RED", requires: [] },
   JAGAT_SETH: { name: "Jagat Seth", team: "GOLD", requires: ["MIR_JAFAR", "RAI_DURLABH"] },
   LOYALIST: { name: "Loyalist", team: "GREEN", requires: [] },
   EIC_SPY: { name: "EIC Spy", team: "RED", requires: [] },

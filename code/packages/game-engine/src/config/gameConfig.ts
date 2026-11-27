@@ -87,6 +87,7 @@ export const GOLD_SLOT_FALLBACK_TEAM = "GREEN" as const;
 export const BALLOT_WEIGHTS: Readonly<Partial<Record<RoleId, number>>> = {
   SAINT_FRASY: 2,
   YAR_LUTUF: 2,
+  ROBERT_CLIVE: 2,
 };
 
 export function ballotWeight(role: RoleId): number {
@@ -139,6 +140,7 @@ export const ALL_NAMED_ROLES: readonly NamedRoleId[] = [
   "YAR_LUTUF",
   "TARA_BAI",
   "RAI_DURLABH",
+  "ROBERT_CLIVE",
   "JAGAT_SETH",
 ];
 

@@ -11,6 +11,7 @@ import { gameAudio } from "@/lib/audio";
 import type { PlayerView } from "@/lib/game-types";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { RoleCard } from "@/components/RoleCard";
+import { RoleReveal } from "@/components/RoleReveal";
 import { RoundTracker } from "@/components/RoundTracker";
 import { ActionPanel } from "@/components/ActionPanel";
 import { PostGameSummary } from "@/components/PostGameSummary";
@@ -903,6 +904,11 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             />
           ) : playerView ? (
             <>
+              <RoleReveal
+                role={playerView.me.role}
+                team={playerView.me.team}
+                matchKey={`${roomId}:${playerView.game.players.map((p) => p.id).join(",")}:${playerView.me.role}`}
+              />
               <RoleCard
                 view={playerView}
                 playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}

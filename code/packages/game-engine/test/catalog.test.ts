@@ -3,10 +3,10 @@ import { ALL_NAMED_ROLES } from "../src/config/gameConfig.js";
 import { ROLE_CATALOG, dependencyClosure, teamOf } from "../src/roles/catalog.js";
 
 describe("ROLE_CATALOG", () => {
-  it("has 7 Green, 7 Red and 1 Gold named role", () => {
+  it("has 7 Green, 8 Red and 1 Gold named role", () => {
     const teams = ALL_NAMED_ROLES.map(teamOf);
     expect(teams.filter((t) => t === "GREEN")).toHaveLength(7);
-    expect(teams.filter((t) => t === "RED")).toHaveLength(7);
+    expect(teams.filter((t) => t === "RED")).toHaveLength(8);
     expect(teams.filter((t) => t === "GOLD")).toHaveLength(1);
   });
 
@@ -46,5 +46,14 @@ describe("dependencyClosure", () => {
 
   it("is just the role for roles without dependencies", () => {
     expect(dependencyClosure("DE_BUSSY")).toEqual(["DE_BUSSY"]);
+  });
+});
+
+describe("Robert Clive", () => {
+  it("is an East India Company (Red) role with no dependencies", async () => {
+    const { BALLOT_WEIGHTS } = await import("../src/config/gameConfig.js");
+    expect(ROLE_CATALOG.ROBERT_CLIVE.team).toBe("RED");
+    expect(ROLE_CATALOG.ROBERT_CLIVE.requires).toEqual([]);
+    expect(BALLOT_WEIGHTS.ROBERT_CLIVE).toBe(2);
   });
 });

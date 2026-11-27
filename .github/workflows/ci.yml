@@ -40,6 +40,26 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+          cache-dependency-path: code/pnpm-lock.yaml
+
+      - name: Apply database schema (additive changes such as new roles)
+        working-directory: code
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: |
+          if [ -z "$DIRECT_URL" ]; then echo "DIRECT_URL not set; skipping schema push."; exit 0; fi
+          pnpm install --frozen-lockfile
+          cd packages/db && npx prisma db push
+
       - name: Trigger Render deploy
         env:
           RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}

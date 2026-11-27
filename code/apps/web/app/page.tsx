@@ -25,14 +25,14 @@ export default function Landing() {
               <span className="text-gilded block italic">Find them before Plassey.</span>
             </h1>
             <p className="rise mt-7 max-w-xl text-lg opacity-75" style={{ animationDelay: "560ms" }}>
-              A real-time social-deduction game for 6–15 players. Seventeen secret roles, five rounds, and one question: who sold Bengal to the Company?
+              A real-time social-deduction game for 6–15 players. Eighteen secret roles, five rounds, and one question: who sold Bengal to the Company?
             </p>
             <div className="rise mt-10 flex flex-wrap gap-3" style={{ animationDelay: "670ms" }}>
               <Link href="/login" className="btn btn-primary btn-lg lamp-glow rounded-full px-8">Gather your court</Link>
               <Link href="/rules" className="btn btn-ghost btn-lg frost rounded-full px-8">Read the rules</Link>
             </div>
             <dl className="rise mt-16 grid max-w-2xl grid-cols-3 gap-6" style={{ animationDelay: "780ms" }}>
-              {[["6–15", "players"], ["17", "secret roles"], ["5", "rounds"]].map(([v, l]) => (
+              {[["6–15", "players"], ["18", "secret roles"], ["5", "rounds"]].map(([v, l]) => (
                 <div key={l} className="hairline border-l pl-4">
                   <dt className="font-display text-4xl font-semibold">{v}</dt>
                   <dd className="eyebrow mt-1">{l}</dd>
@@ -86,7 +86,7 @@ export default function Landing() {
               <p className="eyebrow">The court</p>
               <h2 className="font-display mt-4 max-w-2xl text-5xl font-semibold md:text-6xl">Every seat hides a story.</h2>
             </div>
-            <Link href="/characters" className="btn btn-outline rounded-full">All 17 characters →</Link>
+            <Link href="/characters" className="btn btn-outline rounded-full">All 18 characters →</Link>
           </div>
           <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {featured.map((r) => <CourtCard key={r.id} role={r} large />)}

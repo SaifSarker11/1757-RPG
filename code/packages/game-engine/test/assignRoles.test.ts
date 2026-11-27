@@ -58,9 +58,10 @@ describe("pickRoles (property: every player count x many seeds)", () => {
     }
   });
 
-  it("uses the full named cast at 15 players", () => {
+  it("fills all 15 seats with named roles (16 exist, so one is left out)", () => {
     const roles = pickRoles(15, ALL_NAMED_ROLES, createRng(1));
-    expect([...roles].sort()).toEqual([...ALL_NAMED_ROLES].sort());
+    expect(new Set(roles).size).toBe(15);
+    for (const r of roles) expect(ALL_NAMED_ROLES).toContain(r);
   });
 });
 
