@@ -65,7 +65,9 @@ jobs:
         run: npm i -g vercel@latest
 
       - name: Deploy web (apps/web) to Vercel
-        working-directory: code/apps/web
+        # Run from the repo root: the Vercel project's Root Directory setting
+        # (code/apps/web) is applied on top of the current folder.
+        working-directory: .
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -89,7 +91,9 @@ jobs:
         run: npm i -g vercel@latest
 
       - name: Deploy admin (apps/admin) to Vercel
-        working-directory: code/apps/admin
+        # Run from the repo root: the Vercel project's Root Directory setting
+        # (code/apps/admin) is applied on top of the current folder.
+        working-directory: .
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
