@@ -98,33 +98,37 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 
 Public pages keep **Royal Plassey**. After guest or account sign-in, the **Theme** picker in both the dashboard and room offers:
 
-| Theme | Background | Secondary | Text | Accent |
-|---|---|---|---|---|
-| Royal Plassey | `#111111` | `#55362a` / `#4f0505` | `#f9d4af` | `#e01e1e` |
-| Ivory & Sage | `#E4E4DE` | `#C4C5BA` | `#1B1B1B` | `#595F39` |
-| Navy & Cream | `#0F1A2B` | `#D8CFC0` | `#F5F0E6` | `#C5A059` |
-| Espresso & Champagne | `#241B15` | `#8C7A6B` | `#F4EFEA` | `#DFC498` |
-| Burgundy & Rose | `#3B1219` | `#D6B4B8` | `#F7F3F0` | `#B88B4A` |
+Royal Plassey remains first and unchanged. The alternatives use all twelve combinations currently published in [Brandlic's luxury palette guide](https://brandlic.studio/9-luxury-color-palettes-that-define-high-end-design-in-2025/), including its three 2026–2027 additions.
 
-Loyalists remain emerald green in every theme. Secondary colours are blended into dark surfaces to preserve text contrast. Preferences are saved on the current browser and origin; the Vercel and Render copies have independent preferences.
+| Theme | Reference colours |
+|---|---|
+| Royal Plassey (default) | `#111111` / `#55362a` / `#4f0505` / `#f9d4af` / `#e01e1e` |
+| Midnight Opulence | `#1a1a2e` / `#16213e` / `#0f3460` / `#efc07b` |
+| Golden Hour Elite | `#FEF4D5` / `#F1E49A` / `#E6D17B` / `#2c1810` |
+| Emerald Sophistication | `#0d4c3c` / `#2d5a4a` / `#7ba05b` / `#f4f1eb` |
+| Platinum Prestige | `#2c3e50` / `#34495e` / `#bdc3c7` / `#ecf0f1` |
+| Royal Burgundy | `#722f37` / `#8b1538` / `#a0522d` / `#f5f5dc` |
+| Sapphire Dreams | `#0f1419` / `#1e3a5f` / `#4a90a4` |
+| Rose Gold Romance | `#b76e79` / `#e8b4b8` / `#f7e7ce` / `#ffffff` |
+| Obsidian Elegance | `#0c0c0c` / `#2c2c2c` / `#4a4a4a` / `#bea98e` |
+| Arctic Luxury | `#f8f8ff` / `#e6e6fa` / `#b0c4de` / `#2f4f4f` |
+| Quiet Luxury | `#EDE6DA` / `#D6CBB8` / `#A8998A` / `#4F473F` |
+| Luminous Blue Luxe | `#0B1A33` / `#1D3B6A` / `#2E6FD8` / `#EDE7DC` |
+| Olive & Deep Wine | `#2F3A22` / `#6E7445` / `#5B1A2A` / `#EFE6D6` |
 
-**Sound** is available before sign-in and throughout the game. Court of Murshidabad starts on entry, with Council in Session and Eve of Plassey also available. If the browser blocks autoplay, the first click or key press starts music; the Sound control also shows **Enable music**. Returning players' Off choice is respected. Music loops across page changes, pauses for voice chat, and has its own volume.
+Nawab/Loyalists remain emerald green (`#2f9e5b`), EIC remains red (`#e01e1e`), and Jagat Seth remains neutral light gray (`#D3D3D3`) in every theme. Surface gradients blend each palette's swatches; Rose Gold derives a deeper rose ink for readable text. Preferences are saved on the current browser and origin; Vercel and Render copies have independent preferences.
+
+**Music & sound** appears in the dashboard and room header after guest or account sign-in. Open it to select **Court of Murshidabad**, **Council in Session**, **Eve of Plassey**, or **Off**, and adjust the volume. It is also available before sign-in. Browsers may require a first click to start playback; returning players' Off choice is respected. Music loops across page changes and pauses temporarily for voice chat.
 
 Four original suspense click cues — Court whisper, Bronze seal, Distant war drum, Shadow chime — cover navigation, login, guest play, room creation, role assignment, approvals, ballots, and other controls. Each can be previewed; click sounds have an independent toggle and volume. Soft phase/result cues replace the old 8-bit effects.
 
 ### Updated settings screenshots
 
-| Sound and theme choices | Preview |
+| Settings | Preview |
 |---|---|
-| Music before sign-in and four click sounds | ![Music before sign-in and four click sounds](doc/screenshots/preferences/sound-public.jpg) |
-| Five-theme picker | ![Five-theme picker](doc/screenshots/preferences/theme-picker-plassey.jpg) |
-| Royal Plassey — unchanged default | ![Royal Plassey — unchanged default](doc/screenshots/preferences/dashboard-plassey.jpg) |
-| Ivory & Sage | ![Ivory & Sage](doc/screenshots/preferences/dashboard-ivory-sage.jpg) |
-| Navy & Cream | ![Navy & Cream](doc/screenshots/preferences/dashboard-navy-cream.jpg) |
-| Espresso & Champagne | ![Espresso & Champagne](doc/screenshots/preferences/dashboard-espresso.jpg) |
-| Burgundy & Rose | ![Burgundy & Rose](doc/screenshots/preferences/dashboard-burgundy.jpg) |
-| Mobile sound settings | ![Mobile sound settings](doc/screenshots/preferences/mobile-sound.jpg) |
-| Mobile theme picker | ![Mobile theme picker](doc/screenshots/preferences/mobile-theme.jpg) |
+| Music selection after login | ![Signed-in music selection](doc/screenshots/preferences/music-signed-in.jpg) |
+| Royal first, with all luxury alternatives | ![Luxury theme picker](doc/screenshots/preferences/theme-picker-plassey.jpg) |
+| Green Nawab, red EIC, neutral Jagat Seth | ![Faction colours](doc/screenshots/preferences/faction-colours.jpg) |
 
 ## Features
 

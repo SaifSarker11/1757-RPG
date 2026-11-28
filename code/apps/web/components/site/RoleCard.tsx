@@ -1,17 +1,13 @@
 import Image from "next/image";
 import type { CourtRole } from "@/lib/roles-content";
 
-const TEAM_STYLE = {
-  GREEN: { chip: "bg-loyal/15 text-loyal", ring: "from-loyal/40", label: "Loyalist" },
-  RED: { chip: "bg-traitor/15 text-traitor", ring: "from-traitor/40", label: "Conspirator" },
-  GOLD: { chip: "bg-banker/15 text-banker", ring: "from-banker/40", label: "Neutral" },
-} as const;
+import { FACTION_STYLES } from "@/lib/preferences";
 
 export function CourtCard({ role, large = false }: { role: CourtRole; large?: boolean }) {
-  const t = TEAM_STYLE[role.team];
+  const t = FACTION_STYLES[role.team];
   const initials = role.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
   return (
-    <article className={`card-lift hairline group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-base-200 ${role.team === "GREEN" ? "court-card--loyal" : ""}`}>
+    <article className={`card-lift hairline group relative flex h-full flex-col overflow-hidden rounded-3xl border ${t.surface}`}>
       <div className={`relative ${large ? "aspect-[4/5]" : "aspect-square"} overflow-hidden`}>
         {role.portrait ? (
           <Image
@@ -22,12 +18,12 @@ export function CourtCard({ role, large = false }: { role: CourtRole; large?: bo
             className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className={`flex h-full items-center justify-center bg-gradient-to-br ${t.ring} to-base-300`}>
+          <div className={`flex h-full items-center justify-center bg-gradient-to-br from-base-content/20 to-base-300`}>
             <span className="font-display text-7xl font-semibold opacity-40">{initials}</span>
           </div>
         )}
-        <div className={`absolute inset-0 bg-gradient-to-t ${role.team === "GREEN" ? "from-[#0f2a1c] via-[#0f2a1c]/10" : "from-base-200 via-base-200/10"} to-transparent`} />
-        <span className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] backdrop-blur ${t.chip}`}>
+        <div className={`absolute inset-0 bg-gradient-to-t faction-portrait-fade to-transparent`} />
+        <span className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] backdrop-blur ${t.badge}`}>
           {t.label}
         </span>
       </div>

@@ -16,7 +16,7 @@ export function MusicControl() {
   return <>
     <button type="button" onClick={open} className="btn btn-sm btn-outline font-mono" aria-label="Sound settings" title="Music and click sounds">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M9 18V5l12-2v13M9 8l12-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="18" cy="16" rx="3" ry="2"/></svg>
-      <span>{music.awaitingGesture ? "Enable music" : "Sound"}</span>
+      <span>{music.awaitingGesture ? "Enable music" : "Music & sound"}</span>
     </button>
     <dialog ref={dialog} className="modal sound-dialog" aria-labelledby="sound-title" onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
       <div className="modal-box preference-panel">

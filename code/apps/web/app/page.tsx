@@ -3,12 +3,13 @@ import Link from "next/link";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { CourtCard } from "@/components/site/RoleCard";
+import { FACTION_STYLES } from "@/lib/preferences";
 import { COURT, FACTION_META, ROUND_STEPS } from "@/lib/roles-content";
 
 const FEATURED = ["NAWAB_SIRAJ", "MIR_JAFAR", "LUTFUNNESA", "JAGAT_SETH"];
 
 export default function Landing() {
-  const featured = FEATURED.map((id) => COURT.find((r) => r.id === id)!);
+  const featured = FEATURED.flatMap((id) => { const role = COURT.find((r) => r.id === id); return role ? [role] : []; });
   return (
     <>
       <SiteNav />
@@ -54,7 +55,7 @@ export default function Landing() {
           <h2 className="font-display mt-4 max-w-3xl text-5xl font-semibold leading-tight md:text-6xl">Two factions, one banker, and nobody you can trust.</h2>
           <div className="mt-14 grid gap-4 md:grid-cols-3">
             {(["GREEN", "RED", "GOLD"] as const).map((f) => (
-              <div key={f} className="card-lift hairline rounded-3xl border bg-base-200 p-8">
+              <div key={f} className={`card-lift hairline rounded-3xl border p-8 ${FACTION_STYLES[f].surface}`}>
                 <span className={`eyebrow ${FACTION_META[f].tone}`}>{FACTION_META[f].short}</span>
                 <h3 className="font-display mt-3 text-3xl font-semibold">{FACTION_META[f].label}</h3>
                 <p className="mt-3 text-sm leading-relaxed opacity-70">{FACTION_META[f].text}</p>

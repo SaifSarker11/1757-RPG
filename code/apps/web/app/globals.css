@@ -46,8 +46,8 @@
   --font-display: var(--font-display-serif), Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --color-loyal: #2f9e5b;
-  --color-traitor: var(--color-primary);
-  --color-banker: var(--color-base-content);
+  --color-traitor: #e01e1e;
+  --color-banker: #D3D3D3;
   --color-ink: var(--color-base-100);
   --color-parchment: var(--color-base-content);
 }
@@ -351,47 +351,127 @@ input:-webkit-autofill:focus {
 
 /* Only public pages use the royal default; authenticated game pages can select a palette. */
 [data-theme="plassey"] { --button-end: #4f0505; }
-[data-theme="ivory-sage"] {
- color-scheme: light;
- --color-base-100: #E4E4DE; --color-base-200: #C4C5BA; --color-base-300: #C4C5BA; --color-base-content: #1B1B1B;
- --color-primary: #595F39; --color-primary-content: #E4E4DE; --color-accent: #595F39; --color-accent-content: #E4E4DE;
- --color-secondary: #C4C5BA; --color-secondary-content: #1B1B1B; --color-neutral: #E4E4DE; --color-neutral-content: #1B1B1B;
- --color-info: #595F39; --color-info-content: #E4E4DE; --color-success: #595F39; --color-success-content: #E4E4DE;
- --color-warning: #595F39; --color-warning-content: #E4E4DE; --color-error: #595F39; --color-error-content: #E4E4DE;
- --button-end: color-mix(in oklab, #595F39 92%, #E4E4DE);
-}
-[data-theme="navy-cream"] {
- color-scheme: dark;
- --color-base-100: #0F1A2B; --color-base-200: color-mix(in oklab, #0F1A2B 91%, #D8CFC0); --color-base-300: color-mix(in oklab, #0F1A2B 82%, #D8CFC0); --color-base-content: #F5F0E6;
- --color-primary: #C5A059; --color-primary-content: #0F1A2B; --color-accent: #C5A059; --color-accent-content: #0F1A2B;
- --color-secondary: #D8CFC0; --color-secondary-content: #0F1A2B; --color-neutral: #0F1A2B; --color-neutral-content: #F5F0E6;
- --color-info: #C5A059; --color-info-content: #0F1A2B; --color-success: #C5A059; --color-success-content: #0F1A2B;
- --color-warning: #C5A059; --color-warning-content: #0F1A2B; --color-error: #C5A059; --color-error-content: #0F1A2B;
- --button-end: color-mix(in oklab, #C5A059 92%, #0F1A2B);
-}
-[data-theme="espresso"] {
- color-scheme: dark;
- --color-base-100: #241B15; --color-base-200: color-mix(in oklab, #241B15 91%, #8C7A6B); --color-base-300: color-mix(in oklab, #241B15 82%, #8C7A6B); --color-base-content: #F4EFEA;
- --color-primary: #DFC498; --color-primary-content: #241B15; --color-accent: #DFC498; --color-accent-content: #241B15;
- --color-secondary: #8C7A6B; --color-secondary-content: #241B15; --color-neutral: #241B15; --color-neutral-content: #F4EFEA;
- --color-info: #DFC498; --color-info-content: #241B15; --color-success: #DFC498; --color-success-content: #241B15;
- --color-warning: #DFC498; --color-warning-content: #241B15; --color-error: #DFC498; --color-error-content: #241B15;
- --button-end: color-mix(in oklab, #DFC498 92%, #241B15);
-}
-[data-theme="burgundy"] {
- color-scheme: dark;
- --color-base-100: #3B1219; --color-base-200: color-mix(in oklab, #3B1219 91%, #D6B4B8); --color-base-300: color-mix(in oklab, #3B1219 82%, #D6B4B8); --color-base-content: #F7F3F0;
- --color-primary: #B88B4A; --color-primary-content: #3B1219; --color-accent: #B88B4A; --color-accent-content: #3B1219;
- --color-secondary: #D6B4B8; --color-secondary-content: #3B1219; --color-neutral: #3B1219; --color-neutral-content: #F7F3F0;
- --color-info: #B88B4A; --color-info-content: #3B1219; --color-success: #B88B4A; --color-success-content: #3B1219;
- --color-warning: #B88B4A; --color-warning-content: #3B1219; --color-error: #B88B4A; --color-error-content: #3B1219;
- --button-end: color-mix(in oklab, #B88B4A 92%, #3B1219);
-}
 .theme-preview-plassey { --swatch-bg: #111111; --swatch-surface: #55362a; --swatch-text: #f9d4af; --swatch-accent: #e01e1e; }
-.theme-preview-ivory-sage { --swatch-bg: #E4E4DE; --swatch-surface: #C4C5BA; --swatch-text: #1B1B1B; --swatch-accent: #595F39; }
-.theme-preview-navy-cream { --swatch-bg: #0F1A2B; --swatch-surface: #D8CFC0; --swatch-text: #F5F0E6; --swatch-accent: #C5A059; }
-.theme-preview-espresso { --swatch-bg: #241B15; --swatch-surface: #8C7A6B; --swatch-text: #F4EFEA; --swatch-accent: #DFC498; }
-.theme-preview-burgundy { --swatch-bg: #3B1219; --swatch-surface: #D6B4B8; --swatch-text: #F7F3F0; --swatch-accent: #B88B4A; }
+[data-theme="midnight-opulence"] {
+ color-scheme: dark;
+ --color-base-100: #1a1a2e; --color-base-200: #16213e; --color-base-300: #0f3460; --color-base-content: #efc07b;
+ --color-primary: #efc07b; --color-primary-content: #1a1a2e; --color-accent: #efc07b; --color-accent-content: #1a1a2e;
+ --color-secondary: #16213e; --color-secondary-content: #efc07b; --color-neutral: #1a1a2e; --color-neutral-content: #efc07b;
+ --color-info: #efc07b; --color-info-content: #1a1a2e; --color-success: #efc07b; --color-success-content: #1a1a2e;
+ --color-warning: #efc07b; --color-warning-content: #1a1a2e; --color-error: #efc07b; --color-error-content: #1a1a2e;
+ --button-end: color-mix(in oklab, #efc07b 92%, #1a1a2e);
+}
+.theme-preview-midnight-opulence { --swatch-bg: #1a1a2e; --swatch-surface: #16213e; --swatch-text: #0f3460; --swatch-accent: #efc07b; }
+[data-theme="golden-hour-elite"] {
+ color-scheme: light;
+ --color-base-100: #FEF4D5; --color-base-200: #F1E49A; --color-base-300: #E6D17B; --color-base-content: #2c1810;
+ --color-primary: #2c1810; --color-primary-content: #FEF4D5; --color-accent: #2c1810; --color-accent-content: #FEF4D5;
+ --color-secondary: #F1E49A; --color-secondary-content: #2c1810; --color-neutral: #FEF4D5; --color-neutral-content: #2c1810;
+ --color-info: #2c1810; --color-info-content: #FEF4D5; --color-success: #2c1810; --color-success-content: #FEF4D5;
+ --color-warning: #2c1810; --color-warning-content: #FEF4D5; --color-error: #2c1810; --color-error-content: #FEF4D5;
+ --button-end: color-mix(in oklab, #2c1810 92%, #FEF4D5);
+}
+.theme-preview-golden-hour-elite { --swatch-bg: #FEF4D5; --swatch-surface: #F1E49A; --swatch-text: #E6D17B; --swatch-accent: #2c1810; }
+[data-theme="emerald-sophistication"] {
+ color-scheme: dark;
+ --color-base-100: #0d4c3c; --color-base-200: #2d5a4a; --color-base-300: #7ba05b; --color-base-content: #f4f1eb;
+ --color-primary: #7ba05b; --color-primary-content: #0d4c3c; --color-accent: #7ba05b; --color-accent-content: #0d4c3c;
+ --color-secondary: #2d5a4a; --color-secondary-content: #f4f1eb; --color-neutral: #0d4c3c; --color-neutral-content: #f4f1eb;
+ --color-info: #7ba05b; --color-info-content: #0d4c3c; --color-success: #7ba05b; --color-success-content: #0d4c3c;
+ --color-warning: #7ba05b; --color-warning-content: #0d4c3c; --color-error: #7ba05b; --color-error-content: #0d4c3c;
+ --button-end: color-mix(in oklab, #7ba05b 92%, #0d4c3c);
+}
+.theme-preview-emerald-sophistication { --swatch-bg: #0d4c3c; --swatch-surface: #2d5a4a; --swatch-text: #7ba05b; --swatch-accent: #f4f1eb; }
+[data-theme="platinum-prestige"] {
+ color-scheme: dark;
+ --color-base-100: #2c3e50; --color-base-200: #34495e; --color-base-300: #bdc3c7; --color-base-content: #ecf0f1;
+ --color-primary: #bdc3c7; --color-primary-content: #2c3e50; --color-accent: #bdc3c7; --color-accent-content: #2c3e50;
+ --color-secondary: #34495e; --color-secondary-content: #ecf0f1; --color-neutral: #2c3e50; --color-neutral-content: #ecf0f1;
+ --color-info: #bdc3c7; --color-info-content: #2c3e50; --color-success: #bdc3c7; --color-success-content: #2c3e50;
+ --color-warning: #bdc3c7; --color-warning-content: #2c3e50; --color-error: #bdc3c7; --color-error-content: #2c3e50;
+ --button-end: color-mix(in oklab, #bdc3c7 92%, #2c3e50);
+}
+.theme-preview-platinum-prestige { --swatch-bg: #2c3e50; --swatch-surface: #34495e; --swatch-text: #bdc3c7; --swatch-accent: #ecf0f1; }
+[data-theme="royal-burgundy"] {
+ color-scheme: dark;
+ --color-base-100: #722f37; --color-base-200: #8b1538; --color-base-300: #a0522d; --color-base-content: #f5f5dc;
+ --color-primary: #a0522d; --color-primary-content: #722f37; --color-accent: #a0522d; --color-accent-content: #722f37;
+ --color-secondary: #8b1538; --color-secondary-content: #f5f5dc; --color-neutral: #722f37; --color-neutral-content: #f5f5dc;
+ --color-info: #a0522d; --color-info-content: #722f37; --color-success: #a0522d; --color-success-content: #722f37;
+ --color-warning: #a0522d; --color-warning-content: #722f37; --color-error: #a0522d; --color-error-content: #722f37;
+ --button-end: color-mix(in oklab, #a0522d 92%, #722f37);
+}
+.theme-preview-royal-burgundy { --swatch-bg: #722f37; --swatch-surface: #8b1538; --swatch-text: #a0522d; --swatch-accent: #f5f5dc; }
+[data-theme="sapphire-dreams"] {
+ color-scheme: dark;
+ --color-base-100: #0f1419; --color-base-200: #1e3a5f; --color-base-300: #4a90a4; --color-base-content: #4a90a4;
+ --color-primary: #4a90a4; --color-primary-content: #0f1419; --color-accent: #4a90a4; --color-accent-content: #0f1419;
+ --color-secondary: #1e3a5f; --color-secondary-content: #4a90a4; --color-neutral: #0f1419; --color-neutral-content: #4a90a4;
+ --color-info: #4a90a4; --color-info-content: #0f1419; --color-success: #4a90a4; --color-success-content: #0f1419;
+ --color-warning: #4a90a4; --color-warning-content: #0f1419; --color-error: #4a90a4; --color-error-content: #0f1419;
+ --button-end: color-mix(in oklab, #4a90a4 92%, #0f1419);
+}
+.theme-preview-sapphire-dreams { --swatch-bg: #0f1419; --swatch-surface: #1e3a5f; --swatch-text: #4a90a4; --swatch-accent: #4a90a4; }
+[data-theme="rose-gold-romance"] {
+ color-scheme: light;
+ --color-base-100: #ffffff; --color-base-200: #f7e7ce; --color-base-300: #f7e7ce; --color-base-content: oklch(from #b76e79 calc(l * .45) c h);
+ --color-primary: oklch(from #b76e79 calc(l * .45) c h); --color-primary-content: #ffffff; --color-accent: #b76e79; --color-accent-content: #ffffff;
+ --color-secondary: #f7e7ce; --color-secondary-content: oklch(from #b76e79 calc(l * .45) c h); --color-neutral: #ffffff; --color-neutral-content: oklch(from #b76e79 calc(l * .45) c h);
+ --color-info: oklch(from #b76e79 calc(l * .45) c h); --color-info-content: #ffffff; --color-success: oklch(from #b76e79 calc(l * .45) c h); --color-success-content: #ffffff;
+ --color-warning: oklch(from #b76e79 calc(l * .45) c h); --color-warning-content: #ffffff; --color-error: oklch(from #b76e79 calc(l * .45) c h); --color-error-content: #ffffff;
+ --button-end: color-mix(in oklab, oklch(from #b76e79 calc(l * .45) c h) 92%, #ffffff);
+}
+.theme-preview-rose-gold-romance { --swatch-bg: #b76e79; --swatch-surface: #e8b4b8; --swatch-text: #f7e7ce; --swatch-accent: #ffffff; }
+[data-theme="obsidian-elegance"] {
+ color-scheme: dark;
+ --color-base-100: #0c0c0c; --color-base-200: #2c2c2c; --color-base-300: #4a4a4a; --color-base-content: #bea98e;
+ --color-primary: #bea98e; --color-primary-content: #0c0c0c; --color-accent: #bea98e; --color-accent-content: #0c0c0c;
+ --color-secondary: #2c2c2c; --color-secondary-content: #bea98e; --color-neutral: #0c0c0c; --color-neutral-content: #bea98e;
+ --color-info: #bea98e; --color-info-content: #0c0c0c; --color-success: #bea98e; --color-success-content: #0c0c0c;
+ --color-warning: #bea98e; --color-warning-content: #0c0c0c; --color-error: #bea98e; --color-error-content: #0c0c0c;
+ --button-end: color-mix(in oklab, #bea98e 92%, #0c0c0c);
+}
+.theme-preview-obsidian-elegance { --swatch-bg: #0c0c0c; --swatch-surface: #2c2c2c; --swatch-text: #4a4a4a; --swatch-accent: #bea98e; }
+[data-theme="arctic-luxury"] {
+ color-scheme: light;
+ --color-base-100: #f8f8ff; --color-base-200: #e6e6fa; --color-base-300: #b0c4de; --color-base-content: #2f4f4f;
+ --color-primary: #2f4f4f; --color-primary-content: #f8f8ff; --color-accent: #2f4f4f; --color-accent-content: #f8f8ff;
+ --color-secondary: #e6e6fa; --color-secondary-content: #2f4f4f; --color-neutral: #f8f8ff; --color-neutral-content: #2f4f4f;
+ --color-info: #2f4f4f; --color-info-content: #f8f8ff; --color-success: #2f4f4f; --color-success-content: #f8f8ff;
+ --color-warning: #2f4f4f; --color-warning-content: #f8f8ff; --color-error: #2f4f4f; --color-error-content: #f8f8ff;
+ --button-end: color-mix(in oklab, #2f4f4f 92%, #f8f8ff);
+}
+.theme-preview-arctic-luxury { --swatch-bg: #f8f8ff; --swatch-surface: #e6e6fa; --swatch-text: #b0c4de; --swatch-accent: #2f4f4f; }
+[data-theme="quiet-luxury"] {
+ color-scheme: light;
+ --color-base-100: #EDE6DA; --color-base-200: #D6CBB8; --color-base-300: #A8998A; --color-base-content: #4F473F;
+ --color-primary: #4F473F; --color-primary-content: #EDE6DA; --color-accent: #4F473F; --color-accent-content: #EDE6DA;
+ --color-secondary: #D6CBB8; --color-secondary-content: #4F473F; --color-neutral: #EDE6DA; --color-neutral-content: #4F473F;
+ --color-info: #4F473F; --color-info-content: #EDE6DA; --color-success: #4F473F; --color-success-content: #EDE6DA;
+ --color-warning: #4F473F; --color-warning-content: #EDE6DA; --color-error: #4F473F; --color-error-content: #EDE6DA;
+ --button-end: color-mix(in oklab, #4F473F 92%, #EDE6DA);
+}
+.theme-preview-quiet-luxury { --swatch-bg: #EDE6DA; --swatch-surface: #D6CBB8; --swatch-text: #A8998A; --swatch-accent: #4F473F; }
+[data-theme="luminous-blue-luxe"] {
+ color-scheme: dark;
+ --color-base-100: #0B1A33; --color-base-200: #1D3B6A; --color-base-300: #2E6FD8; --color-base-content: #EDE7DC;
+ --color-primary: #2E6FD8; --color-primary-content: #0B1A33; --color-accent: #2E6FD8; --color-accent-content: #0B1A33;
+ --color-secondary: #1D3B6A; --color-secondary-content: #EDE7DC; --color-neutral: #0B1A33; --color-neutral-content: #EDE7DC;
+ --color-info: #2E6FD8; --color-info-content: #0B1A33; --color-success: #2E6FD8; --color-success-content: #0B1A33;
+ --color-warning: #2E6FD8; --color-warning-content: #0B1A33; --color-error: #2E6FD8; --color-error-content: #0B1A33;
+ --button-end: color-mix(in oklab, #2E6FD8 92%, #0B1A33);
+}
+.theme-preview-luminous-blue-luxe { --swatch-bg: #0B1A33; --swatch-surface: #1D3B6A; --swatch-text: #2E6FD8; --swatch-accent: #EDE7DC; }
+[data-theme="olive-deep-wine"] {
+ color-scheme: dark;
+ --color-base-100: #2F3A22; --color-base-200: #6E7445; --color-base-300: #5B1A2A; --color-base-content: #EFE6D6;
+ --color-primary: #5B1A2A; --color-primary-content: #2F3A22; --color-accent: #5B1A2A; --color-accent-content: #2F3A22;
+ --color-secondary: #6E7445; --color-secondary-content: #EFE6D6; --color-neutral: #2F3A22; --color-neutral-content: #EFE6D6;
+ --color-info: #5B1A2A; --color-info-content: #2F3A22; --color-success: #5B1A2A; --color-success-content: #2F3A22;
+ --color-warning: #5B1A2A; --color-warning-content: #2F3A22; --color-error: #5B1A2A; --color-error-content: #2F3A22;
+ --button-end: color-mix(in oklab, #5B1A2A 92%, #2F3A22);
+}
+.theme-preview-olive-deep-wine { --swatch-bg: #2F3A22; --swatch-surface: #6E7445; --swatch-text: #5B1A2A; --swatch-accent: #EFE6D6; }
 .preference-panel { max-width: 29rem; width: calc(100% - 2rem); max-height: calc(100dvh - 2rem); background: var(--color-base-100); color: var(--color-base-content); border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); border-radius: 8px; padding: 1.5rem; }
 .preference-panel h2 { letter-spacing: 0; }
 .modal::backdrop { background: color-mix(in oklab, var(--color-base-100) 70%, transparent); backdrop-filter: blur(5px); }
@@ -404,3 +484,13 @@ input:-webkit-autofill:focus {
 .theme-choice { letter-spacing: 0; white-space: normal; }
 html { transition: background-color .35s, color .35s; }
 @media (prefers-reduced-motion: reduce) { html { transition: none; } }
+
+/* Semantic faction colours are independent of every personal palette. */
+:root { --faction-ink: #111111; --faction-copy: #f9d4af; --loyal-surface: #0f2a1c; --banker-surface: #343434; }
+.faction-green { --faction-color: #2f9e5b; --faction-surface: var(--loyal-surface); }
+.faction-red { --faction-color: #e01e1e; --faction-surface: #4f0505; }
+.faction-gray { --faction-color: #D3D3D3; --faction-surface: var(--banker-surface); }
+.faction-surface { background: linear-gradient(165deg, var(--faction-ink), var(--faction-surface)); border-color: color-mix(in oklab, var(--faction-color) 45%, transparent); color: var(--faction-copy); }
+.faction-surface h3 { color: var(--faction-copy); }
+.faction-surface .eyebrow { color: var(--faction-color); }
+.faction-portrait-fade { background: linear-gradient(to top, var(--faction-surface), transparent); }

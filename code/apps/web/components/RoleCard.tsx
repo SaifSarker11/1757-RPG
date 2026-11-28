@@ -1,4 +1,5 @@
 import React from "react";
+import { FACTION_STYLES } from "@/lib/preferences";
 import Image from "next/image";
 import type { PlayerView, VisionLabel } from "@/lib/game-types";
 import { SIDE_LABEL, courtEntry } from "@/components/RoleReveal";
@@ -25,26 +26,17 @@ interface RoleCardProps {
 export function RoleCard({ view, playerNames = {} }: RoleCardProps) {
   const { me, vision, reveals, myVoteWeight } = view;
 
-  const teamColor =
-    me.team === "GREEN"
-      ? "text-success border-success"
-      : me.team === "RED"
-        ? "text-error border-error"
-        : "text-warning border-warning";
-
-  const teamBadge =
-    me.team === "GREEN"
-      ? "badge-success text-success-content"
-      : me.team === "RED"
-        ? "badge-error text-error-content"
-        : "badge-warning text-warning-content";
+  const faction = FACTION_STYLES[me.team];
+  const role = courtEntry(me.role);
+  const teamColor = faction.text;
+  const teamBadge = faction.badge;
 
   return (
     <div className={`p-4 border-4 bg-base-100 pixel-card flex flex-col gap-3 ${teamColor}`}>
       <div className="flex items-center gap-4 border-b-2 border-base-300 pb-3">
-        {courtEntry(me.role)?.portrait && (
+        {role?.portrait && (
           <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-xl border border-base-content/10">
-            <Image src={courtEntry(me.role)!.portrait!} alt="" fill sizes="64px" className="object-cover" />
+            <Image src={role.portrait} alt="" fill sizes="64px" className="object-cover" />
           </div>
         )}
         <div className="min-w-0">
