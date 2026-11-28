@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { authClient } from "@/lib/auth-client";
 import { fetchSocketToken } from "@/lib/socket-token";
-import { gameAudio } from "@/lib/audio";
 import type { PlayerView } from "@/lib/game-types";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { RoleCard } from "@/components/RoleCard";
@@ -198,8 +197,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   // Phase change transition effect triggers
   useEffect(() => {
     if (currentPhase === "LOBBY") return;
-    gameAudio.playPhaseChange();
-
     let friendlyName = currentPhase.replace(/_/g, " ");
     if (currentPhase === "DISCUSSION") friendlyName = `Round ${roundNumber}: Discussion Phase`;
     if (currentPhase === "TEAM_PROPOSAL") friendlyName = `Round ${roundNumber}: Propose Council`;
@@ -259,19 +256,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     socket.on("game:error", (err: { code: string; message: string }) => {
       setGameError(err.message || err.code);
       setTimeout(() => setGameError(null), 4000);
-    });
-
-    socket.on("game:event", (payload: { roomId: string; events: any[] }) => {
-      if (payload.roomId === roomId) {
-        for (const evt of payload.events) {
-          if (evt.type === "MISSION_RESOLVED") {
-            if (evt.winner === "GREEN") gameAudio.playSuccess();
-            else gameAudio.playFailure();
-          } else if (evt.type === "GAME_ENDED") {
-            gameAudio.playVictory();
-          }
-        }
-      }
     });
 
     socket.on("room:chat-history", (history: ChatMessage[]) => {
@@ -354,10 +338,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       ]);
       if (payload.approved) {
         setCurrentPhase("MISSION_VOTE");
-        gameAudio.playSuccess();
       } else {
         setCurrentPhase("DISCUSSION");
-        gameAudio.playFailure();
       }
     });
 
@@ -372,11 +354,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         },
       ]);
       setHasVotedMission(false);
-      if (payload.winner === "green") {
-        gameAudio.playSuccess();
-      } else {
-        gameAudio.playFailure();
-      }
     });
 
     socket.on("round:transition", (payload: { round: number; selectorId: string }) => {
@@ -406,7 +383,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       setRoleReveal(payload.roleReveal);
       setExcludedWinCredit(payload.excludedWinCredit);
       setCurrentPhase("ENDGAME");
-      gameAudio.playVictory();
     });
 
     return () => {
@@ -430,10 +406,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   useEffect(() => {
     if (currentPhase !== "DISCUSSION" || discussionTimer <= 0) return;
     
-    if (discussionTimer <= 10) {
-      gameAudio.playTimerTick();
-    }
-
     const interval = setInterval(() => {
       setDiscussionTimer((prev) => prev - 1);
     }, 1000);
@@ -452,7 +424,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   }, [messages]);
 
   const emitGameAction = (action: any) => {
-    gameAudio.playClick();
     if (!socketRef.current) return;
     setActionLoading(true);
     socketRef.current.emit(
@@ -469,7 +440,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleStartGame = () => {
-    gameAudio.playClick();
     if (socketRef.current) {
       setActionLoading(true);
       socketRef.current.emit("game:start", { roomId }, (ack: { ok: boolean; error?: { message: string } }) => {
@@ -484,7 +454,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
   /** Custom rooms: the host ends the current timer now. */
   const handleSkip = () => {
-    gameAudio.playClick();
     if (!socketRef.current) return;
     setActionLoading(true);
     socketRef.current.emit("game:skip", { roomId }, (ack: { ok: boolean; error?: { message: string } }) => {
@@ -498,7 +467,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
 
   /** Custom rooms: the host freezes or restarts the timer for everyone. */
   const handleTogglePause = () => {
-    gameAudio.playClick();
     if (!socketRef.current) return;
     setActionLoading(true);
     const event = isPaused ? "game:resume" : "game:pause";
@@ -548,7 +516,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   };
 
   const handleLeaveRoom = async () => {
-    gameAudio.playClick();
     if (!session?.user) return;
     try {
       await fetch(`${API_URL}/rooms/${roomId}/leave`, {
@@ -655,7 +622,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
           <ThemeControl />
 
           <button
-            onClick={() => { gameAudio.playClick(); setShowInfoModal(true); }}
+            onClick={() => setShowInfoModal(true)}
             className="btn btn-primary btn-sm rounded-none border-2 font-pixel"
           >
             INFO CODES
@@ -741,7 +708,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                     <div 
                       onClick={() => {
                         if (currentPhase === "TEAM_PROPOSAL" && isMyTurnToSelect) {
-                          gameAudio.playClick();
                           setSelectedPlayers((prev) =>
                             prev.includes(p.userId)
                               ? prev.filter((id) => id !== p.userId)
@@ -860,7 +826,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               game={playerView.game}
               playerNames={Object.fromEntries(players.map((p) => [p.userId, p.name]))}
               onReturnToLobby={() => {
-                gameAudio.playClick();
                 setPlayerView(null);
                 setCurrentPhase("LOBBY");
                 fetchRoom();
@@ -923,19 +888,19 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             {/* Tab Bar */}
             <div className="flex border-b-2 border-base-content/25 mb-3 font-pixel text-[10px]">
               <button 
-                onClick={() => { gameAudio.playClick(); setRightSidebarTab("chat"); }}
+                onClick={() => setRightSidebarTab("chat")}
                 className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "chat" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
               >
                 Chat Scrolls
               </button>
               <button 
-                onClick={() => { gameAudio.playClick(); setRightSidebarTab("chronicle"); }}
+                onClick={() => setRightSidebarTab("chronicle")}
                 className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "chronicle" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
               >
                 Chronicle
               </button>
               <button
-                onClick={() => { gameAudio.playClick(); setRightSidebarTab("voice"); }}
+                onClick={() => setRightSidebarTab("voice")}
                 className={`flex-1 text-center pb-2 uppercase ${rightSidebarTab === "voice" ? "border-b-4 border-primary text-primary font-bold" : "text-base-content/50"}`}
               >
                 Voice{voice.joined ? (voice.muted ? " 🔇" : " 🎙️") : voice.participants.length > 0 ? ` (${voice.participants.length})` : ""}
@@ -1027,7 +992,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       {showInfoModal && (
         <InfoModal
           open={showInfoModal}
-          onClose={() => { gameAudio.playClick(); setShowInfoModal(false); }}
+          onClose={() => setShowInfoModal(false)}
           roles={activeRolesFilter.map((r) => ({ name: r.name, team: r.team, power: r.power }))}
         />
       )}

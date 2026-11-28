@@ -1,6 +1,5 @@
 "use client";
 
-import { gameAudio } from "@/lib/audio";
 import type { useVoiceChat } from "@/lib/useVoiceChat";
 
 interface Props {
@@ -60,7 +59,6 @@ export function VoiceChatPanel({ voice, playerNames }: Props) {
           <>
             <button
               onClick={() => {
-                gameAudio.playClick();
                 voice.toggleMute();
               }}
               className={`btn btn-xs flex-1 rounded-none border-2 font-pixel ${muted ? "btn-warning" : "btn-outline"}`}
@@ -69,7 +67,6 @@ export function VoiceChatPanel({ voice, playerNames }: Props) {
             </button>
             <button
               onClick={() => {
-                gameAudio.playClick();
                 voice.leave();
               }}
               className="btn btn-xs btn-error flex-1 rounded-none border-2 font-pixel"
@@ -80,7 +77,6 @@ export function VoiceChatPanel({ voice, playerNames }: Props) {
         ) : (
           <button
             onClick={() => {
-              gameAudio.playClick();
               void voice.join();
             }}
             disabled={joining}

@@ -1,8 +1,6 @@
 // apps/web/components/InfoModal.tsx
 "use client";
 
-import { useEffect } from "react";
-import { gameAudio } from "@/lib/audio";
 
 interface RoleInfo {
   name: string;
@@ -17,13 +15,6 @@ interface InfoModalProps {
 }
 
 export default function InfoModal({ open, onClose, roles }: InfoModalProps) {
-  // Play opening/closing sounds
-  useEffect(() => {
-    if (open) {
-      gameAudio.playClick();
-    }
-  }, [open]);
-
   if (!open) return null;
 
   return (
@@ -34,10 +25,7 @@ export default function InfoModal({ open, onClose, roles }: InfoModalProps) {
             Game Info
           </h2>
           <button
-            onClick={() => {
-              gameAudio.playClick();
-              onClose();
-            }}
+            onClick={() => onClose()}
             className="btn btn-sm btn-circle btn-ghost font-pixel"
           >
             ✕
@@ -59,7 +47,6 @@ export default function InfoModal({ open, onClose, roles }: InfoModalProps) {
           <section>
             <h3 className="text-lg font-pixel font-bold text-secondary mb-2">Settings</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Sound Effects: {gameAudio.isEnabled() ? "ON" : "OFF"}</li>
               <li>Theme: {localStorage.getItem("daisyui-theme") ?? "plassey"}</li>
             </ul>
           </section>

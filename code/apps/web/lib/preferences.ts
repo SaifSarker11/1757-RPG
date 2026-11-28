@@ -15,21 +15,11 @@ export const THEMES = [
   { id: "olive-deep-wine", name: "Olive & Deep Wine", background: "#2F3A22", surface: "#6E7445", text: "#EFE6D6", accent: "#5B1A2A", colors: ["#2F3A22", "#6E7445", "#5B1A2A", "#EFE6D6"] },
 ] as const;
 export type ThemeId = (typeof THEMES)[number]["id"];
-export const CLICK_SOUNDS = [
-  { id: "whisper", name: "Secret cipher" },
-  { id: "seal", name: "Puzzle lock" },
-  { id: "drum", name: "War omen" },
-  { id: "chime", name: "Phantom bell" },
-] as const;
-export type ClickSoundId = (typeof CLICK_SOUNDS)[number]["id"];
 export function validTheme(value: string | null): ThemeId {
   return THEMES.find((theme) => theme.id === value)?.id ?? "plassey";
 }
 export function themeForPage(saved: string | null, authenticated: boolean, pathname: string): ThemeId {
   return authenticated && (pathname === "/home" || pathname.startsWith("/room/")) ? validTheme(saved) : "plassey";
-}
-export function validClickSound(value: string | null): ClickSoundId {
-  return CLICK_SOUNDS.find((sound) => sound.id === value)?.id ?? "whisper";
 }
 export function safeVolume(value: string | null, fallback: number): number {
   const parsed = Number.parseFloat(value ?? "");

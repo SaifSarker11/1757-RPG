@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CLICK_SOUNDS, FACTION_STYLES, THEMES, safeVolume, themeForPage, validClickSound, validTheme } from "../../../apps/web/lib/preferences";
+import { FACTION_STYLES, THEMES, safeVolume, themeForPage, validTheme } from "../../../apps/web/lib/preferences";
 describe("player themes", () => {
  it("keeps royal as default", () => { expect(validTheme(null)).toBe("plassey"); expect(THEMES[0]).toMatchObject({background:"#111111", surface:"#55362a", text:"#f9d4af", accent:"#e01e1e", elevated:"#4f0505"}); });
  it("offers the exact Midnight Opulence reference palette", () => expect(THEMES.find(t => t.id === "midnight-opulence" )).toHaveProperty("colors", ["#1a1a2e", "#16213e", "#0f3460", "#efc07b"]));
@@ -17,9 +17,7 @@ describe("player themes", () => {
  it("only applies personal themes after login in the game", () => { expect(themeForPage("midnight-opulence",false,"/home")).toBe("plassey"); expect(themeForPage("midnight-opulence",true,"/login")).toBe("plassey"); expect(themeForPage("midnight-opulence",true,"/")).toBe("plassey"); expect(themeForPage("midnight-opulence",true,"/home")).toBe("midnight-opulence"); expect(themeForPage("midnight-opulence",true,"/room/abc")).toBe("midnight-opulence"); });
  it("rejects unsupported themes", () => expect(validTheme("retro")).toBe("plassey"));
 });
-describe("sound preferences", () => {
- it("provides four distinct click choices", () => expect(new Set(CLICK_SOUNDS.map(s => s.id)).size).toBe(4));
- it("defaults to a suspense cue instead of a legacy chiptune", () => expect(validClickSound(null)).toBe("whisper"));
+describe("volume preferences", () => {
  it("clamps volume without allowing corrupt values", () => { expect(safeVolume("2",0.35)).toBe(1); expect(safeVolume("-2",0.35)).toBe(0); expect(safeVolume("NaN",0.35)).toBe(0.35); });
 });
 

@@ -94,7 +94,7 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 - **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
 - **Transitions on every page:** the Nawab-versus-Clive battle scene appears immediately and lifts to reveal the destination, with no blank intermediary screen; reduced-motion preferences are respected.
 
-### Personal themes and sound
+### Personal themes and music
 
 Public pages keep **Royal Plassey**. After guest or account sign-in, the **Theme** picker in both the dashboard and room offers:
 
@@ -118,9 +118,9 @@ Royal Plassey remains first and unchanged. The alternatives use all twelve combi
 
 Nawab/Loyalists remain emerald green (`#2f9e5b`), EIC remains red (`#e01e1e`), and Jagat Seth remains neutral light gray (`#D3D3D3`) in every theme. Surface gradients blend each palette's swatches; Rose Gold derives a deeper rose ink for readable text. Preferences are saved on the current browser and origin; Vercel and Render copies have independent preferences.
 
-**Music & sound** appears in the dashboard and room header after guest or account sign-in. Open it to select **Court of Murshidabad**, **Council in Session**, **Eve of Plassey**, or **Off**, and adjust the volume. It is also available before sign-in. Browsers may require a first click to start playback; returning players' Off choice is respected. Music loops across page changes and pauses temporarily for voice chat.
+**Music** appears in the dashboard and room header after guest or account sign-in. in the dashboard and room header after guest or account sign-in. Open it to select **Court of Murshidabad**, **Council in Session**, **Eve of Plassey**, or **Off**, and adjust the volume. It is also available before sign-in. Browsers may require a first click to start playback; returning players' Off choice is respected. Music loops across page changes and pauses temporarily for voice chat.
 
-Four original suspense click cues — Court whisper, Bronze seal, Distant war drum, Shadow chime — cover navigation, login, guest play, room creation, role assignment, approvals, ballots, and other controls. Each can be previewed; click sounds have an independent toggle and volume. Soft phase/result cues replace the old 8-bit effects.
+Buttons stay silent and there is no vibration: the music alone carries the atmosphere.
 
 ### Updated settings screenshots
 

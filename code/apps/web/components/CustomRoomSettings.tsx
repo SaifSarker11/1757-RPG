@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { NamedRoleId, RoleId, Team } from "@repo/game-engine";
-import { gameAudio } from "@/lib/audio";
 import {
   ALL_NAMED_ROLES,
   DISCUSSION_SECONDS,
@@ -114,7 +113,6 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
 
   const toggleRole = (role: NamedRoleId) => {
     if (role === "NAWAB_SIRAJ") return;
-    gameAudio.playClick();
     edit();
     setEnabled((prev) => {
       const next = new Set(prev);
@@ -143,7 +141,6 @@ export function CustomRoomSettings({ roomId, apiUrl, room, players, isHost }: Pr
   );
 
   const save = async () => {
-    gameAudio.playClick();
     setSaving(true);
     setMessage(null);
     try {

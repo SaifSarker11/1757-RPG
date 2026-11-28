@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { gameAudio } from "@/lib/audio";
 import { ThemeControl } from "@/components/ThemeControl";
 import { MusicControl } from "@/components/MusicControl";
 
@@ -69,7 +68,6 @@ export default function HomePage() {
   }, [isPending, session, router]);
 
   async function handleSignOut() {
-    gameAudio.playClick();
     await authClient.signOut();
     router.replace("/login");
     router.refresh();
@@ -77,7 +75,6 @@ export default function HomePage() {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    gameAudio.playClick();
     if (!displayName.trim() || !session?.user) return;
     setProfileMessage(null);
     setActionLoading(true);
@@ -107,7 +104,6 @@ export default function HomePage() {
   };
 
   const handleCreateRoom = async () => {
-    gameAudio.playClick();
     if (!session?.user) return;
     setError(null);
     setActionLoading(true);
@@ -138,7 +134,6 @@ export default function HomePage() {
 
   const handleJoinRoomByCode = async (e: React.FormEvent) => {
     e.preventDefault();
-    gameAudio.playClick();
     const codeOrId = joinCode.trim();
     if (!codeOrId || !session?.user) return;
     setError(null);
@@ -268,7 +263,6 @@ export default function HomePage() {
                       role="radio"
                       aria-checked={selected}
                       onClick={() => {
-                        gameAudio.playClick();
                         setRoomMode(option.mode);
                       }}
                       className={`text-left p-3 border-2 rounded-none transition-colors ${

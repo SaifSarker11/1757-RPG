@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { gameAudio } from "@/lib/audio";
 import Link from "next/link";
 import { AuthShell, Field } from "@/components/site/AuthShell";
 
@@ -16,7 +15,6 @@ export default function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    gameAudio.playClick();
     setLoading(true);
     setError(null);
 
@@ -46,7 +44,6 @@ export default function LoginPage() {
   }
 
   async function handleGuestLogin() {
-    gameAudio.playClick();
     setLoading(true);
     setError(null);
 
