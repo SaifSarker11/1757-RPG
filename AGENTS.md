@@ -7,3 +7,4 @@
 
 - Render the council from the authoritative PlayerView; show only self/private reveals as portraits because visions may be decoys.
 - Emit JUnit and JSON from each Vitest workspace in CI and upload reports so reviewers can verify actual execution, not infer it from a badge.
+- Select transition art with a session-persisted shuffle bag; show each scene once per cycle and prewarm images to avoid blank overlays.

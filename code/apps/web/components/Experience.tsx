@@ -7,12 +7,14 @@ import { themeForPage } from "@/lib/preferences";
 import { readPreference } from "@/lib/browser-preferences";
 import { MusicControl } from "./MusicControl";
 import { ThemeControl } from "./ThemeControl";
+import { warmTransitionScenes } from "@/lib/transition-player";
 
 /** Persistent across navigation: music starts on entry and keeps playing through every page change. */
 export function Experience() {
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
   useMusic();
+  useEffect(() => { if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) warmTransitionScenes(); }, []);
   const inGame = pathname === "/home" || pathname.startsWith("/room/");
   useEffect(() => {
     const apply = () => document.documentElement.setAttribute("data-theme", themeForPage(readPreference("daisyui-theme"), Boolean(session?.user), pathname));
