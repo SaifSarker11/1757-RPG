@@ -80,47 +80,8 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 - **Mir Jafar's steal:** if Green won on rounds, Mir Jafar gets one guess. Naming **Mir Madan** correctly steals the win for Red.
 - **Jagat Seth's gamble:** if Jagat Seth is in the game, he then names one player: **Mir Jafar** if Green is winning, **Rai Durlabh** if Red is winning. A correct guess wins the whole game for Jagat Seth alone.
 
-## Look and feel
-
-- **Default royal palette (preserved):**
-  | Colour | Hex | Used for |
-  |---|---|---|
-  | Warm Champagne Gold | `#f9d4af` | headings, body text, highlights, active borders |
-  | Rich Espresso Bronze | `#55362a` | secondary surfaces, card borders, muted accents |
-  | Deep Royal Crimson | `#4f0505` | elevated cards, section gradients, hover states |
-  | Obsidian Black | `#111111` | page background, modals |
-  | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
-- **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
 - **Artwork:** the original ornamental Nawab–Clive sword duel layered over the **1757** title, with its smooth entrance and scroll effects. Login/signup use the supplied sunset battlefield as a full-screen background; the signed-in dashboard uses the wider battlefield.
 - **Transitions:** eighteen distinct historical illustrations, randomly shuffled without repeats until every scene has appeared. Consecutive repeats across cycles are prevented; the cycle survives page reloads within the tab. Images are preloaded, failed images never leave a blank overlay, and reduced-motion preferences are respected.
-
-### Personal themes and music
-
-**Royal Plassey** is the default. The **Theme** picker is available beside Music from the first screen; the selected palette continues through login, dashboard and room.
-
-Royal Plassey remains first and unchanged. The alternatives use all twelve combinations currently published in [Brandlic's luxury palette guide](https://brandlic.studio/9-luxury-color-palettes-that-define-high-end-design-in-2025/), including its three 2026–2027 additions.
-
-| Theme | Reference colours |
-|---|---|
-| Royal Plassey (default) | `#111111` / `#55362a` / `#4f0505` / `#f9d4af` / `#e01e1e` |
-| Midnight Opulence | `#1a1a2e` / `#16213e` / `#0f3460` / `#efc07b` |
-| Golden Hour Elite | `#FEF4D5` / `#F1E49A` / `#E6D17B` / `#2c1810` |
-| Emerald Sophistication | `#0d4c3c` / `#2d5a4a` / `#7ba05b` / `#f4f1eb` |
-| Platinum Prestige | `#2c3e50` / `#34495e` / `#bdc3c7` / `#ecf0f1` |
-| Royal Burgundy | `#722f37` / `#8b1538` / `#a0522d` / `#f5f5dc` |
-| Sapphire Dreams | `#0f1419` / `#1e3a5f` / `#4a90a4` |
-| Rose Gold Romance | `#b76e79` / `#e8b4b8` / `#f7e7ce` / `#ffffff` |
-| Obsidian Elegance | `#0c0c0c` / `#2c2c2c` / `#4a4a4a` / `#bea98e` |
-| Arctic Luxury | `#f8f8ff` / `#e6e6fa` / `#b0c4de` / `#2f4f4f` |
-| Quiet Luxury | `#EDE6DA` / `#D6CBB8` / `#A8998A` / `#4F473F` |
-| Luminous Blue Luxe | `#0B1A33` / `#1D3B6A` / `#2E6FD8` / `#EDE7DC` |
-| Olive & Deep Wine | `#2F3A22` / `#6E7445` / `#5B1A2A` / `#EFE6D6` |
-
-Nawab/Loyalists remain emerald green (`#2f9e5b`), EIC remains red (`#e01e1e`), and Jagat Seth remains neutral light gray (`#D3D3D3`) in every theme. Surface gradients blend each palette's swatches; Rose Gold derives a deeper rose ink for readable text. Preferences are saved on the current browser and origin; Vercel and Render copies have independent preferences.
-
-**Music** appears in the dashboard and room header after guest or account sign-in. Open it to select **Court of Murshidabad**, **Council in Session**, **Eve of Plassey**, or **Off**, and adjust the volume. It is also available before sign-in. Browsers may require a first click to start playback; returning players' Off choice is respected. Music loops across page changes and pauses temporarily for voice chat.
-
-Buttons stay silent and there is no vibration: the music alone carries the atmosphere.
 
 ### Updated settings screenshots
 
