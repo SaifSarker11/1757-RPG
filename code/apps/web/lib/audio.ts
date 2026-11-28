@@ -54,33 +54,59 @@ class AudioEngine {
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
     osc.start(now); osc.stop(now + duration + 0.01);
   }
-  /** Each cue: a mysterious motif, a resonant body and fading echoes, like a cipher unlocking. */
+  /** Detuned, dissonant layers that never resolve: suspense, unease and a puzzle left unsolved. */
   private echo(f: number, d: number, a: number, at: number, type: OscillatorType = "sine") {
-    [0, 0.17, 0.34].forEach((t, i) => this.tone(f, d, a * ([1, 0.35, 0.12][i] ?? 0), at + t, f * 0.995, type));
+    [0, 0.13, 0.29, 0.47].forEach((t, i) => this.tone(f * (1 + i * 0.006), d, a * ([1, 0.45, 0.2, 0.08][i] ?? 0), at + t, f * 0.97, type));
+  }
+  private noise(duration: number, amplitude: number, delay = 0, from = 3000, to = 400) {
+    const ctx = this.context(); if (!ctx || this.volume === 0) return;
+    const now = ctx.currentTime + delay;
+    const buffer = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * duration)), ctx.sampleRate);
+    const data = buffer.getChannelData(0); for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(); src.buffer = buffer;
+    const filter = ctx.createBiquadFilter(); filter.type = "bandpass"; filter.Q.value = 6;
+    filter.frequency.setValueAtTime(from, now); filter.frequency.exponentialRampToValueAtTime(to, now + duration);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, amplitude * this.volume), now + duration * 0.4);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+    src.onended = () => { src.disconnect(); filter.disconnect(); gain.disconnect(); };
+    src.start(now); src.stop(now + duration + 0.01);
   }
   private cue(sound: ClickSoundId) {
-    if (sound === "whisper") { // Secret cipher: falling minor second over a low drone
-      this.tone(82.41, 0.55, 0.12, 0, 78, "triangle");
-      this.echo(659.25, 0.16, 0.09, 0); this.echo(622.25, 0.22, 0.08, 0.07);
+    if (sound === "whisper") { // Secret cipher: reversed breath, beating tritone, falling question
+      this.noise(0.28, 0.07, 0, 600, 4200);
+      this.tone(55, 0.7, 0.16, 0.18, 49, "triangle"); this.tone(56.6, 0.7, 0.1, 0.18, 50, "triangle");
+      this.echo(698.46, 0.2, 0.08, 0.2); this.echo(493.88, 0.3, 0.07, 0.3); this.tone(466.16, 0.5, 0.05, 0.42, 440);
     }
-    if (sound === "seal") { // Puzzle lock: two tumbler clicks, then a hollow resonance
-      this.tone(2200, 0.03, 0.08, 0, 900, "square"); this.tone(2900, 0.03, 0.06, 0.055, 1200, "square");
-      this.echo(311.13, 0.32, 0.12, 0.08, "triangle"); this.tone(466.16, 0.4, 0.04, 0.1);
+    if (sound === "seal") { // Puzzle lock: three uneven tumblers, then a cluster that refuses to settle
+      [0, 0.07, 0.19].forEach((t, i) => this.tone([2600, 1800, 3300][i] ?? 2000, 0.025, 0.08, t, 700, "square"));
+      this.noise(0.08, 0.05, 0.2, 5000, 1500);
+      this.echo(277.18, 0.45, 0.1, 0.24, "triangle"); this.tone(293.66, 0.5, 0.06, 0.26); this.tone(415.3, 0.55, 0.04, 0.3, 392);
     }
-    if (sound === "drum") { // War omen: deep boom with an uneasy tritone
-      this.tone(72, 0.45, 0.32, 0, 34); this.tone(146.83, 0.5, 0.06, 0.03, 140, "triangle");
-      this.echo(207.65, 0.4, 0.05, 0.05);
+    if (sound === "drum") { // War omen: heartbeat double-thud, distant cannon rumble, dread swell
+      this.tone(64, 0.3, 0.34, 0, 32); this.tone(58, 0.35, 0.28, 0.16, 30);
+      this.noise(0.6, 0.06, 0.05, 300, 60);
+      this.tone(103.83, 0.7, 0.05, 0.1, 98, "sawtooth"); this.echo(146.83, 0.5, 0.04, 0.2);
     }
-    if (sound === "chime") { // Phantom bell: tritone shimmer that dissolves
-      this.echo(523.25, 0.5, 0.08, 0); this.tone(739.99, 0.6, 0.05, 0.02); this.echo(1046.5, 0.35, 0.03, 0.06);
+    if (sound === "chime") { // Phantom bell: inharmonic bell partials that drift out of tune
+      [1, 2.76, 5.4, 8.93].forEach((ratio, i) => this.tone(311.13 * ratio, 0.9 - i * 0.15, 0.07 / (i + 1), i * 0.01, 311.13 * ratio * 0.985));
+      this.echo(440, 0.4, 0.035, 0.12); this.noise(0.4, 0.025, 0.05, 8000, 2000);
     }
   }
-  public preview(sound: ClickSoundId) { this.cue(sound); }
+  /** Short haptic pattern matched to each cue on devices that support vibration. */
+  private haptic(sound: ClickSoundId) {
+    if (!this.enabled || typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
+    const patterns: Record<ClickSoundId, number[]> = { whisper: [8, 40, 14], seal: [6, 30, 6, 60, 18], drum: [28, 60, 22], chime: [12] };
+    try { navigator.vibrate(patterns[sound]); } catch { /* unsupported */ }
+  }
+  public preview(sound: ClickSoundId) { this.initPreferences(); this.cue(sound); this.haptic(sound); }
   public playClick() {
     const now = Date.now();
     // A single global click and a legacy handler may refer to the same action.
     if (now - this.lastClick < 60) return;
-    this.lastClick = now; this.initPreferences(); this.cue(this.sound);
+    this.lastClick = now; this.initPreferences(); this.cue(this.sound); this.haptic(this.sound);
   }
   public playTimerTick() { this.tone(220, 0.08, 0.06); }
   public playPhaseChange() { this.tone(146.83, 0.5, 0.12); this.tone(155.56, 0.65, 0.055, 0.12); }
