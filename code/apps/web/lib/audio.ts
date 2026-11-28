@@ -56,7 +56,7 @@ class AudioEngine {
   }
   /** Each cue: a mysterious motif, a resonant body and fading echoes, like a cipher unlocking. */
   private echo(f: number, d: number, a: number, at: number, type: OscillatorType = "sine") {
-    [0, 0.17, 0.34].forEach((t, i) => this.tone(f, d, a * [1, 0.35, 0.12][i], at + t, f * 0.995, type));
+    [0, 0.17, 0.34].forEach((t, i) => this.tone(f, d, a * ([1, 0.35, 0.12][i] ?? 0), at + t, f * 0.995, type));
   }
   private cue(sound: ClickSoundId) {
     if (sound === "whisper") { // Secret cipher: falling minor second over a low drone
