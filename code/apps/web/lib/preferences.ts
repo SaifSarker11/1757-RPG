@@ -16,10 +16,10 @@ export const THEMES = [
 ] as const;
 export type ThemeId = (typeof THEMES)[number]["id"];
 export const CLICK_SOUNDS = [
-  { id: "whisper", name: "Court whisper" },
-  { id: "seal", name: "Bronze seal" },
-  { id: "drum", name: "Distant war drum" },
-  { id: "chime", name: "Shadow chime" },
+  { id: "whisper", name: "Secret cipher" },
+  { id: "seal", name: "Puzzle lock" },
+  { id: "drum", name: "War omen" },
+  { id: "chime", name: "Phantom bell" },
 ] as const;
 export type ClickSoundId = (typeof CLICK_SOUNDS)[number]["id"];
 export function validTheme(value: string | null): ThemeId {

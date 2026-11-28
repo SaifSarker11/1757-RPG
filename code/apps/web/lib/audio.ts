@@ -54,11 +54,26 @@ class AudioEngine {
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
     osc.start(now); osc.stop(now + duration + 0.01);
   }
+  /** Each cue: a mysterious motif, a resonant body and fading echoes, like a cipher unlocking. */
+  private echo(f: number, d: number, a: number, at: number, type: OscillatorType = "sine") {
+    [0, 0.17, 0.34].forEach((t, i) => this.tone(f, d, a * [1, 0.35, 0.12][i], at + t, f * 0.995, type));
+  }
   private cue(sound: ClickSoundId) {
-    if (sound === "whisper") { this.tone(190, 0.19, 0.22, 0, 95); this.tone(285, 0.24, 0.06, 0.015, 150); }
-    if (sound === "seal") { this.tone(330, 0.25, 0.16, 0, 270, "triangle"); this.tone(713, 0.28, 0.055, 0.012); }
-    if (sound === "drum") { this.tone(120, 0.26, 0.3, 0, 42); this.tone(61, 0.18, 0.07, 0.02, 40); }
-    if (sound === "chime") { this.tone(440, 0.32, 0.14); this.tone(466.16, 0.38, 0.065, 0.025); }
+    if (sound === "whisper") { // Secret cipher: falling minor second over a low drone
+      this.tone(82.41, 0.55, 0.12, 0, 78, "triangle");
+      this.echo(659.25, 0.16, 0.09, 0); this.echo(622.25, 0.22, 0.08, 0.07);
+    }
+    if (sound === "seal") { // Puzzle lock: two tumbler clicks, then a hollow resonance
+      this.tone(2200, 0.03, 0.08, 0, 900, "square"); this.tone(2900, 0.03, 0.06, 0.055, 1200, "square");
+      this.echo(311.13, 0.32, 0.12, 0.08, "triangle"); this.tone(466.16, 0.4, 0.04, 0.1);
+    }
+    if (sound === "drum") { // War omen: deep boom with an uneasy tritone
+      this.tone(72, 0.45, 0.32, 0, 34); this.tone(146.83, 0.5, 0.06, 0.03, 140, "triangle");
+      this.echo(207.65, 0.4, 0.05, 0.05);
+    }
+    if (sound === "chime") { // Phantom bell: tritone shimmer that dissolves
+      this.echo(523.25, 0.5, 0.08, 0); this.tone(739.99, 0.6, 0.05, 0.02); this.echo(1046.5, 0.35, 0.03, 0.06);
+    }
   }
   public preview(sound: ClickSoundId) { this.cue(sound); }
   public playClick() {
