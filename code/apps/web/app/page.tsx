@@ -16,22 +16,23 @@ export default function Landing() {
       <SiteNav />
       <main>
         {/* Hero — Tabletales composition: gold line, edge-to-edge title, art rising through it */}
-        <section className="hero relative overflow-hidden pt-28 md:pt-32" style={{ display: "block" }}>
-          <p className="eyebrow rise text-center" style={{ animationDelay: "150ms" }}>
+        <section className="opening-hero">
+          <p className="eyebrow rise text-center">
             Bengal, 1757 · A kingdom is lost by the hands that betray it
           </p>
-          <h1 aria-label="1757" className="font-display mt-[8vw] px-3 text-center font-black uppercase leading-[0.8] tracking-[-0.03em] text-[34vw]">
+          <div className="opening-stage">
+          <h1 aria-label="1757" className="opening-title font-display">
             <span className="display-tall letter-mask justify-center" aria-hidden="true">
               {"1757".split("").map((c, i) => (
                 <span key={i} className="letter" style={{ ["--i" as string]: i }}>{c}</span>
               ))}
             </span>
           </h1>
-          <div className="relative z-10 mx-auto mt-8 w-full" data-parallax>
-            <Image src={BATTLEFIELD_ART} alt="The Plassey battlefield with troops, cannons, war elephants, cavalry and archers" width={1672} height={940} unoptimized priority className="art-in h-auto w-full" />
+          <div className="opening-duel" data-parallax>
+            <Image src="/images/hero-duel.webp" alt="Nawab Siraj-ud-Daulah and Robert Clive crossing swords in the iconic ornamental 1757 illustration" width={900} height={900} priority className="art-in h-auto w-full" />
           </div>
-          <div className="relative z-20 mx-auto -mt-10 max-w-3xl px-6 pb-24 text-center">
-            <div className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10 bg-gradient-to-t from-base-100 via-base-100/95 to-transparent" />
+          </div>
+          <div className="opening-copy mx-auto max-w-3xl px-6 text-center">
             <p className="text-lg opacity-80 md:text-xl">
               A real-time social-deduction game for 6–15 players. Secret roles, five rounds, and one question: who sold Bengal to the Company?
             </p>

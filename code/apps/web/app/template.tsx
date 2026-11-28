@@ -17,6 +17,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const image = useRef<HTMLImageElement>(null);
 
   useLayoutEffect(() => {
+    if (pathname === "/") return; // The opening uses its own iconic duel entrance, not a random cover.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const chosen = nextTransitionScene();
     const element = scene.current; const picture = image.current;

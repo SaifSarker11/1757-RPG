@@ -521,9 +521,9 @@ html { transition: background-color .35s, color .35s; }
 .dashboard-council { min-width: 0; }
 .dashboard-art { position: relative; height: 260px; overflow: hidden; border-radius: 4px; }
 .dashboard-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
-.dashboard-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 40%, color-mix(in oklab, var(--color-base-100) 80%, transparent)); }
+.dashboard-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 30%, color-mix(in oklab, var(--faction-ink) 90%, transparent)); }
 .dashboard-art > span { position: absolute; z-index: 1; bottom: 24px; left: 24px; font: 28px/1.2 var(--font-display); color: var(--faction-copy); }
-.dashboard-actions { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 32px; padding: 32px 0; }
+.dashboard-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px; padding: 32px 0; }
 .dashboard-section { min-width: 0; }
 .dashboard-section + .dashboard-section { border-left: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); padding-left: 32px; }
 .dashboard-section h2, .dashboard-profile h2 { font-family: var(--font-display); font-size: 28px; line-height: 1.2; margin: 8px 0 20px; overflow-wrap: anywhere; }
@@ -531,7 +531,7 @@ html { transition: background-color .35s, color .35s; }
 .council-mode-selector .btn { flex: 1; height: auto; padding: 12px; white-space: normal; background: var(--color-base-100); border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); font-size: 12px; }
 .council-mode-selector .btn[data-selected='true'] { border-color: var(--color-base-content); background: color-mix(in oklab, var(--color-base-300) 60%, var(--color-base-100)); }
 .council-field-label { display: block; font-size: 12px; margin-bottom: 8px; color: color-mix(in oklab, var(--color-base-content) 75%, transparent); }
-.dashboard-profile { min-width: 0; padding: 24px 0 0 24px; border-left: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); }
+.dashboard-profile { min-width: 0; padding: 0 0 0 24px; border-left: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); }
 .profile-ledger { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 16px; padding: 24px 0; border-block: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); }
 .profile-ledger dt { font: 11px var(--font-mono); opacity: .65; text-transform: uppercase; }
 .profile-ledger dd { font: 32px/1.2 var(--font-display); margin-top: 8px; }
@@ -580,3 +580,35 @@ html { transition: background-color .35s, color .35s; }
 @media (max-width: 1000px) { .dashboard-layout { grid-template-columns: minmax(0,1fr); gap: 16px; } .dashboard-profile { padding: 24px 0; border-left: 0; border-top: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); } .profile-ledger { grid-template-columns: repeat(4,minmax(0,1fr)); } }
 @media (max-width: 640px) { .game-header { grid-template-columns: minmax(0,1fr); } .game-header-tools { justify-content: flex-start; } .dashboard-heading { padding: 32px 0 24px; } .dashboard-heading h1 { font-size: 40px; } .dashboard-art { height: 200px; } .dashboard-art > span { font-size: 24px; left: 16px; bottom: 16px; } .dashboard-actions { grid-template-columns: minmax(0,1fr); gap: 24px; } .dashboard-section + .dashboard-section { border-left: 0; padding: 24px 0 0; border-top: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); } .profile-ledger { grid-template-columns: repeat(2,minmax(0,1fr)); } .council-caption h2 { font-size: 28px; } .council-footer { font-size: 11px; } .dense-seat-list { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; font-size: 11px; padding: 12px 0; } .dense-seat-list li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
 @media (prefers-reduced-motion: reduce) { .game-shell *, .game-shell *::before, .game-shell *::after { animation: none !important; transition: none !important; } }
+
+/* The opening duel remains layered over the title, never a separate image band. */
+.opening-hero { display: block; position: relative; overflow: hidden; padding-top: 112px; }
+.opening-stage { position: relative; height: min(720px, calc(100svh - 200px)); min-height: 480px; max-width: 1200px; margin: 40px auto 0; }
+.opening-title { position: absolute; inset: 0 0 auto; margin: 0; text-align: center; font-size: 400px; font-weight: 900; line-height: .8; letter-spacing: 0; }
+.opening-duel { position: absolute; z-index: 1; bottom: -12%; left: 50%; width: min(680px, 80%); transform: translateX(-50%); }
+.opening-copy { position: relative; z-index: 2; padding-top: 80px; padding-bottom: 64px; background: linear-gradient(180deg, transparent, var(--color-base-100) 32%); }
+.opening-hero + section { padding-top: 64px; }
+.auth-scene { position: relative; isolation: isolate; min-height: 100svh; display: grid; grid-template-columns: minmax(0,1fr) minmax(360px,480px); gap: 64px; align-items: center; padding: 80px max(32px, calc((100% - 1200px)/2)); overflow: hidden; }
+.auth-background { z-index: -3; object-position: center; }
+.auth-shade { position: absolute; inset: 0; z-index: -2; background: linear-gradient(90deg, color-mix(in oklab, var(--faction-ink) 15%, transparent), color-mix(in oklab, var(--color-base-100) 85%, transparent) 60%, var(--color-base-100)), linear-gradient(0deg, color-mix(in oklab, var(--faction-ink) 75%, transparent), transparent 60%); }
+.auth-identity { align-self: end; color: var(--faction-copy); padding-bottom: 32px; }
+.auth-content { width: 100%; max-width: 400px; justify-self: end; padding-block: 24px; }
+.auth-content h1 { font-size: 48px; line-height: 1.1; }
+.auth-content .input, .auth-content .btn { min-height: 44px; border-radius: 4px; }
+.dashboard-shell::before { background: linear-gradient(180deg, color-mix(in oklab, var(--color-base-100) 94%, transparent), color-mix(in oklab, var(--color-base-100) 90%, transparent)), var(--battlefield-image) center / cover no-repeat; }
+.dashboard-shell .max-w-7xl { max-width: 1200px; }
+.dashboard-section { display: flex; flex-direction: column; }
+.dashboard-create-fields { display: grid; grid-template-columns: minmax(0,1fr); gap: 16px; margin-top: 20px; }
+.dashboard-section > label { margin-top: auto; }
+.dashboard-section > .btn { margin-top: 16px; }
+.dashboard-profile h2 { margin-top: 8px; }
+@media (min-width: 1500px) { .opening-title { font-size: 480px; } .opening-duel { width: 740px; } }
+@media (max-width: 1000px) { .opening-title { font-size: 300px; } .auth-scene { gap: 32px; grid-template-columns: minmax(0,1fr) minmax(320px,400px); } }
+@media (max-width: 640px) {
+ .opening-hero { padding-top: 104px; } .opening-hero > .eyebrow { padding-inline: 24px; font-size: 9px; line-height: 1.6; letter-spacing: 0; }
+ .opening-stage { min-height: 340px; height: 420px; margin-top: 40px; } .opening-title { font-size: 176px; } .opening-duel { width: min(440px,100%); bottom: -8%; } .opening-copy { padding-top: 48px; padding-bottom: 40px; }
+ .auth-scene { grid-template-columns: minmax(0,1fr); gap: 0; padding: 48px 24px 88px; } .auth-identity { display: none; } .auth-content { justify-self: center; } .auth-shade { background: linear-gradient(180deg, color-mix(in oklab, var(--color-base-100) 70%, transparent), color-mix(in oklab, var(--color-base-100) 92%, transparent)); } .auth-background { object-position: 65% center; } .auth-content h1 { font-size: 40px; }
+ .dashboard-section > label { margin-top: 0; }
+}
+@media (max-width: 360px) { .opening-title { font-size: 148px; } }
+@media (prefers-reduced-motion: reduce) { .auth-background { animation: none; } }

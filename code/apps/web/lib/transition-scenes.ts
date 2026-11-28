@@ -13,6 +13,10 @@ import scene11 from "../assets/transitions/river-dawn.webp.asset.json";
 import scene12 from "../assets/transitions/river-messenger.webp.asset.json";
 import scene13 from "../assets/transitions/war-council.webp.asset.json";
 
+import conspiracy from "../assets/transitions/company-bengal-conspiracy.jpg.asset.json";
+import defeat from "../assets/transitions/bengal-defeat.jpg.asset.json";
+import warship from "../assets/transitions/warship-conspiracy.jpg.asset.json";
+
 const host = "https://plassey-shadow-crown.lovable.app";
 export const TRANSITION_SCENES = [
   { id: "commanders-duel", src: "/images/transition-battle.jpg", label: "Nawab and Clive" },
@@ -30,4 +34,7 @@ export const TRANSITION_SCENES = [
   { id: "river-dawn", src: `${host}${scene11.url}`, label: "River Dawn" },
   { id: "river-messenger", src: `${host}${scene12.url}`, label: "River Messenger" },
   { id: "war-council", src: `${host}${scene13.url}`, label: "War Council" },
+  { id: "company-bengal-conspiracy", src: `${host}${conspiracy.url}`, label: "The secret pact" },
+  { id: "bengal-defeat", src: `${host}${defeat.url}`, label: "Bengal after Plassey" },
+  { id: "warship-conspiracy", src: `${host}${warship.url}`, label: "The Company warship council" },
 ] as const;

@@ -1,21 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BATTLEFIELD_ART } from "@/lib/artwork";
+import { AUTH_BATTLEFIELD_ART } from "@/lib/artwork";
 
 export function AuthShell({ title, subtitle, children, footer }: { title: string; subtitle: string; children: ReactNode; footer: ReactNode }) {
   return (
-    <main className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden overflow-hidden lg:block">
-        <Image src={BATTLEFIELD_ART} alt="Troops, cannon crews and war elephants on the Plassey battlefield" fill unoptimized priority sizes="50vw" className="ken-burns object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-base-100/30 to-transparent" />
-        <div className="absolute bottom-12 left-12 right-12">
+    <main className="auth-scene">
+      <Image src={AUTH_BATTLEFIELD_ART} alt="The Plassey battlefield beneath a fiery sunset, with war elephants and cavalry" fill unoptimized priority sizes="100vw" className="auth-background ken-burns object-cover" />
+      <div className="auth-shade" aria-hidden="true" />
+      <div className="auth-identity">
           <Link href="/" className="font-display text-5xl font-semibold">1757</Link>
           <p className="font-display mt-3 max-w-md text-2xl italic opacity-80">&ldquo;The court is full of traitors, and nobody knows who they are.&rdquo;</p>
-        </div>
       </div>
-      <div className="flex items-center justify-center p-6">
-        <div className="rise w-full max-w-sm">
+      <div className="auth-content">
+        <div className="rise w-full">
           <Link href="/" className="font-display text-3xl font-semibold lg:hidden">1757</Link>
           <p className="eyebrow mt-6 lg:mt-0">Plassey · 1757</p>
           <h1 className="font-display mt-3 text-5xl font-semibold">{title}</h1>

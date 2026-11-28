@@ -195,7 +195,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="game-shell min-h-screen text-base-content font-sans px-4 py-6 md:px-8">
+    <main className="game-shell dashboard-shell min-h-screen text-base-content font-sans px-4 py-6 md:px-8" style={{ ["--battlefield-image" as string]: `url("${BATTLEFIELD_ART}")` }}>
       <header className="game-header mx-auto max-w-7xl">
         <div className="min-w-0"><span className="game-wordmark">1757</span><span className="council-kicker block">The court of Bengal</span></div>
         <div className="game-header-tools"><MusicControl /><ThemeControl /><button onClick={handleSignOut} className="btn btn-ghost btn-sm">Leave</button></div>
@@ -215,7 +215,7 @@ export default function HomePage() {
               <div className="council-mode-selector" role="radiogroup" aria-label="Room mode">
                 {([{ mode: 'STANDARD', title: 'Standard Council' }, { mode: 'CUSTOM', title: 'Royal Decree' }] as const).map(option => <button key={option.mode} type="button" role="radio" aria-checked={roomMode === option.mode} className="btn btn-sm" data-selected={roomMode === option.mode} onClick={() => setRoomMode(option.mode)}>{option.title}</button>)}
               </div>
-              <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+              <div className="dashboard-create-fields">
                 <label className="min-w-0"><span className="council-field-label">Max capacity</span><input type="number" min={6} max={15} value={maxPlayers} onChange={e => setMaxPlayers(parseInt(e.target.value, 10))} className="input input-bordered w-full" /></label>
                 <button onClick={handleCreateRoom} disabled={actionLoading} className="btn btn-primary">{actionLoading ? 'CREATING...' : roomMode === 'CUSTOM' ? 'NEW CUSTOM ROOM' : 'NEW ROOM'} <span aria-hidden="true">↗</span></button>
               </div>

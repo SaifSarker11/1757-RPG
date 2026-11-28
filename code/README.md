@@ -13,8 +13,8 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
   | Obsidian Black | `#111111` | page background, modals |
   | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
 - **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
-- **Artwork:** a panoramic Plassey battlefield with troops, artillery and elephants beneath the **1757** title. The commanders’ duel appears only in the transition gallery.
-- **Transitions:** fifteen distinct historical illustrations, randomly shuffled without repeats until every scene has appeared. Consecutive repeats across cycles are prevented; the cycle survives page reloads within the tab. Images are preloaded, failed images never leave a blank overlay, and reduced-motion preferences are respected.
+- **Artwork:** the original ornamental Nawab–Clive sword duel layered over the **1757** title, with its smooth entrance and scroll effects. Login/signup use the supplied sunset battlefield as a full-screen background; the signed-in dashboard uses the wider battlefield.
+- **Transitions:** eighteen distinct historical illustrations, randomly shuffled without repeats until every scene has appeared. Consecutive repeats across cycles are prevented; the cycle survives page reloads within the tab. Images are preloaded, failed images never leave a blank overlay, and reduced-motion preferences are respected.
 - **Battle recap:** every match ends with a full-width report covering the winner and reason, round scores, ministers, all ballots and votes, mission cards, Mir Madan's reveal, Jagat Seth's gamble, and every player's final identity and result.
 
 ### Personal themes and music
@@ -209,10 +209,18 @@ The project uses **Vitest** (not “Vtest”). Tests are in `code/packages/game-
 
 The dashboard and room use an Avalon-inspired tabletop layout, adapted to 1757: a circular court table, secret identity medallions, the rotating leader’s crown, minister markers, five battle-round tokens and rejection track. Portraits only reveal your own role or genuine private reveals; faction identity and rules are unchanged. The first-screen settings, battlefield artwork, visible game display-name field and signed-in council screenshots reflect the current interface.
 
+## Opening and sign-in screenshots
+
+![Iconic 1757 opening duel](../doc/screenshots/current/home.jpg)
+
+| Sign in | Sign up |
+|---|---|
+| ![Sign in with sunset battlefield](../doc/screenshots/current/login.jpg) | ![Sign up with sunset battlefield](../doc/screenshots/current/signup.jpg) |
+
 ## Transition gallery and current screenshots
 
 ![Historical transition scene](../doc/screenshots/current/transition-render.jpg)
 
 ![Current named-player dashboard](../doc/screenshots/current/dashboard.jpg)
 
-The new paintings are generated historical illustrations, visually reviewed for obvious anatomy, equipment and perspective defects; they are not archival images or a guarantee of historical accuracy. The screenshots were captured from real public pages and a completed six-player match.
+The new paintings are generated historical illustrations, visually reviewed for obvious anatomy, equipment and perspective defects; they are not archival images or a guarantee of historical accuracy. The screenshots were captured from real public pages and a completed six-player match. README captures explicitly select the dark Royal Plassey theme, use consistent desktop framing, and wait for transitions to finish. The gallery includes a secret Company–Bengali pact, a British-only warship council, and the somber aftermath of Plassey (an interpretation of the beginning of Bengal’s loss of autonomy, not a claim that all independence ended in one day).
