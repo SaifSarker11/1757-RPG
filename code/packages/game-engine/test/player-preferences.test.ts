@@ -14,7 +14,8 @@ describe("player themes", () => {
  it("offers the exact Quiet Luxury reference palette", () => expect(THEMES.find(t => t.id === "quiet-luxury" )).toHaveProperty("colors", ["#EDE6DA", "#D6CBB8", "#A8998A", "#4F473F"]));
  it("offers the exact Luminous Blue Luxe reference palette", () => expect(THEMES.find(t => t.id === "luminous-blue-luxe" )).toHaveProperty("colors", ["#0B1A33", "#1D3B6A", "#2E6FD8", "#EDE7DC"]));
  it("offers the exact Olive & Deep Wine reference palette", () => expect(THEMES.find(t => t.id === "olive-deep-wine" )).toHaveProperty("colors", ["#2F3A22", "#6E7445", "#5B1A2A", "#EFE6D6"]));
- it("only applies personal themes after login in the game", () => { expect(themeForPage("midnight-opulence",false,"/home")).toBe("plassey"); expect(themeForPage("midnight-opulence",true,"/login")).toBe("plassey"); expect(themeForPage("midnight-opulence",true,"/")).toBe("plassey"); expect(themeForPage("midnight-opulence",true,"/home")).toBe("midnight-opulence"); expect(themeForPage("midnight-opulence",true,"/room/abc")).toBe("midnight-opulence"); });
+ it("allows theme selection from the first screen before login", () => { expect(themeForPage("midnight-opulence",false,"/")).toBe("midnight-opulence"); expect(themeForPage(null,false,"/")).toBe("plassey"); });
+ it("preserves the chosen theme through login and the game", () => { for (const pathname of ["/login", "/signup", "/home", "/room/abc"]) expect(themeForPage("midnight-opulence",true,pathname)).toBe("midnight-opulence"); });
  it("rejects unsupported themes", () => expect(validTheme("retro")).toBe("plassey"));
 });
 describe("volume preferences", () => {

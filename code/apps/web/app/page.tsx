@@ -4,6 +4,7 @@ import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { CourtCard } from "@/components/site/RoleCard";
 import { FACTION_STYLES } from "@/lib/preferences";
+import { BATTLEFIELD_ART } from "@/lib/artwork";
 import { COURT, FACTION_META, ROUND_STEPS } from "@/lib/roles-content";
 
 const FEATURED = ["NAWAB_SIRAJ", "MIR_JAFAR", "LUTFUNNESA", "JAGAT_SETH"];
@@ -26,10 +27,10 @@ export default function Landing() {
               ))}
             </span>
           </h1>
-          <div className="relative z-10 mx-auto -mt-[22vw] w-[min(88vw,780px)]" data-parallax>
-            <Image src="/images/hero-duel.webp" alt="Nawab Siraj-ud-Daulah and Robert Clive crossing swords amid cannon smoke" width={900} height={900} priority className="art-in h-auto w-full" />
+          <div className="relative z-10 mx-auto mt-8 w-full" data-parallax>
+            <Image src={BATTLEFIELD_ART} alt="The Plassey battlefield with troops, cannons, war elephants, cavalry and archers" width={1672} height={940} unoptimized priority className="art-in h-auto w-full" />
           </div>
-          <div className="relative z-20 mx-auto -mt-24 max-w-3xl px-6 pb-24 text-center">
+          <div className="relative z-20 mx-auto -mt-10 max-w-3xl px-6 pb-24 text-center">
             <div className="pointer-events-none absolute inset-x-0 -top-24 bottom-0 -z-10 bg-gradient-to-t from-base-100 via-base-100/95 to-transparent" />
             <p className="text-lg opacity-80 md:text-xl">
               A real-time social-deduction game for 6–15 players. Secret roles, five rounds, and one question: who sold Bengal to the Company?
@@ -117,7 +118,7 @@ export default function Landing() {
         {/* CTA */}
         <section className="relative mx-auto mt-28 max-w-6xl overflow-hidden rounded-[2rem] px-6">
           <div className="relative overflow-hidden rounded-[2rem]">
-            <Image src="/images/hero-plassey.jpg" alt="" fill sizes="100vw" className="object-cover opacity-40" />
+            <Image src={BATTLEFIELD_ART} alt="" fill unoptimized sizes="100vw" className="object-cover opacity-40" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-base-100/80 to-base-100" />
             <div className="relative flex flex-col items-center px-6 py-24 text-center">
               <h2 className="font-display max-w-3xl text-5xl font-semibold md:text-7xl">The Nawab is waiting.</h2>

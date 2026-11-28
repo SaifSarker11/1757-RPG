@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { ThemeControl } from "@/components/ThemeControl";
 import { MusicControl } from "@/components/MusicControl";
+import { BATTLEFIELD_ART } from "@/lib/artwork";
 
 const API_URL =
   typeof window !== "undefined"
@@ -19,6 +20,7 @@ export default function HomePage() {
 
 
   const [displayName, setDisplayName] = useState("");
+  const [courtName, setCourtName] = useState("");
   const [username, setUsername] = useState("");
   const [userStats, setUserStats] = useState<{
     xp: number;
@@ -40,11 +42,13 @@ export default function HomePage() {
   useEffect(() => {
     if (session?.user) {
       setDisplayName(session.user.name);
+      setCourtName(session.user.name);
       // Fetch extended profile & stats
       fetch(`${API_URL}/api/users/me`, { credentials: "include" })
         .then((res) => (res.ok ? res.json() : null))
         .then((json) => {
           if (json?.data) {
+            if (json.data.name) { setDisplayName(json.data.name); setCourtName(json.data.name); }
             if (json.data.username) setUsername(json.data.username);
           }
         })
@@ -94,7 +98,7 @@ export default function HomePage() {
         throw new Error(errJson.error ?? "Failed to update profile");
       }
 
-      await authClient.getSession({ fetchOptions: { cache: "no-store" } });
+      setCourtName(displayName.trim());
       setProfileMessage("Profile updated successfully");
     } catch (err) {
       setProfileMessage(err instanceof Error ? err.message : "Error updating profile");
@@ -199,12 +203,12 @@ export default function HomePage() {
       <div className="dashboard-heading mx-auto max-w-7xl">
         <span className="council-kicker">Plassey · 23 June 1757</span>
         <h1>The council awaits.</h1>
-        <p>Welcome back, {session.user.name}.</p>
+        <p>Welcome back, {courtName}.</p>
       </div>
       {error && <div className="alert alert-error mx-auto mb-6 max-w-7xl" role="alert">{error}</div>}
       <div className="dashboard-layout mx-auto max-w-7xl">
         <section className="dashboard-council">
-          <div className="dashboard-art" aria-hidden="true"><img src="/images/transition-battle.jpg" alt="" /><span>Trust is a dangerous thing.</span></div>
+          <div className="dashboard-art"><img src={BATTLEFIELD_ART} alt="The Plassey battlefield: troops, cannons, elephants and cavalry" /><span>Trust is a dangerous thing.</span></div>
           <div className="dashboard-actions">
             <section className="dashboard-section">
               <span className="council-kicker">01 · Convene</span><h2>Create chamber</h2>
@@ -224,15 +228,18 @@ export default function HomePage() {
           </div>
         </section>
         <aside className="dashboard-profile">
-          <span className="council-kicker">Your place in the court</span><h2>{session.user.name}</h2>
+          <span className="council-kicker">Your place in the court</span><h2>{courtName}</h2>
+          <form onSubmit={handleUpdateProfile} className="mb-6 space-y-3">
+            <label className="block"><span className="council-field-label">Game display name</span><input type="text" autoComplete="nickname" maxLength={50} value={displayName} onChange={e => setDisplayName(e.target.value)} className="input input-bordered w-full" required /></label>
+            <button type="submit" disabled={actionLoading || !displayName.trim()} className="btn btn-primary w-full">{actionLoading ? 'SAVING...' : 'SAVE DISPLAY NAME'}</button>
+          </form>
+          {profileMessage && <p role="status" className="my-4 text-sm">{profileMessage}</p>}
           {userStats && <dl className="profile-ledger">
             <div><dt>Level</dt><dd>{userStats.level}</dd></div><div><dt>Total XP</dt><dd>{userStats.xp}</dd></div>
             <div><dt>Matches</dt><dd>{userStats.matchesPlayed}</dd></div><div><dt>Win rate</dt><dd>{userStats.winRate}%</dd></div>
           </dl>}
           <details className="profile-details"><summary>Profile settings</summary>
-            {profileMessage && <p role="status" className="my-4 text-sm">{profileMessage}</p>}
             <form onSubmit={handleUpdateProfile} className="mt-5 space-y-4">
-              <label className="block"><span className="council-field-label">Display name</span><input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} className="input input-bordered w-full" required /></label>
               <label className="block"><span className="council-field-label">Handle / username</span><input type="text" placeholder="e.g. siraj1757" value={username} onChange={e => setUsername(e.target.value)} className="input input-bordered w-full" /></label>
               <button type="submit" disabled={actionLoading || !displayName.trim()} className="btn btn-primary w-full">{actionLoading ? 'SAVING...' : 'SAVE PROFILE'}</button>
             </form>

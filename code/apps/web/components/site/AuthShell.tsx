@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BATTLEFIELD_ART } from "@/lib/artwork";
 
 export function AuthShell({ title, subtitle, children, footer }: { title: string; subtitle: string; children: ReactNode; footer: ReactNode }) {
   return (
     <main className="grid min-h-screen lg:grid-cols-2">
       <div className="relative hidden overflow-hidden lg:block">
-        <Image src="/images/hero-plassey.jpg" alt="The Battle of Plassey" fill priority sizes="50vw" className="ken-burns object-cover" />
+        <Image src={BATTLEFIELD_ART} alt="Troops, cannon crews and war elephants on the Plassey battlefield" fill unoptimized priority sizes="50vw" className="ken-burns object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-base-100/30 to-transparent" />
         <div className="absolute bottom-12 left-12 right-12">
           <Link href="/" className="font-display text-5xl font-semibold">1757</Link>

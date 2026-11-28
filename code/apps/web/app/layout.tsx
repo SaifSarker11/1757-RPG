@@ -3,6 +3,7 @@ import { Bodoni_Moda, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Experience } from "@/components/Experience";
 import { Motion } from "@/components/site/Motion";
+import { BATTLEFIELD_ART } from "@/lib/artwork";
 
 const display = Bodoni_Moda({
   variable: "--font-display-serif",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "1757 — The Battle of Plassey",
     description: "Real-time social deduction in the Nawab's court. Who will betray Bengal?",
-    images: ["/images/hero-plassey.jpg"],
+    images: [BATTLEFIELD_ART],
     type: "website",
   },
   twitter: { card: "summary_large_image" },

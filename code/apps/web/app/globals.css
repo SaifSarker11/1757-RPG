@@ -349,7 +349,7 @@ input:-webkit-autofill:focus {
 .page-panel--b { z-index: 92; background: linear-gradient(180deg, var(--color-base-300), var(--color-base-200)); }
 @media (prefers-reduced-motion: reduce) { .page-panel { display: none; } }
 
-/* Only public pages use the royal default; authenticated game pages can select a palette. */
+/* Royal is the default; saved personal palettes apply from the first screen. */
 [data-theme="plassey"] { --button-end: #4f0505; }
 .theme-preview-plassey { --swatch-bg: #111111; --swatch-surface: #55362a; --swatch-text: #f9d4af; --swatch-accent: #e01e1e; }
 [data-theme="midnight-opulence"] {
@@ -475,7 +475,7 @@ input:-webkit-autofill:focus {
 .preference-panel { max-width: 29rem; width: calc(100% - 2rem); max-height: calc(100dvh - 2rem); background: var(--color-base-100); color: var(--color-base-content); border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); border-radius: 8px; padding: 1.5rem; }
 .preference-panel h2 { letter-spacing: 0; }
 .modal::backdrop { background: color-mix(in oklab, var(--color-base-100) 70%, transparent); backdrop-filter: blur(5px); }
-.public-sound-control { position: fixed; bottom: 1rem; right: 1rem; z-index: 70; background: var(--color-base-100); border-radius: 4px; }
+.public-sound-control { position: fixed; bottom: 1rem; right: 1rem; z-index: 70; display: flex; gap: 8px; max-width: calc(100% - 2rem); background: var(--color-base-100); border-radius: 4px; }
 .theme-swatches { display: grid; grid-template-columns: repeat(4, 9px); height: 28px; flex-shrink: 0; border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); }
 .theme-swatches i:nth-child(1) { background: var(--swatch-bg); }
 .theme-swatches i:nth-child(2) { background: var(--swatch-surface); }
@@ -497,7 +497,7 @@ html { transition: background-color .35s, color .35s; }
 
 /* Signed-in council: tactile medallions, unframed game board, restrained court typography. */
 .game-shell { position: relative; isolation: isolate; background: var(--color-base-100); letter-spacing: 0; }
-.game-shell::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--color-base-100), color-mix(in oklab, var(--color-base-100) 88%, transparent) 45%, var(--color-base-100)), url('/images/transition-battle.jpg') center top/cover no-repeat; }
+.game-shell::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--color-base-100), color-mix(in oklab, var(--color-base-100) 88%, var(--color-base-300)) 45%, var(--color-base-100)); }
 .game-header { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 16px; border-bottom: 1px solid color-mix(in oklab, var(--color-base-content) 18%, transparent); padding: 0 0 20px; }
 .game-wordmark { font-family: var(--font-display); font-size: 40px; line-height: 1; font-weight: 800; }
 .game-header-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; min-width: 0; }

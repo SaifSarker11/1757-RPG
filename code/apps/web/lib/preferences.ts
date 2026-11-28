@@ -18,8 +18,8 @@ export type ThemeId = (typeof THEMES)[number]["id"];
 export function validTheme(value: string | null): ThemeId {
   return THEMES.find((theme) => theme.id === value)?.id ?? "plassey";
 }
-export function themeForPage(saved: string | null, authenticated: boolean, pathname: string): ThemeId {
-  return authenticated && (pathname === "/home" || pathname.startsWith("/room/")) ? validTheme(saved) : "plassey";
+export function themeForPage(saved: string | null, _authenticated: boolean, _pathname: string): ThemeId {
+  return validTheme(saved);
 }
 export function safeVolume(value: string | null, fallback: number): number {
   const parsed = Number.parseFloat(value ?? "");
