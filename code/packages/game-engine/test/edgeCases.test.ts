@@ -8,7 +8,7 @@ import type { GameState, RoleId } from "../src/types.js";
 import { computeVision } from "../src/vision/visionRules.js";
 import { viewFor } from "../src/vision/viewFor.js";
 import { FULL_CAST, byRole, gameWithRoles, inPhase } from "./fixtures.js";
-import { T0 } from "./helpers.js";
+import { Harness, T0, eventsOfType } from "./helpers.js";
 
 // Plan §7 item 16: edge role cases.
 
@@ -128,9 +128,36 @@ describe("Jagat Seth absent", () => {
   });
 });
 
-describe("disconnect edge cases", () => {
-  // Covered with the reconnection module, which adds presence to the engine.
-  it.todo("disconnected Leader");
-  it.todo("disconnected minister");
-  it.todo("disconnect during an endgame guess");
+describe("absent-player timeout recovery", () => {
+  // Socket disconnect/reconnect is tested in apps/api/src/socket/socket.integration.test.ts.
+  // The pure engine sees only an absent action: these cases verify its safe deadline fallback.
+  const roles: RoleId[] = ["NAWAB_SIRAJ", "LUTFUNNESA", "MIR_MADAN", "LOYALIST", "MIR_JAFAR", "EIC_SPY"];
+  it("an absent leader's deadline rejects the nomination and passes leadership", () => {
+    const h = new Harness(6, 1, 30, roles);
+    h.advanceTo("SELECTION");
+    const oldSeat = h.state.leaderSeat;
+    h.timeout();
+    expect(h.state.failTrack).toBe(1);
+    expect(h.state.leaderSeat).toBe((oldSeat + 1) % 6);
+    expect(h.state.phase).toBe("DISCUSSION");
+  });
+  it("an absent minister's missing card defaults to Success without exposing identity", () => {
+    const h = new Harness(6, 1, 30, roles);
+    h.nominate(["p0", "p1"]);
+    h.voteAll("APPROVE");
+    h.dispatch({ type: "PLAY_CARD", playerId: "p0", card: "SUCCESS" });
+    h.timeout();
+    expect(h.state.phase).toBe("ROUND_RESULT");
+    expect(eventsOfType(h.log, "MISSION_RESOLVED").at(-1)).toMatchObject({ successCount: 2, sabotageCount: 0 });
+    expect(viewFor(h.state, "p0").game.players.every(p => p.role === undefined)).toBe(true);
+  });
+  it("an absent Mir Jafar's guess times out without stealing the Loyalist victory", () => {
+    const h = new Harness(6, 1, 30, roles);
+    for (let round = 0; round < 3; round++) h.playRound("SUCCESS");
+    expect(h.state.phase).toBe("ENDGAME");
+    h.timeout();
+    expect(h.state.phase).toBe("POST_GAME");
+    expect(h.state.outcome?.winner).toBe("GREEN");
+    expect(h.state.outcome?.mirJafarGuess).toMatchObject({ targetId: null, correct: false });
+  });
 });

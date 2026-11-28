@@ -494,3 +494,89 @@ html { transition: background-color .35s, color .35s; }
 .faction-surface h3 { color: var(--faction-copy); }
 .faction-surface .eyebrow { color: var(--faction-color); }
 .faction-portrait-fade { background: linear-gradient(to top, var(--faction-surface), transparent); }
+
+/* Signed-in council: tactile medallions, unframed game board, restrained court typography. */
+.game-shell { position: relative; isolation: isolate; background: var(--color-base-100); letter-spacing: 0; }
+.game-shell::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, var(--color-base-100), color-mix(in oklab, var(--color-base-100) 88%, transparent) 45%, var(--color-base-100)), url('/images/transition-battle.jpg') center top/cover no-repeat; }
+.game-header { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 16px; border-bottom: 1px solid color-mix(in oklab, var(--color-base-content) 18%, transparent); padding: 0 0 20px; }
+.game-wordmark { font-family: var(--font-display); font-size: 40px; line-height: 1; font-weight: 800; }
+.game-header-tools { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.game-header-tools > * { flex-shrink: 0; }
+.council-kicker { font: 11px/1.5 var(--font-mono); text-transform: uppercase; color: color-mix(in oklab, var(--color-base-content) 65%, transparent); letter-spacing: 0; }
+.game-shell .btn { border-radius: 4px; letter-spacing: 0; min-height: 40px; }
+.game-shell .input { border-radius: 4px; border-width: 1px; background: color-mix(in oklab, var(--color-base-100) 75%, var(--color-base-300)); min-width: 0; }
+.game-shell .pixel-card { border-radius: 8px !important; border-width: 1px; box-shadow: none; background-image: linear-gradient(155deg, color-mix(in oklab, var(--color-base-100) 82%, var(--color-base-300)), var(--color-base-100)); }
+.game-shell .font-pixel { font-family: var(--font-sans); font-size: 12px; letter-spacing: 0; line-height: 1.5; }
+.game-shell .border-b-2 { border-bottom-width: 1px; }
+.game-shell .border-dashed { border-style: solid; }
+.game-shell .border-b-4 { border-bottom-width: 2px; }
+.game-shell .border-4, .game-shell .border-2 { border-width: 1px; }
+.game-shell .glow-primary { animation: none; }
+.game-shell .btn-success { background: var(--color-loyal); color: var(--faction-ink); border: 0; }
+.game-shell .font-historical { letter-spacing: 0; }
+.dashboard-heading { padding: 48px 0 32px; }
+.dashboard-heading h1 { font-family: var(--font-display); font-size: 56px; line-height: 1.05; margin-top: 12px; }
+.dashboard-heading p { margin-top: 16px; color: color-mix(in oklab, var(--color-base-content) 75%, transparent); }
+.dashboard-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 40px; }
+.dashboard-council { min-width: 0; }
+.dashboard-art { position: relative; height: 260px; overflow: hidden; border-radius: 4px; }
+.dashboard-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+.dashboard-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 40%, color-mix(in oklab, var(--color-base-100) 80%, transparent)); }
+.dashboard-art > span { position: absolute; z-index: 1; bottom: 24px; left: 24px; font: 28px/1.2 var(--font-display); color: var(--faction-copy); }
+.dashboard-actions { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 32px; padding: 32px 0; }
+.dashboard-section { min-width: 0; }
+.dashboard-section + .dashboard-section { border-left: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); padding-left: 32px; }
+.dashboard-section h2, .dashboard-profile h2 { font-family: var(--font-display); font-size: 28px; line-height: 1.2; margin: 8px 0 20px; overflow-wrap: anywhere; }
+.council-mode-selector { display: flex; gap: 8px; }
+.council-mode-selector .btn { flex: 1; height: auto; padding: 12px; white-space: normal; background: var(--color-base-100); border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); font-size: 12px; }
+.council-mode-selector .btn[data-selected='true'] { border-color: var(--color-base-content); background: color-mix(in oklab, var(--color-base-300) 60%, var(--color-base-100)); }
+.council-field-label { display: block; font-size: 12px; margin-bottom: 8px; color: color-mix(in oklab, var(--color-base-content) 75%, transparent); }
+.dashboard-profile { min-width: 0; padding: 24px 0 0 24px; border-left: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); }
+.profile-ledger { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 16px; padding: 24px 0; border-block: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); }
+.profile-ledger dt { font: 11px var(--font-mono); opacity: .65; text-transform: uppercase; }
+.profile-ledger dd { font: 32px/1.2 var(--font-display); margin-top: 8px; }
+.profile-details { margin-top: 24px; }
+.profile-details summary { cursor: pointer; font-size: 14px; }
+.council-stage { width: 100%; min-width: 0; position: relative; }
+.council-caption { text-align: center; padding: 8px 0 12px; }
+.council-caption h2 { font: 32px/1.2 var(--font-display); margin: 8px 0; }
+.council-board { width: 100%; max-width: 760px; aspect-ratio: 1; margin-inline: auto; position: relative; container-type: inline-size; }
+.council-rim { position: absolute; inset: 15%; border-radius: 50%; border: 8px double color-mix(in oklab, var(--color-base-content) 65%, var(--color-base-300)); background: radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--color-base-300) 35%, var(--color-base-100)), var(--color-base-100) 75%); box-shadow: inset 0 0 0 4px var(--color-base-300), inset 0 0 48px color-mix(in oklab, var(--color-base-100) 90%, transparent), 0 16px 40px color-mix(in oklab, var(--color-base-100) 80%, transparent); }
+.council-rim::after { content: ''; position: absolute; inset: 10px; border: 1px dashed color-mix(in oklab, var(--color-base-content) 45%, transparent); border-radius: 50%; }
+.council-core { position: absolute; inset: 25%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
+.council-core h3 { font: 28px/1.1 var(--font-display); text-wrap: balance; }
+.council-core .council-kicker { font-size: 10px; }
+.council-seal { font: 64px/.8 var(--font-display); font-weight: 800; opacity: .6; }
+.council-seal span { display: block; margin-top: 8px; }
+.round-medallions { display: flex; gap: 8px; justify-content: center; width: 100%; }
+.round-medallion { flex: 0 1 44px; aspect-ratio: 1; border-radius: 50%; border: 3px double color-mix(in oklab, var(--color-base-content) 30%, transparent); display: grid; place-items: center; font: 20px var(--font-display); color: var(--color-base-content); background: var(--color-base-100); }
+.round-medallion--current { border-color: var(--color-base-content); background: var(--color-base-content); color: var(--color-base-100); }
+.round-medallion--loyal { border-color: var(--color-loyal); background: var(--loyal-surface); color: var(--color-loyal); }
+.round-medallion--traitor { border-color: var(--color-traitor); background: var(--faction-ink); color: var(--color-traitor); }
+.council-score { display: flex; align-items: center; gap: 12px; font: 12px var(--font-mono); white-space: nowrap; }
+.council-rejections { display: flex; gap: 6px; }
+.council-rejections i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid color-mix(in oklab, var(--color-base-content) 40%, transparent); }
+.council-rejections i[data-rejected='true'] { background: var(--color-traitor); border-color: var(--color-traitor); }
+.council-metadata { font: 11px/1.4 var(--font-mono); color: color-mix(in oklab, var(--color-base-content) 70%, transparent); }
+.council-seat { position: absolute; left: var(--seat-x); top: var(--seat-y); transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; width: 16%; z-index: 2; }
+.seat-portrait { position: relative; width: 70%; aspect-ratio: 1; border-radius: 50%; border: 4px double color-mix(in oklab, var(--color-base-content) 65%, var(--color-base-300)); background: linear-gradient(140deg, var(--color-base-300), var(--color-base-100)); display: grid; place-items: center; box-shadow: inset 0 0 0 3px var(--color-base-100), 0 6px 16px color-mix(in oklab, var(--color-base-100) 70%, transparent); transition: box-shadow .3s, border-color .3s; }
+.seat-portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.seat-portrait--green { border-color: var(--color-loyal); }
+.seat-portrait--red { border-color: var(--color-traitor); }
+.seat-portrait--gold { border-color: var(--color-banker); }
+.seat-hidden { font: 32px var(--font-display); opacity: .6; text-shadow: 1px 1px var(--color-base-100); }
+.seat-name { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font: 11px/1.5 var(--font-sans); background: var(--color-base-100); border: 1px solid color-mix(in oklab, var(--color-base-content) 20%, transparent); border-radius: 3px; padding: 2px 4px; margin-top: 4px; }
+.council-seat[data-me='true'] .seat-name { border-color: var(--color-base-content); }
+.council-seat[data-leader='true'] .seat-portrait { box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-base-content) 25%, transparent), 0 0 32px color-mix(in oklab, var(--color-base-content) 18%, transparent); }
+.council-seat[data-speaking='true'] .seat-portrait { box-shadow: 0 0 0 4px var(--color-loyal); }
+.seat-crown { position: absolute; top: -24px; font-size: 32px; line-height: 1; color: var(--color-base-content); }
+.seat-connection { width: 10px; height: 10px; border-radius: 50%; background: var(--color-base-300); border: 2px solid var(--color-base-100); position: absolute; bottom: 2px; right: 2px; }
+.seat-connection[data-online='true'] { background: var(--color-loyal); }
+.seat-minister { position: absolute; bottom: -5px; left: -5px; color: var(--color-base-content); background: var(--color-base-100); border-radius: 50%; font-size: 16px; width: 24px; height: 24px; text-align: center; }
+.seat-voted { font: 9px var(--font-mono); margin-top: 2px; color: var(--color-base-content); }
+.council-footer { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; padding: 16px 0; border-block: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent); font: 12px/1.5 var(--font-sans); }
+.dense-seat-list { display: none; }
+@container (max-width: 450px) { .council-core { gap: 8px; } .council-core h3 { font-size: 20px; } .council-core .council-kicker { font-size: 8px; } .round-medallions { gap: 4px; } .round-medallion { border-width: 2px; font-size: 14px; } .council-score { font-size: 9px; gap: 6px; } .council-metadata { font-size: 8px; } .council-rejections { gap: 4px; } .council-rejections i { width: 6px; height: 6px; } .seat-hidden { font-size: 24px; } .seat-name { font-size: 10px; padding: 0 2px; } .seat-crown { font-size: 24px; top: -20px; } .seat-portrait { border-width: 3px; } .council-board[data-dense='true'] .council-seat { width: 12%; } .council-board[data-dense='true'] .seat-name, .council-board[data-dense='true'] .seat-voted { display: none; } }
+@media (max-width: 1000px) { .dashboard-layout { grid-template-columns: minmax(0,1fr); gap: 16px; } .dashboard-profile { padding: 24px 0; border-left: 0; border-top: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); } .profile-ledger { grid-template-columns: repeat(4,minmax(0,1fr)); } }
+@media (max-width: 640px) { .game-header { grid-template-columns: minmax(0,1fr); } .game-header-tools { justify-content: flex-start; } .dashboard-heading { padding: 32px 0 24px; } .dashboard-heading h1 { font-size: 40px; } .dashboard-art { height: 200px; } .dashboard-art > span { font-size: 24px; left: 16px; bottom: 16px; } .dashboard-actions { grid-template-columns: minmax(0,1fr); gap: 24px; } .dashboard-section + .dashboard-section { border-left: 0; padding: 24px 0 0; border-top: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent); } .profile-ledger { grid-template-columns: repeat(2,minmax(0,1fr)); } .council-caption h2 { font-size: 28px; } .council-footer { font-size: 11px; } .dense-seat-list { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; font-size: 11px; padding: 12px 0; } .dense-seat-list li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+@media (prefers-reduced-motion: reduce) { .game-shell *, .game-shell *::before, .game-shell *::after { animation: none !important; transition: none !important; } }

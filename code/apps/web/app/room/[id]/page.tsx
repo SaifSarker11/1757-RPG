@@ -11,7 +11,7 @@ import type { PlayerView } from "@/lib/game-types";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { RoleCard } from "@/components/RoleCard";
 import { RoleReveal } from "@/components/RoleReveal";
-import { RoundTracker } from "@/components/RoundTracker";
+import { CouncilTable } from "@/components/CouncilTable";
 import { ActionPanel } from "@/components/ActionPanel";
 import { PostGameSummary } from "@/components/PostGameSummary";
 import { NominationHistoryCard } from "@/components/NominationHistoryCard";
@@ -254,6 +254,8 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     });
 
     socket.on("game:error", (err: { code: string; message: string }) => {
+      // A waiting room has no game to sync yet; that is a normal lobby, not a failure.
+      if (err.code === "NO_GAME") return;
       setGameError(err.message || err.code);
       setTimeout(() => setGameError(null), 4000);
     });
@@ -563,7 +565,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
     : CHARACTER_ROLES;
 
   return (
-    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center scanlines">
+    <main className="game-shell min-h-screen text-base-content font-sans p-4 md:p-6 flex flex-col items-center">
       
       {/* Phase Transition text overlay */}
       {phaseTransitionText && (
@@ -577,12 +579,12 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
       )}
 
       {/* Decorative Game Header */}
-      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-7xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex-1">
-          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
+      <div className="game-header w-full max-w-7xl mb-6">
+        <div className="min-w-0">
+          <span className="game-wordmark">1757</span><span className="council-kicker block">The court of Bengal</span>
         </div>
 
-        <div className="flex-none flex flex-wrap items-center justify-center gap-3">
+        <div className="game-header-tools">
           <MusicControl />
 
           {hasTimer && (
@@ -625,7 +627,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             onClick={() => setShowInfoModal(true)}
             className="btn btn-primary btn-sm rounded-none border-2 font-pixel"
           >
-            INFO CODES
+            CODEX
           </button>
 
           <button
@@ -649,161 +651,18 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         </div>
       )}
 
-      {/* Round & Sabotage Progress Tracker Banner */}
-      {playerView ? (
-        <div className="w-full max-w-7xl mb-6">
-          <RoundTracker view={playerView} />
-        </div>
-      ) : (
-        <div className="bg-base-100 border-4 border-primary p-3 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl mb-6 pixel-card font-pixel text-xs gap-4">
-          <span className="text-secondary font-bold uppercase tracking-wider">CHAMBER STATUS:</span>
-          <span className="text-base-content/80 font-sans">
-            Council convening. Awaiting start of round by host.
-          </span>
-        </div>
-      )}
-
       {/* Main Grid View */}
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         
         {/* COLUMN 1: Virtual Council Tent (Circular Game Table) */}
         <div className={playerView?.game.phase === "POST_GAME" ? "hidden" : "lg:col-span-8 flex flex-col gap-6"}>
-          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_var(--color-ink)] p-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[460px] pixel-card">
-            
-            <h2 className="text-xl font-historical font-extrabold text-primary uppercase tracking-widest border-b-2 border-dashed pb-2 mb-4 w-full text-center border-base-content/20"><span className="bracket mr-3 align-middle text-xs opacity-60">02</span>
-              The Nawab's Secretariat Tent
-            </h2>
-
-            {/* Simulated 2D Oval Council Table */}
-            <div className="relative w-full aspect-[4/3] max-w-md md:max-w-xl mx-auto flex items-center justify-center min-h-[300px] border-4 border-dashed border-secondary/40 bg-base-200/40 p-4 rounded-none">
-              
-              {/* Inner Round Table Graphic */}
-              <div className="absolute w-[50%] h-[50%] border-4 border-double border-secondary rounded-full flex flex-col items-center justify-center text-center p-4 bg-base-300/20">
-                <span className="text-[10px] font-pixel text-base-content/60 uppercase">Secretariat</span>
-                <span className="text-[8px] font-pixel text-base-content/50 uppercase mt-0.5">Plassey 1757</span>
-              </div>
-
-              {/* Render Players as seats around the council table */}
-              {players.map((p, idx) => {
-                const angle = getPlayerAngle(idx, players.length);
-                const rx = 135; // horizontal radius
-                const ry = 95;  // vertical radius
-                const tx = rx * Math.cos(angle);
-                const ty = ry * Math.sin(angle);
-
-                const isOnline = onlinePlayers[p.userId] !== false;
-                const isSelected = selectedPlayers.includes(p.userId);
-                const isLeader = currentSelectorId === p.userId;
-                const isOnProposedBoard = proposedTeam.includes(p.userId);
-                
-                return (
-                  <div 
-                    key={p.userId}
-                    style={{
-                      transform: `translate(${tx}px, ${ty}px)`
-                    }}
-                    className="absolute flex flex-col items-center z-20 group transition-all duration-300"
-                  >
-                    {/* Visual shield / portrait container */}
-                    <div 
-                      onClick={() => {
-                        if (currentPhase === "TEAM_PROPOSAL" && isMyTurnToSelect) {
-                          setSelectedPlayers((prev) =>
-                            prev.includes(p.userId)
-                              ? prev.filter((id) => id !== p.userId)
-                              : [...prev, p.userId]
-                          );
-                        }
-                      }}
-                      className={`w-14 h-14 border-4 flex flex-col items-center justify-center text-center bg-base-100 shadow-md relative rounded-none transition-all ${
-                        isSelected ? "border-primary scale-110 glow-primary" :
-                        isOnProposedBoard ? "border-accent scale-105" :
-                        isLeader ? "border-secondary scale-105 animate-pulse" :
-                        "border-base-content/20"
-                      }`}
-                    >
-                      <span className="text-xl">
-                        {p.isHost ? "👑" : "🛡️"}
-                      </span>
-
-                      {/* Vote state badge */}
-                      {isOnProposedBoard && (
-                        <span className="absolute -top-3.5 bg-accent text-accent-content border border-base-300 text-[7px] font-pixel px-1 uppercase">
-                          BOARD
-                        </span>
-                      )}
-
-                      {isLeader && (
-                        <span className="absolute -top-3.5 bg-secondary text-secondary-content border border-base-300 text-[7px] font-pixel px-1 uppercase">
-                          LEADER
-                        </span>
-                      )}
-
-                      {/* Voice: mic badge, green while talking */}
-                      {(() => {
-                        const inVoice = voice.participants.filter((v) => v.userId === p.userId);
-                        if (inVoice.length === 0) return null;
-                        const talking = inVoice.some((v) => !v.muted && voice.isSpeaking(v.socketId));
-                        const allMuted = inVoice.every((v) => v.muted);
-                        return (
-                          <span
-                            title={allMuted ? "In voice (muted)" : "In voice"}
-                            className={`absolute -bottom-1 -left-1 text-[10px] leading-none px-0.5 border ${
-                              talking ? "bg-success border-success scale-125" : "bg-base-100 border-base-content/20"
-                            } transition-transform`}
-                          >
-                            {allMuted ? "🔇" : "🎙️"}
-                          </span>
-                        );
-                      })()}
-
-                      {/* Connection marker */}
-                      <span className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-base-100 rounded-full ${isOnline ? "bg-success" : "bg-neutral opacity-60"}`} />
-                    </div>
-
-                    {/* Character Tag label */}
-                    <span className="bg-base-300 border border-base-content/10 px-1 py-0.5 mt-1 font-pixel text-[8px] max-w-[80px] truncate text-center uppercase text-base-content font-bold">
-                      {p.name}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {/* Private Role HUD Card embedded inside table */}
-            {myRoleInfo && (
-              <div className="w-full bg-base-200 border-2 border-primary/20 p-3 mt-4 flex flex-col sm:flex-row justify-between items-center gap-3 font-pixel">
-                <div className="text-center sm:text-left">
-                  <span className="text-[8px] text-base-content/65 block uppercase tracking-wider">Your Secret Seal:</span>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-sm font-historical font-extrabold uppercase text-primary">{myRoleInfo.role.replace("_", " ")}</span>
-                    <span className={`badge badge-sm rounded-none border text-[8px] uppercase ${
-                      myRoleInfo.team === "green" ? "bg-base-content text-base-100" :
-                      myRoleInfo.team === "red" ? "bg-accent text-accent-content" : "bg-secondary text-secondary-content"
-                    }`}>
-                      {myRoleInfo.team} Team
-                    </span>
-                  </div>
-                </div>
-
-                {myRoleInfo.visiblePlayers && myRoleInfo.visiblePlayers.length > 0 && (
-                  <div className="bg-base-100 p-2 border border-base-content/10">
-                    <span className="text-[7px] text-base-content/65 uppercase block">Intelligence Reveals:</span>
-                    <div className="flex flex-wrap gap-1 mt-0.5 justify-center">
-                      {myRoleInfo.visiblePlayers.map((vp: any, idx: number) => {
-                        const targetPlayer = players.find((pl) => pl.userId === vp.userId);
-                        return (
-                          <span key={idx} className="badge badge-outline rounded-none text-[8px] uppercase py-1 px-1.5">
-                            {vp.userId === session.user.id ? "Me" : (targetPlayer?.name ?? `Player ${vp.userId.slice(-4)}`)}: <span className="text-base-content font-bold ml-1">{vp.role.replace("_", " ")}</span>
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <CouncilTable
+            players={players}
+            view={playerView}
+            viewerId={session.user.id}
+            onlinePlayers={onlinePlayers}
+            speakingIds={voice.participants.filter(p => !p.muted && voice.isSpeaking(p.socketId)).map(p => p.userId)}
+          />
 
           {/* Custom rules, shown in the lobby only */}
           {!playerView && isCustomRoom && (
@@ -863,7 +722,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
               </div>
               <div className="flex-1 flex flex-col justify-center items-center text-center p-2">
                 <p className="text-xs font-sans mb-3 text-base-content/85">
-                  Waiting for conspirators. Current player count: {players.length} / 15
+                  Waiting for conspirators. Current player count: {players.length} / {roomData?.maxPlayers ?? 15}
                 </p>
                 {isHost ? (
                   <button

@@ -50,3 +50,6 @@ modules.md
 *.tsbuildinfo
 *.log
 .understand-anything/
+
+# Vitest reports are uploaded as CI artifacts, not committed
+test-results/

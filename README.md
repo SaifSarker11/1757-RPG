@@ -118,7 +118,7 @@ Royal Plassey remains first and unchanged. The alternatives use all twelve combi
 
 Nawab/Loyalists remain emerald green (`#2f9e5b`), EIC remains red (`#e01e1e`), and Jagat Seth remains neutral light gray (`#D3D3D3`) in every theme. Surface gradients blend each palette's swatches; Rose Gold derives a deeper rose ink for readable text. Preferences are saved on the current browser and origin; Vercel and Render copies have independent preferences.
 
-**Music** appears in the dashboard and room header after guest or account sign-in. in the dashboard and room header after guest or account sign-in. Open it to select **Court of Murshidabad**, **Council in Session**, **Eve of Plassey**, or **Off**, and adjust the volume. It is also available before sign-in. Browsers may require a first click to start playback; returning players' Off choice is respected. Music loops across page changes and pauses temporarily for voice chat.
+**Music** appears in the dashboard and room header after guest or account sign-in. Open it to select **Court of Murshidabad**, **Council in Session**, **Eve of Plassey**, or **Off**, and adjust the volume. It is also available before sign-in. Browsers may require a first click to start playback; returning players' Off choice is respected. Music loops across page changes and pauses temporarily for voice chat.
 
 Buttons stay silent and there is no vibration: the music alone carries the atmosphere.
 
@@ -339,3 +339,11 @@ See [`code/docs/deployment.md`](code/docs/deployment.md) for environment variabl
 **Supervisor:** Samia Nawsheen, Junior Lecturer, Department of CSE, IUT
 
 **Course teacher:** Farzana Tabassum, Lecturer, Department of CSE, IUT
+
+## Automated test evidence
+
+The project uses **Vitest** (not “Vtest”). Tests are in `code/packages/game-engine/test/` and colocated `code/apps/api/src/**/*.test.ts`. GitHub CI runs them before build/deploy, publishes counts in its summary, and uploads JUnit/JSON reports as **vitest-results**. See [testing instructions and reviewer evidence](TESTING.md). TODO cases are listed separately, not treated as passes.
+
+## Signed-in council design
+
+The dashboard and room use an Avalon-inspired tabletop layout, adapted to 1757: a circular court table, secret identity medallions, the rotating leader’s crown, minister markers, five battle-round tokens and rejection track. Portraits only reveal your own role or genuine private reveals; faction identity and rules are unchanged. Public and login pages are unchanged by this redesign.

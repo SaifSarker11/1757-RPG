@@ -191,221 +191,53 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-base-200 text-base-content font-sans p-4 md:p-6 flex flex-col items-center scanlines">
-      
-      {/* Navbar Banner in 2D Indie style */}
-      <div className="navbar bg-base-100 border-4 border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] rounded-none w-full max-w-5xl px-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex-1">
-          <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
-        </div>
-
-        <div className="flex-none flex flex-wrap justify-center items-center gap-3">
-          {/* Sound Toggle */}
-          <MusicControl />
-
-          <span className="text-xs font-pixel uppercase bg-neutral text-neutral-content px-3 py-1.5 border border-base-300">
-            {session.user.name}
-          </span>
-
-          <ThemeControl />
-
-          <button
-            onClick={handleSignOut}
-            className="btn btn-error btn-sm rounded-none border-2 font-pixel"
-          >
-            Leave
-          </button>
-        </div>
+    <main className="game-shell min-h-screen text-base-content font-sans px-4 py-6 md:px-8">
+      <header className="game-header mx-auto max-w-7xl">
+        <div className="min-w-0"><span className="game-wordmark">1757</span><span className="council-kicker block">The court of Bengal</span></div>
+        <div className="game-header-tools"><MusicControl /><ThemeControl /><button onClick={handleSignOut} className="btn btn-ghost btn-sm">Leave</button></div>
+      </header>
+      <div className="dashboard-heading mx-auto max-w-7xl">
+        <span className="council-kicker">Plassey · 23 June 1757</span>
+        <h1>The council awaits.</h1>
+        <p>Welcome back, {session.user.name}.</p>
       </div>
-
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-stretch">
-        
-        {/* LEFT COLUMN: Controls Dashboard (7 Columns) */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
-          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_var(--color-ink)] p-6 flex flex-col gap-6 flex-1 justify-between pixel-card">
-            
-            <div>
-              <h2 className="text-2xl font-historical font-extrabold uppercase tracking-wide border-b-4 border-double pb-2 mb-4 text-primary"><span className="bracket mr-3 align-middle text-xs opacity-60">01</span>Lobby Secretary</h2>
-              <p className="text-sm font-sans leading-relaxed text-base-content/85">
-                Welcome, commander. Choose to initialize a new secretariat chamber or enter an active council session using the room registry code below.
-              </p>
-            </div>
-
-            {error && (
-              <div className="alert alert-error text-xs font-pixel py-3 rounded-none border-2 border-error">
-                <span>{error}</span>
+      {error && <div className="alert alert-error mx-auto mb-6 max-w-7xl" role="alert">{error}</div>}
+      <div className="dashboard-layout mx-auto max-w-7xl">
+        <section className="dashboard-council">
+          <div className="dashboard-art" aria-hidden="true"><img src="/images/transition-battle.jpg" alt="" /><span>Trust is a dangerous thing.</span></div>
+          <div className="dashboard-actions">
+            <section className="dashboard-section">
+              <span className="council-kicker">01 · Convene</span><h2>Create chamber</h2>
+              <div className="council-mode-selector" role="radiogroup" aria-label="Room mode">
+                {([{ mode: 'STANDARD', title: 'Standard Council' }, { mode: 'CUSTOM', title: 'Royal Decree' }] as const).map(option => <button key={option.mode} type="button" role="radio" aria-checked={roomMode === option.mode} className="btn btn-sm" data-selected={roomMode === option.mode} onClick={() => setRoomMode(option.mode)}>{option.title}</button>)}
               </div>
-            )}
-
-            {/* Action 1: Create a Room */}
-            <div className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
-              <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Create Chamber</h3>
-              <p className="text-xs text-base-content/75 mb-4 font-sans">Initialize a new secure game room. Choose the rules and the maximum capacity limit (6-15 players).</p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" role="radiogroup" aria-label="Room mode">
-                {([
-                  {
-                    mode: "STANDARD",
-                    title: "Standard Council",
-                    blurb: "The usual rules: every character in play, roles dealt at random, fixed timers.",
-                  },
-                  {
-                    mode: "CUSTOM",
-                    title: "Royal Decree",
-                    blurb: "Custom rules: set each round's timer, pick the characters, fix who plays whom, and pause or skip timers as host.",
-                  },
-                ] as const).map((option) => {
-                  const selected = roomMode === option.mode;
-                  return (
-                    <button
-                      key={option.mode}
-                      type="button"
-                      role="radio"
-                      aria-checked={selected}
-                      onClick={() => {
-                        setRoomMode(option.mode);
-                      }}
-                      className={`text-left p-3 border-2 rounded-none transition-colors ${
-                        selected
-                          ? "border-primary bg-primary/10 shadow-[3px_3px_0px_0px_var(--color-primary)]"
-                          : "border-base-content/15 bg-base-100 hover:border-base-content/40"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2 font-pixel text-xs font-bold uppercase">
-                        <span className={`w-3 h-3 border-2 ${selected ? "bg-primary border-primary" : "border-base-content/40"}`} />
-                        {option.title}
-                      </span>
-                      <span className="block text-[11px] font-sans text-base-content/70 mt-1 leading-snug">{option.blurb}</span>
-                    </button>
-                  );
-                })}
+              <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+                <label className="min-w-0"><span className="council-field-label">Max capacity</span><input type="number" min={6} max={15} value={maxPlayers} onChange={e => setMaxPlayers(parseInt(e.target.value, 10))} className="input input-bordered w-full" /></label>
+                <button onClick={handleCreateRoom} disabled={actionLoading} className="btn btn-primary">{actionLoading ? 'CREATING...' : roomMode === 'CUSTOM' ? 'NEW CUSTOM ROOM' : 'NEW ROOM'} <span aria-hidden="true">↗</span></button>
               </div>
-              
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
-                <div className="form-control flex-1">
-                  <span className="label-text font-pixel font-bold mb-1">Max Capacity</span>
-                  <input
-                    type="number"
-                    min={6}
-                    max={15}
-                    value={maxPlayers}
-                    onChange={(e) => setMaxPlayers(parseInt(e.target.value, 10))}
-                    className="input input-bordered w-full font-pixel bg-base-100 rounded-none border-2"
-                  />
-                </div>
-                
-                <button
-                  onClick={handleCreateRoom}
-                  disabled={actionLoading}
-                  className="btn btn-primary rounded-none font-pixel border-2 pixel-btn"
-                >
-                  {actionLoading ? "CREATING..." : roomMode === "CUSTOM" ? "NEW CUSTOM ROOM" : "NEW ROOM"}
-                </button>
-              </div>
-            </div>
-
-            {/* Action 2: Join by Room Code */}
-            <form onSubmit={handleJoinRoomByCode} className="bg-base-200 p-5 rounded-none border-2 border-base-content/10">
-              <h3 className="text-lg font-pixel font-bold text-secondary mb-2 uppercase">Enter Chamber</h3>
-              <p className="text-xs text-base-content/75 mb-4 font-sans">Input the 6-character uppercase registry code or paste the full room ID directly.</p>
-              
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
-                <div className="form-control flex-1">
-                  <span className="label-text font-pixel font-bold mb-1">Registry Code</span>
-                  <input
-                    type="text"
-                    placeholder="e.g. A1B2C3"
-                    value={joinCode}
-                    onChange={(e) => setJoinCode(e.target.value)}
-                    required
-                    className="input input-bordered w-full font-pixel bg-base-100 rounded-none border-2"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={actionLoading || !joinCode.trim()}
-                  className="btn btn-accent rounded-none font-pixel border-2 pixel-btn"
-                >
-                  {actionLoading ? "JOINING..." : "JOIN CHAMBER"}
-                </button>
-              </div>
-            </form>
-
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: Profile Settings & Stats (5 Columns) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          <div className="bg-base-100 border-4 border-base-content/20 shadow-[6px_6px_0px_0px_var(--color-ink)] p-6 flex flex-col justify-between pixel-card">
-            <div>
-              <h3 className="text-xl font-historical font-bold text-primary border-b-4 border-double pb-2 mb-4 uppercase">Profile Settings</h3>
-              <p className="text-xs text-base-content/70 mb-4 font-sans">
-                Customize your identity. You can change your display name and set a unique conspirator handle.
-              </p>
-            </div>
-
-            {userStats && (
-              <div className="grid grid-cols-2 gap-2 p-3 bg-base-200 border-2 border-base-300 font-pixel text-xs mb-4">
-                <div>
-                  <span className="text-base-content/60 block">LEVEL</span>
-                  <span className="text-base font-bold text-primary">{userStats.level}</span>
-                </div>
-                <div>
-                  <span className="text-base-content/60 block">TOTAL XP</span>
-                  <span className="text-base font-bold">{userStats.xp}</span>
-                </div>
-                <div>
-                  <span className="text-base-content/60 block">MATCHES</span>
-                  <span className="font-bold">{userStats.matchesPlayed} ({userStats.matchesWon}W)</span>
-                </div>
-                <div>
-                  <span className="text-base-content/60 block">WIN RATE</span>
-                  <span className="font-bold text-accent">{userStats.winRate}%</span>
-                </div>
-              </div>
-            )}
-
-            {profileMessage && (
-              <div className="alert alert-info text-xs font-pixel py-2 rounded-none border-2 border-info mb-4">
-                <span>{profileMessage}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div className="form-control">
-                <span className="label-text font-pixel font-bold mb-1">Display Name</span>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
-                  required
-                />
-              </div>
-
-              <div className="form-control">
-                <span className="label-text font-pixel font-bold mb-1">Handle / Username</span>
-                <input
-                  type="text"
-                  placeholder="e.g. siraj1757"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="input input-bordered w-full font-pixel bg-base-200 rounded-none border-2"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={actionLoading || !displayName.trim()}
-                className="btn btn-primary w-full rounded-none font-pixel border-2 pixel-btn"
-              >
-                {actionLoading ? "SAVING..." : "SAVE PROFILE"}
-              </button>
+            </section>
+            <form onSubmit={handleJoinRoomByCode} className="dashboard-section">
+              <span className="council-kicker">02 · Take your seat</span><h2>Enter chamber</h2>
+              <label><span className="council-field-label">Registry code or room ID</span><input type="text" placeholder="e.g. A1B2C3" value={joinCode} onChange={e => setJoinCode(e.target.value)} required className="input input-bordered w-full" /></label>
+              <button type="submit" disabled={actionLoading || !joinCode.trim()} className="btn btn-primary mt-5 w-full">{actionLoading ? 'JOINING...' : 'JOIN CHAMBER'} <span aria-hidden="true">→</span></button>
             </form>
           </div>
-        </div>
-
+        </section>
+        <aside className="dashboard-profile">
+          <span className="council-kicker">Your place in the court</span><h2>{session.user.name}</h2>
+          {userStats && <dl className="profile-ledger">
+            <div><dt>Level</dt><dd>{userStats.level}</dd></div><div><dt>Total XP</dt><dd>{userStats.xp}</dd></div>
+            <div><dt>Matches</dt><dd>{userStats.matchesPlayed}</dd></div><div><dt>Win rate</dt><dd>{userStats.winRate}%</dd></div>
+          </dl>}
+          <details className="profile-details"><summary>Profile settings</summary>
+            {profileMessage && <p role="status" className="my-4 text-sm">{profileMessage}</p>}
+            <form onSubmit={handleUpdateProfile} className="mt-5 space-y-4">
+              <label className="block"><span className="council-field-label">Display name</span><input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} className="input input-bordered w-full" required /></label>
+              <label className="block"><span className="council-field-label">Handle / username</span><input type="text" placeholder="e.g. siraj1757" value={username} onChange={e => setUsername(e.target.value)} className="input input-bordered w-full" /></label>
+              <button type="submit" disabled={actionLoading || !displayName.trim()} className="btn btn-primary w-full">{actionLoading ? 'SAVING...' : 'SAVE PROFILE'}</button>
+            </form>
+          </details>
+        </aside>
       </div>
     </main>
   );

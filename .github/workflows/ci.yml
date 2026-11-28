@@ -32,7 +32,21 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:generate
       - run: pnpm typecheck
-      - run: pnpm test
+      - name: Run Vitest suites (game engine and API)
+        run: pnpm test
+      - name: Publish test counts to the run summary
+        if: always()
+        run: node scripts/test-summary.mjs
+      - name: Upload Vitest evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-results
+          path: |
+            code/packages/game-engine/test-results/
+            code/apps/api/test-results/
+          if-no-files-found: error
+          retention-days: 30
       - run: pnpm build
 
   deploy-api:

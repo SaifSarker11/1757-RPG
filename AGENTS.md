@@ -4,3 +4,6 @@
 - Keep player preference validation in web/lib/preferences.ts and test it with the existing Vitest runner; pure validation needs no browser or server.
 - Apply personal themes only to authenticated dashboard/room pages through semantic CSS variables; public pages always retain the default.
 - Browser audio preferences use safe local storage, never game-state persistence; blocked autoplay waits for a user gesture and respects Off.
+
+- Render the council from the authoritative PlayerView; show only self/private reveals as portraits because visions may be decoys.
+- Emit JUnit and JSON from each Vitest workspace in CI and upload reports so reviewers can verify actual execution, not infer it from a badge.
