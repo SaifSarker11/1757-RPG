@@ -19,6 +19,7 @@ import { NominationHistoryCard } from "@/components/NominationHistoryCard";
 import { CustomRoomSettings } from "@/components/CustomRoomSettings";
 import { VoiceChatPanel } from "@/components/VoiceChatPanel";
 import { useVoiceChat } from "@/lib/useVoiceChat";
+import { ThemeControl } from "@/components/ThemeControl";
 import { MusicControl } from "@/components/MusicControl";
 import { musicPlayer } from "@/lib/music";
 
@@ -45,7 +46,7 @@ const API_URL =
     ? ""
     : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
 
-const THEMES = ["plassey"];
+
 
 function getTeamSizeForRound(roundNumber: number, playerCount: number): number {
   const sizes: Record<number, number[]> = {
@@ -95,7 +96,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   // Theme selector state
-  const [currentTheme, setCurrentTheme] = useState("plassey");
+
 
   // Game States (Authoritative Server View)
   const [playerView, setPlayerView] = useState<PlayerView | null>(null);
@@ -126,7 +127,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   const proposedTeamRef = useRef(proposedTeam);
 
   // sound and transition states
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(false);
+
   const [phaseTransitionText, setPhaseTransitionText] = useState<string | null>(null);
   const [activeRolesOnly, setActiveRolesOnly] = useState<boolean>(true);
   const [rightSidebarTab, setRightSidebarTab] = useState<"chat" | "chronicle" | "voice">("chat");
@@ -156,26 +157,9 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
   // Info Modal
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
 
-  useEffect(() => {
-    const savedTheme = "plassey";
-    localStorage.setItem("daisyui-theme", savedTheme);
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
-    setSoundEnabled(gameAudio.isEnabled());
-  }, []);
 
-  const changeTheme = (themeName: string) => {
-    gameAudio.playClick();
-    setCurrentTheme(themeName);
-    localStorage.setItem("daisyui-theme", themeName);
-    document.documentElement.setAttribute("data-theme", themeName);
-  };
 
-  const toggleSound = () => {
-    const nextVal = !soundEnabled;
-    gameAudio.setEnabled(nextVal);
-    setSoundEnabled(nextVal);
-  };
+
 
   const fetchRoom = async () => {
     try {
@@ -632,13 +616,6 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         </div>
 
         <div className="flex-none flex flex-wrap items-center justify-center gap-3">
-          <button 
-            onClick={toggleSound}
-            className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
-          >
-            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
-          </button>
-
           <MusicControl />
 
           {hasTimer && (
@@ -675,21 +652,7 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
             Code: {roomData?.code ?? roomId.slice(0, 6)}
           </span>
 
-          {/* Theme Dropdown */}
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
-              Theme: {currentTheme}
-            </div>
-            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
-              {THEMES.map((themeName) => (
-                <li key={themeName}>
-                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
-                    {themeName}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ThemeControl />
 
           <button
             onClick={() => { gameAudio.playClick(); setShowInfoModal(true); }}

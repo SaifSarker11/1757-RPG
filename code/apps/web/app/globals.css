@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: plassey --default --prefersdark, retro, dark, light, cupcake, synthwave, forest;
+  themes: false;
 }
 
 /* ---------------------------------------------------------------
@@ -46,18 +46,18 @@
   --font-display: var(--font-display-serif), Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --color-loyal: #2f9e5b;
-  --color-traitor: #e01e1e;
-  --color-banker: #f9d4af;
-  --color-ink: #111111;
-  --color-parchment: #f9d4af;
+  --color-traitor: var(--color-primary);
+  --color-banker: var(--color-base-content);
+  --color-ink: var(--color-base-100);
+  --color-parchment: var(--color-base-content);
 }
 
 body {
   font-family: var(--font-sans);
   background:
-    radial-gradient(120% 70% at 50% -10%, #4f0505 0%, transparent 60%),
-    radial-gradient(80% 60% at 100% 100%, color-mix(in oklab, #55362a 70%, transparent) 0%, transparent 70%),
-    linear-gradient(180deg, #111111 0%, color-mix(in oklab, #111111 85%, #4f0505) 50%, #111111 100%);
+    radial-gradient(120% 70% at 50% -10%, var(--color-base-200) 0%, transparent 60%),
+    radial-gradient(80% 60% at 100% 100%, color-mix(in oklab, var(--color-base-300) 70%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, var(--color-base-100) 0%, color-mix(in oklab, var(--color-base-100) 85%, var(--color-base-200)) 50%, var(--color-base-100) 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
@@ -74,7 +74,7 @@ body {
 }
 .hairline { border-color: color-mix(in oklab, var(--color-base-content) 10%, transparent); }
 .text-gilded {
-  background-image: linear-gradient(100deg, #f9d4af, #f9d4af 40%, #e01e1e 85%, #4f0505);
+  background-image: linear-gradient(100deg, var(--color-base-content), var(--color-base-content) 40%, var(--color-primary) 85%, var(--color-base-200));
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent;
@@ -103,9 +103,9 @@ html.lenis, html.lenis body { height: auto; }
 .page-progress {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 2px; pointer-events: none;
   transform-origin: left center; transform: scaleX(0);
-  background: linear-gradient(90deg, #4f0505, #e01e1e 60%, #f9d4af);
+  background: linear-gradient(90deg, var(--color-base-200), var(--color-primary) 60%, var(--color-base-content));
 }
-.page-scene { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 1; overflow: hidden; background: #111111 url(/images/transition-battle.jpg) center/cover; clip-path: inset(0 0 0 0); }
+.page-scene { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: 1; overflow: hidden; background: var(--color-base-100) url(/images/transition-battle.jpg) center/cover; clip-path: inset(0 0 0 0); }
 .page-scene img { width: 100%; height: 100%; object-fit: cover; }
 a, button { transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), transform var(--duration-slow) var(--ease-out); }
 .btn:active { transform: scale(.97); }
@@ -140,8 +140,8 @@ a, button { transition: color var(--duration-fast) var(--ease-out), background-c
    as refined hairline surfaces with soft depth. */
 .pixel-border { border: 1px solid color-mix(in oklab, currentColor 35%, transparent); }
 .pixel-border-sm { border: 1px solid color-mix(in oklab, currentColor 25%, transparent); }
-.pixel-shadow { box-shadow: 0 10px 30px -14px color-mix(in oklab, #111111 70%, transparent); }
-.pixel-shadow-sm { box-shadow: 0 4px 14px -8px color-mix(in oklab, #111111 60%, transparent); }
+.pixel-shadow { box-shadow: 0 10px 30px -14px color-mix(in oklab, var(--color-base-100) 70%, transparent); }
+.pixel-shadow-sm { box-shadow: 0 4px 14px -8px color-mix(in oklab, var(--color-base-100) 60%, transparent); }
 .pixel-btn {
   border: 1px solid color-mix(in oklab, currentColor 30%, transparent);
   border-radius: 999px !important;
@@ -153,7 +153,7 @@ a, button { transition: color var(--duration-fast) var(--ease-out), background-c
 .pixel-btn:disabled { opacity: 0.5; transform: none; box-shadow: none; cursor: not-allowed; }
 .pixel-card {
   border: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
-  box-shadow: 0 24px 60px -30px color-mix(in oklab, #111111 80%, transparent);
+  box-shadow: 0 24px 60px -30px color-mix(in oklab, var(--color-base-100) 80%, transparent);
   border-radius: var(--radius-box) !important;
 }
 
@@ -182,7 +182,7 @@ a, button { transition: color var(--duration-fast) var(--ease-out), background-c
   display: block;
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(transparent 50%, color-mix(in oklab, #111111 10%, transparent) 50%);
+  background: linear-gradient(transparent 50%, color-mix(in oklab, var(--color-base-100) 10%, transparent) 50%);
   z-index: 10;
   background-size: 100% 4px, 6px 100%;
   pointer-events: none;
@@ -245,37 +245,37 @@ input:-webkit-autofill:focus {
 .burger:hover span:last-child { width: 1.25rem; }
 @media (prefers-reduced-motion: reduce) { .letter-mask .letter, .art-in { animation: none; } .menu-panel, .menu-panel .menu-link { transition: none; } }
 
-/* Strict palette gradients: #f9d4af · #55362a · #4f0505 · #111111 · #e01e1e */
-.bg-base-200 { background-image: linear-gradient(160deg, #111111 0%, color-mix(in oklab, #111111 60%, #4f0505) 55%, #4f0505 100%); }
-.bg-base-300 { background-image: linear-gradient(160deg, #4f0505 0%, color-mix(in oklab, #4f0505 50%, #55362a) 55%, #55362a 100%); }
-.btn-primary { background-image: linear-gradient(135deg, #e01e1e 0%, color-mix(in oklab, #e01e1e 55%, #4f0505) 55%, #4f0505 100%); color: #f9d4af; border: 0; box-shadow: 0 10px 30px -12px #e01e1e; transition: filter var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
-.btn-primary:hover { filter: brightness(1.12); box-shadow: 0 14px 36px -10px #e01e1e; color: #f9d4af; }
-.text-red-glow { color: #e01e1e; text-shadow: 0 0 24px color-mix(in oklab, #e01e1e 50%, transparent); }
+/* Strict palette gradients: var(--color-base-content) · var(--color-base-300) · var(--color-base-200) · var(--color-base-100) · var(--color-primary) */
+.bg-base-200 { background-image: linear-gradient(160deg, var(--color-base-100) 0%, color-mix(in oklab, var(--color-base-100) 60%, var(--color-base-200)) 55%, var(--color-base-200) 100%); }
+.bg-base-300 { background-image: linear-gradient(160deg, var(--color-base-200) 0%, color-mix(in oklab, var(--color-base-200) 50%, var(--color-base-300)) 55%, var(--color-base-300) 100%); }
+.btn-primary { background-image: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in oklab, var(--color-primary) 55%, var(--button-end)) 55%, var(--button-end) 100%); color: var(--color-primary-content); border: 0; box-shadow: 0 10px 30px -12px var(--color-primary); transition: filter var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+.btn-primary:hover { filter: brightness(1.05); box-shadow: 0 14px 36px -10px var(--color-primary); color: var(--color-primary-content); }
+.text-red-glow { color: var(--color-primary); text-shadow: 0 0 24px color-mix(in oklab, var(--color-primary) 50%, transparent); }
 
 /* --- Prägen Hätlen-style in-game transitions --- */
 .pg-veil { position: fixed; inset: 0; z-index: 95; pointer-events: none; display: grid; place-items: center;
-  background: radial-gradient(90% 70% at 50% 40%, #4f0505 0%, #111111 75%); clip-path: inset(0 0 0 0); }
-.pg-veil .pg-count { font-family: var(--font-mono); letter-spacing: .3em; font-size: .8rem; color: #f9d4af; }
-.pg-veil .pg-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; transform-origin: left; background: linear-gradient(90deg, #4f0505, #e01e1e, #f9d4af); }
+  background: radial-gradient(90% 70% at 50% 40%, var(--color-base-200) 0%, var(--color-base-100) 75%); clip-path: inset(0 0 0 0); }
+.pg-veil .pg-count { font-family: var(--font-mono); letter-spacing: .3em; font-size: .8rem; color: var(--color-base-content); }
+.pg-veil .pg-line { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; transform-origin: left; background: linear-gradient(90deg, var(--color-base-200), var(--color-primary), var(--color-base-content)); }
 .bracket { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; }
 .bracket::before { content: "["; opacity: .5; margin-right: .35em; }
 .bracket::after { content: "]"; opacity: .5; margin-left: .35em; }
-.pg-plus { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid color-mix(in oklab, #f9d4af 40%, transparent); font-family: var(--font-mono); transition: transform .5s var(--ease-out), background .3s; }
-.pg-plus:hover { transform: rotate(90deg); background: #e01e1e; }
+.pg-plus { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1px solid color-mix(in oklab, var(--color-base-content) 40%, transparent); font-family: var(--font-mono); transition: transform .5s var(--ease-out), background .3s; }
+.pg-plus:hover { transform: rotate(90deg); background: var(--color-primary); }
 @media (prefers-reduced-motion: reduce) { .pg-veil { display: none; } }
 
 /* --- Full battle recap --- */
 .battle-recap {
   background:
-    radial-gradient(80% 30% at 50% 0%, color-mix(in oklab, #e01e1e 18%, transparent), transparent),
-    linear-gradient(155deg, #4f0505 0%, #111111 45%, #55362a 100%);
-  border: 1px solid color-mix(in oklab, #f9d4af 20%, transparent);
+    radial-gradient(80% 30% at 50% 0%, color-mix(in oklab, var(--color-primary) 18%, transparent), transparent),
+    linear-gradient(155deg, var(--color-base-200) 0%, var(--color-base-100) 45%, var(--color-base-300) 100%);
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 20%, transparent);
   animation: recap-enter .9s var(--ease-out) both;
 }
 .battle-recap__hero {
   background:
-    linear-gradient(180deg, color-mix(in oklab, #111111 12%, transparent), #111111),
-    radial-gradient(70% 100% at 50% 0%, #4f0505, transparent);
+    linear-gradient(180deg, color-mix(in oklab, var(--color-base-100) 12%, transparent), var(--color-base-100)),
+    radial-gradient(70% 100% at 50% 0%, var(--color-base-200), transparent);
 }
 .battle-recap__hero::after {
   content: "1757";
@@ -286,16 +286,16 @@ input:-webkit-autofill:focus {
   font-size: clamp(10rem, 25vw, 22rem);
   font-weight: 900;
   line-height: 1;
-  color: color-mix(in oklab, #f9d4af 3.5%, transparent);
+  color: color-mix(in oklab, var(--color-base-content) 3.5%, transparent);
   pointer-events: none;
 }
 .recap-result, .recap-fate, .recap-vote {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in oklab, #f9d4af 30%, transparent);
-  color: #f9d4af;
-  background: color-mix(in oklab, #55362a 35%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 30%, transparent);
+  color: var(--color-base-content);
+  background: color-mix(in oklab, var(--color-base-300) 35%, transparent);
   font-family: var(--font-mono);
   font-size: .6rem;
   letter-spacing: .12em;
@@ -304,29 +304,29 @@ input:-webkit-autofill:focus {
 }
 .recap-result { min-width: 7rem; padding: .55rem .8rem; }
 .recap-result--red, .recap-fate--lost, .recap-vote--reject {
-  border-color: color-mix(in oklab, #e01e1e 55%, transparent);
-  color: #f9d4af;
-  background: color-mix(in oklab, #4f0505 65%, transparent);
+  border-color: color-mix(in oklab, var(--color-primary) 55%, transparent);
+  color: var(--color-base-content);
+  background: color-mix(in oklab, var(--color-base-200) 65%, transparent);
 }
 .recap-details::details-content { transition: content-visibility .3s allow-discrete; }
 .recap-details summary { list-style: none; }
 .recap-details summary::-webkit-details-marker { display: none; }
-.recap-details summary::after { content: " +"; color: #e01e1e; }
+.recap-details summary::after { content: " +"; color: var(--color-primary); }
 .recap-details[open] summary::after { content: " −"; }
 .recap-vote { padding: .3rem .45rem; font-size: .55rem; letter-spacing: .04em; }
 .recap-reveal {
   min-height: 10rem;
   padding: 1.25rem;
-  border: 1px solid color-mix(in oklab, #f9d4af 15%, transparent);
-  background: linear-gradient(145deg, color-mix(in oklab, #55362a 25%, transparent), color-mix(in oklab, #111111 85%, transparent));
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--color-base-300) 25%, transparent), color-mix(in oklab, var(--color-base-100) 85%, transparent));
 }
 .recap-identity {
   display: flex;
   align-items: center;
   gap: .8rem;
   padding: .8rem;
-  border: 1px solid color-mix(in oklab, #f9d4af 12%, transparent);
-  background: color-mix(in oklab, #111111 55%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+  background: color-mix(in oklab, var(--color-base-100) 55%, transparent);
 }
 .recap-fate { padding: .35rem .5rem; }
 @keyframes recap-enter {
@@ -336,15 +336,71 @@ input:-webkit-autofill:focus {
 @media (prefers-reduced-motion: reduce) { .battle-recap { animation: none; } }
 
 /* Headings, labels and highlights read in champagne; red is reserved for CTAs, active badges and urgent states. */
-.text-primary, .eyebrow, .burger + *, h1, h2, h3 { color: #f9d4af; }
-.text-secondary { color: color-mix(in oklab, #f9d4af 72%, transparent); }
-.burger span { background: #f9d4af; }
+.text-primary, .eyebrow, .burger + *, h1, h2, h3 { color: var(--color-base-content); }
+.text-secondary { color: color-mix(in oklab, var(--color-base-content) 72%, transparent); }
+.burger span { background: var(--color-base-content); }
 
 /* Loyalist cards: emerald, never red */
-.court-card--loyal { background: linear-gradient(180deg, #111111 0%, #0f2a1c 60%, #14532d 100%); border-color: color-mix(in oklab, #2f9e5b 35%, transparent); }
+.court-card--loyal { background: linear-gradient(180deg, var(--color-base-100) 0%, #0f2a1c 60%, #14532d 100%); border-color: color-mix(in oklab, #2f9e5b 35%, transparent); }
 .court-card--loyal .eyebrow { color: #4fc07f; }
 .court-card--loyal .card-fade { --tw-gradient-from: #0f2a1c; }
 /* epic.net-style layered panel sweep */
-.page-panel { position: fixed; inset: 0; z-index: 91; pointer-events: none; background: linear-gradient(180deg, #4f0505, #111111); clip-path: inset(100% 0 0 0); }
-.page-panel--b { z-index: 92; background: linear-gradient(180deg, #55362a, #4f0505); }
+.page-panel { position: fixed; inset: 0; z-index: 91; pointer-events: none; background: linear-gradient(180deg, var(--color-base-200), var(--color-base-100)); clip-path: inset(100% 0 0 0); }
+.page-panel--b { z-index: 92; background: linear-gradient(180deg, var(--color-base-300), var(--color-base-200)); }
 @media (prefers-reduced-motion: reduce) { .page-panel { display: none; } }
+
+/* Only public pages use the royal default; authenticated game pages can select a palette. */
+[data-theme="plassey"] { --button-end: #4f0505; }
+[data-theme="ivory-sage"] {
+ color-scheme: light;
+ --color-base-100: #E4E4DE; --color-base-200: #C4C5BA; --color-base-300: #C4C5BA; --color-base-content: #1B1B1B;
+ --color-primary: #595F39; --color-primary-content: #E4E4DE; --color-accent: #595F39; --color-accent-content: #E4E4DE;
+ --color-secondary: #C4C5BA; --color-secondary-content: #1B1B1B; --color-neutral: #E4E4DE; --color-neutral-content: #1B1B1B;
+ --color-info: #595F39; --color-info-content: #E4E4DE; --color-success: #595F39; --color-success-content: #E4E4DE;
+ --color-warning: #595F39; --color-warning-content: #E4E4DE; --color-error: #595F39; --color-error-content: #E4E4DE;
+ --button-end: color-mix(in oklab, #595F39 92%, #E4E4DE);
+}
+[data-theme="navy-cream"] {
+ color-scheme: dark;
+ --color-base-100: #0F1A2B; --color-base-200: color-mix(in oklab, #0F1A2B 91%, #D8CFC0); --color-base-300: color-mix(in oklab, #0F1A2B 82%, #D8CFC0); --color-base-content: #F5F0E6;
+ --color-primary: #C5A059; --color-primary-content: #0F1A2B; --color-accent: #C5A059; --color-accent-content: #0F1A2B;
+ --color-secondary: #D8CFC0; --color-secondary-content: #0F1A2B; --color-neutral: #0F1A2B; --color-neutral-content: #F5F0E6;
+ --color-info: #C5A059; --color-info-content: #0F1A2B; --color-success: #C5A059; --color-success-content: #0F1A2B;
+ --color-warning: #C5A059; --color-warning-content: #0F1A2B; --color-error: #C5A059; --color-error-content: #0F1A2B;
+ --button-end: color-mix(in oklab, #C5A059 92%, #0F1A2B);
+}
+[data-theme="espresso"] {
+ color-scheme: dark;
+ --color-base-100: #241B15; --color-base-200: color-mix(in oklab, #241B15 91%, #8C7A6B); --color-base-300: color-mix(in oklab, #241B15 82%, #8C7A6B); --color-base-content: #F4EFEA;
+ --color-primary: #DFC498; --color-primary-content: #241B15; --color-accent: #DFC498; --color-accent-content: #241B15;
+ --color-secondary: #8C7A6B; --color-secondary-content: #241B15; --color-neutral: #241B15; --color-neutral-content: #F4EFEA;
+ --color-info: #DFC498; --color-info-content: #241B15; --color-success: #DFC498; --color-success-content: #241B15;
+ --color-warning: #DFC498; --color-warning-content: #241B15; --color-error: #DFC498; --color-error-content: #241B15;
+ --button-end: color-mix(in oklab, #DFC498 92%, #241B15);
+}
+[data-theme="burgundy"] {
+ color-scheme: dark;
+ --color-base-100: #3B1219; --color-base-200: color-mix(in oklab, #3B1219 91%, #D6B4B8); --color-base-300: color-mix(in oklab, #3B1219 82%, #D6B4B8); --color-base-content: #F7F3F0;
+ --color-primary: #B88B4A; --color-primary-content: #3B1219; --color-accent: #B88B4A; --color-accent-content: #3B1219;
+ --color-secondary: #D6B4B8; --color-secondary-content: #3B1219; --color-neutral: #3B1219; --color-neutral-content: #F7F3F0;
+ --color-info: #B88B4A; --color-info-content: #3B1219; --color-success: #B88B4A; --color-success-content: #3B1219;
+ --color-warning: #B88B4A; --color-warning-content: #3B1219; --color-error: #B88B4A; --color-error-content: #3B1219;
+ --button-end: color-mix(in oklab, #B88B4A 92%, #3B1219);
+}
+.theme-preview-plassey { --swatch-bg: #111111; --swatch-surface: #55362a; --swatch-text: #f9d4af; --swatch-accent: #e01e1e; }
+.theme-preview-ivory-sage { --swatch-bg: #E4E4DE; --swatch-surface: #C4C5BA; --swatch-text: #1B1B1B; --swatch-accent: #595F39; }
+.theme-preview-navy-cream { --swatch-bg: #0F1A2B; --swatch-surface: #D8CFC0; --swatch-text: #F5F0E6; --swatch-accent: #C5A059; }
+.theme-preview-espresso { --swatch-bg: #241B15; --swatch-surface: #8C7A6B; --swatch-text: #F4EFEA; --swatch-accent: #DFC498; }
+.theme-preview-burgundy { --swatch-bg: #3B1219; --swatch-surface: #D6B4B8; --swatch-text: #F7F3F0; --swatch-accent: #B88B4A; }
+.preference-panel { max-width: 29rem; width: calc(100% - 2rem); max-height: calc(100dvh - 2rem); background: var(--color-base-100); color: var(--color-base-content); border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); border-radius: 8px; padding: 1.5rem; }
+.preference-panel h2 { letter-spacing: 0; }
+.modal::backdrop { background: color-mix(in oklab, var(--color-base-100) 70%, transparent); backdrop-filter: blur(5px); }
+.public-sound-control { position: fixed; bottom: 1rem; right: 1rem; z-index: 70; background: var(--color-base-100); border-radius: 4px; }
+.theme-swatches { display: grid; grid-template-columns: repeat(4, 9px); height: 28px; flex-shrink: 0; border: 1px solid color-mix(in oklab, var(--color-base-content) 25%, transparent); }
+.theme-swatches i:nth-child(1) { background: var(--swatch-bg); }
+.theme-swatches i:nth-child(2) { background: var(--swatch-surface); }
+.theme-swatches i:nth-child(3) { background: var(--swatch-text); }
+.theme-swatches i:nth-child(4) { background: var(--swatch-accent); }
+.theme-choice { letter-spacing: 0; white-space: normal; }
+html { transition: background-color .35s, color .35s; }
+@media (prefers-reduced-motion: reduce) { html { transition: none; } }

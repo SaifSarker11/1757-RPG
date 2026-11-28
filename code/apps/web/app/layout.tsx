@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Bodoni_Moda, Geist_Mono, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Experience } from "@/components/Experience";
 import { Motion } from "@/components/site/Motion";
 
 const display = Bodoni_Moda({
@@ -38,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       suppressHydrationWarning
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-base-100 text-base-content"><Motion />
+      <body className="min-h-full flex flex-col bg-base-100 text-base-content"><Motion /><Experience />
         {children}
       </body>
     </html>

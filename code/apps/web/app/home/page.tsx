@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { gameAudio } from "@/lib/audio";
+import { ThemeControl } from "@/components/ThemeControl";
 import { MusicControl } from "@/components/MusicControl";
 
 const API_URL =
@@ -11,13 +12,13 @@ const API_URL =
     ? ""
     : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
 
-const THEMES = ["plassey"];
+
 
 export default function HomePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
-  const [currentTheme, setCurrentTheme] = useState("plassey");
+
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [userStats, setUserStats] = useState<{
@@ -33,15 +34,9 @@ export default function HomePage() {
   const [roomMode, setRoomMode] = useState<"STANDARD" | "CUSTOM">("STANDARD");
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
 
-  useEffect(() => {
-    const savedTheme = "plassey";
-    localStorage.setItem("daisyui-theme", savedTheme);
-    setCurrentTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
-    setSoundEnabled(gameAudio.isEnabled());
-  }, []);
+
+
 
   useEffect(() => {
     if (session?.user) {
@@ -65,18 +60,7 @@ export default function HomePage() {
     }
   }, [session]);
 
-  const changeTheme = (themeName: string) => {
-    gameAudio.playClick();
-    setCurrentTheme(themeName);
-    localStorage.setItem("daisyui-theme", themeName);
-    document.documentElement.setAttribute("data-theme", themeName);
-  };
 
-  const toggleSound = () => {
-    const nextVal = !soundEnabled;
-    gameAudio.setEnabled(nextVal);
-    setSoundEnabled(nextVal);
-  };
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -220,36 +204,15 @@ export default function HomePage() {
           <span className="font-historical text-2xl font-extrabold tracking-wide uppercase text-primary drop-shadow">Battle of Plassey 1757</span>
         </div>
 
-        <div className="flex-none flex items-center gap-3">
+        <div className="flex-none flex flex-wrap justify-center items-center gap-3">
           {/* Sound Toggle */}
-          <button 
-            onClick={toggleSound}
-            className={`btn btn-sm btn-outline border-2 rounded-none font-pixel ${soundEnabled ? "btn-accent text-accent-content" : ""}`}
-          >
-            {soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇"}
-          </button>
-
           <MusicControl />
 
           <span className="text-xs font-pixel uppercase bg-neutral text-neutral-content px-3 py-1.5 border border-base-300">
             {session.user.name}
           </span>
 
-          {/* Theme Dropdown */}
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-outline btn-sm rounded-none border-2 font-pixel">
-              Theme: {currentTheme}
-            </div>
-            <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-none z-10 w-52 p-2 shadow-lg border-2 border-base-300 max-h-60 overflow-y-auto">
-              {THEMES.map((themeName) => (
-                <li key={themeName}>
-                  <button onClick={() => changeTheme(themeName)} className="capitalize font-mono">
-                    {themeName}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ThemeControl />
 
           <button
             onClick={handleSignOut}

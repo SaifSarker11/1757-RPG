@@ -4,7 +4,7 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
 
 ## Look and feel
 
-- **Palette (strict, five colours only):**
+- **Default royal palette (preserved):**
   | Colour | Hex | Used for |
   |---|---|---|
   | Warm Champagne Gold | `#f9d4af` | headings, body text, highlights, active borders |
@@ -14,8 +14,26 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
   | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
 - **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
 - **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
-- **Transitions on every page:** public pages open with the battle painting lifting away; in-game screens (lobby → end of match) use a Prägen Hätlen-style veil with a bracketed `[000]→[100]` counter, gradient hairline and blur-in, plus bracketed section labels.
+- **Transitions on every page:** the Nawab-versus-Clive battle scene appears immediately and lifts to reveal the destination, with no blank intermediary screen; reduced-motion preferences are respected.
 - **Battle recap:** every match ends with a full-width report covering the winner and reason, round scores, ministers, all ballots and votes, mission cards, Mir Madan's reveal, Jagat Seth's gamble, and every player's final identity and result.
+
+### Personal themes and sound
+
+Public pages keep **Royal Plassey**. After guest or account sign-in, the **Theme** picker in both the dashboard and room offers:
+
+| Theme | Background | Secondary | Text | Accent |
+|---|---|---|---|---|
+| Royal Plassey | `#111111` | `#55362a` / `#4f0505` | `#f9d4af` | `#e01e1e` |
+| Ivory & Sage | `#E4E4DE` | `#C4C5BA` | `#1B1B1B` | `#595F39` |
+| Navy & Cream | `#0F1A2B` | `#D8CFC0` | `#F5F0E6` | `#C5A059` |
+| Espresso & Champagne | `#241B15` | `#8C7A6B` | `#F4EFEA` | `#DFC498` |
+| Burgundy & Rose | `#3B1219` | `#D6B4B8` | `#F7F3F0` | `#B88B4A` |
+
+Loyalists remain emerald green in every theme. Secondary colours are blended into dark surfaces to preserve text contrast. Preferences are saved on the current browser and origin; the Vercel and Render copies have independent preferences.
+
+**Sound** is available before sign-in and throughout the game. Court of Murshidabad starts on entry, with Council in Session and Eve of Plassey also available. If the browser blocks autoplay, the first click or key press starts music; the Sound control also shows **Enable music**. Returning players' Off choice is respected. Music loops across page changes, pauses for voice chat, and has its own volume.
+
+Four original suspense click cues — Court whisper, Bronze seal, Distant war drum, Shadow chime — cover navigation, login, guest play, room creation, role assignment, approvals, ballots, and other controls. Each can be previewed; click sounds have an independent toggle and volume. Soft phase/result cues replace the old 8-bit effects.
 
 ## Architecture
 
@@ -32,7 +50,7 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
 
 ## Prerequisites
 
-- **Node.js** ≥ 18
+- **Node.js** ≥ 20.9
 - **pnpm** 9 (`corepack enable && corepack prepare pnpm@9.0.0 --activate`)
 - **Docker** (optional, for containerised local dev)
 
@@ -60,6 +78,7 @@ pnpm dev
 |---|---|
 | API | https://one757-rpg.onrender.com |
 | Web | https://1757-web-rpg.vercel.app |
+| Web on Render | https://one757-web.onrender.com |
 | Admin | https://1757-admin-rpg.vercel.app |
 
 ## Quick Start (Docker)
@@ -137,7 +156,7 @@ address to both, or to the API's `EXTRA_ALLOWED_ORIGINS`.
 
 ### Vercel (Web & Admin)
 
-The Next.js apps deploy to [Vercel](https://vercel.com) through Vercel's Git integration whenever `main` changes. The Vercel project is on the Hobby plan, which only deploys commits authored by the project owner, so changes reach `main` through pull requests that the owner merges. Don't push directly to `main`: Vercel blocks those deploys.
+GitHub Actions deploys and promotes the web and admin projects on pushes to `main`. Set the Vercel web Root Directory to `code/apps/web`, and the admin Root Directory to `code/apps/admin`. CI needs `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and the web `VERCEL_PROJECT_ID`. Render auto-deploys the Docker services; the existing bare `/rooms` rewrite must stay intact.
 
 ## CI/CD
 
@@ -149,7 +168,7 @@ The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs on every push to `
 4. **Test** → `pnpm test`
 5. **Build** → `pnpm build`
 6. **Deploy API** → Render webhook (main only)
-7. **Deploy Web** → Vercel Git integration (when the owner merges a PR into main)
+7. **Deploy Web & Admin** → Vercel CLI deploy and promote (main only)
 
 ## Documentation
 

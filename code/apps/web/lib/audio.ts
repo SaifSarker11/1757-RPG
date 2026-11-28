@@ -1,197 +1,76 @@
-// Procedural 8-bit chiptune sound effects engine using Web Audio API
+import { safeVolume, validClickSound, type ClickSoundId } from "./preferences";
+import { readPreference, writePreference } from "./browser-preferences";
+
+/** Soft, original suspense cues synthesized locally; no audio downloads or tracking. */
 class AudioEngine {
   private ctx: AudioContext | null = null;
-  private volume: number = 0.5; // default volume
-  private enabled: boolean = false;
-
-  constructor() {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("game-sfx-enabled");
-      this.enabled = saved === "true";
-      const savedVol = localStorage.getItem("game-sfx-volume");
-      if (savedVol) this.volume = parseFloat(savedVol);
-    }
+  private volume = 0.35;
+  private enabled = true;
+  private sound: ClickSoundId = "whisper";
+  private initialized = false;
+  private lastClick = -Infinity;
+  private initPreferences() {
+    if (this.initialized || typeof window === "undefined") return;
+    this.initialized = true;
+    this.enabled = readPreference("game-sfx-enabled") !== "false";
+    this.volume = safeVolume(readPreference("game-sfx-volume"), 0.35);
+    this.sound = validClickSound(readPreference("game-sfx-sound"));
   }
-
-  private initCtx() {
-    if (!this.ctx && typeof window !== "undefined") {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioCtx) {
-        this.ctx = new AudioCtx();
-      }
-    }
-    if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume();
-    }
+  private context(): AudioContext | null {
+    this.initPreferences();
+    if (typeof window === "undefined" || !this.enabled) return null;
+    const AudioCtx = window.AudioContext;
+    if (!AudioCtx) return null;
+    if (!this.ctx) this.ctx = new AudioCtx();
+    if (this.ctx.state === "suspended") void this.ctx.resume().catch(() => {});
+    return this.ctx;
   }
-
-  public isEnabled(): boolean {
-    return this.enabled;
+  public isEnabled() { this.initPreferences(); return this.enabled; }
+  public getVolume() { this.initPreferences(); return this.volume; }
+  public getSound() { this.initPreferences(); return this.sound; }
+  public setEnabled(value: boolean) {
+    this.initPreferences(); this.enabled = value;
+    writePreference("game-sfx-enabled", String(value));
   }
-
-  public setEnabled(val: boolean) {
-    this.enabled = val;
-    if (typeof window !== "undefined") {
-      localStorage.setItem("game-sfx-enabled", String(val));
-    }
-    if (val) {
-      this.initCtx();
-      this.playClick();
-    }
+  public setVolume(value: number) {
+    this.initPreferences(); this.volume = safeVolume(String(value), 0.35);
+    writePreference("game-sfx-volume", String(this.volume));
   }
-
-  public getVolume(): number {
-    return this.volume;
+  public setSound(value: ClickSoundId) {
+    this.initPreferences(); this.sound = validClickSound(value);
+    writePreference("game-sfx-sound", this.sound);
   }
-
-  public setVolume(vol: number) {
-    this.volume = Math.max(0, Math.min(1, vol));
-    if (typeof window !== "undefined") {
-      localStorage.setItem("game-sfx-volume", String(this.volume));
-    }
-  }
-
-  private createOscillator(
-    type: OscillatorType,
-    freq: number,
-    duration: number,
-    gainStart: number
-  ): { osc: OscillatorNode; gain: GainNode } | null {
-    this.initCtx();
-    if (!this.ctx || !this.enabled) return null;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
+  private tone(frequency: number, duration: number, amplitude: number, delay = 0, endFrequency = frequency, type: OscillatorType = "sine") {
+    const ctx = this.context(); if (!ctx || this.volume === 0) return;
+    const now = ctx.currentTime + delay;
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
     osc.type = type;
-    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
-    gain.gain.setValueAtTime(gainStart * this.volume, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    return { osc, gain };
+    osc.frequency.setValueAtTime(frequency, now);
+    osc.frequency.exponentialRampToValueAtTime(endFrequency, now + duration);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, amplitude * this.volume), now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.onended = () => { osc.disconnect(); gain.disconnect(); };
+    osc.start(now); osc.stop(now + duration + 0.01);
   }
-
+  private cue(sound: ClickSoundId) {
+    if (sound === "whisper") { this.tone(190, 0.19, 0.22, 0, 95); this.tone(285, 0.24, 0.06, 0.015, 150); }
+    if (sound === "seal") { this.tone(330, 0.25, 0.16, 0, 270, "triangle"); this.tone(713, 0.28, 0.055, 0.012); }
+    if (sound === "drum") { this.tone(120, 0.26, 0.3, 0, 42); this.tone(61, 0.18, 0.07, 0.02, 40); }
+    if (sound === "chime") { this.tone(440, 0.32, 0.14); this.tone(466.16, 0.38, 0.065, 0.025); }
+  }
+  public preview(sound: ClickSoundId) { this.cue(sound); }
   public playClick() {
-    const sound = this.createOscillator("triangle", 150, 0.08, 0.4);
-    if (!sound) return;
-    sound.osc.frequency.exponentialRampToValueAtTime(600, this.ctx!.currentTime + 0.08);
-    sound.osc.start();
-    sound.osc.stop(this.ctx!.currentTime + 0.08);
+    const now = Date.now();
+    // A single global click and a legacy handler may refer to the same action.
+    if (now - this.lastClick < 60) return;
+    this.lastClick = now; this.initPreferences(); this.cue(this.sound);
   }
-
-  public playTimerTick() {
-    const sound = this.createOscillator("sine", 800, 0.05, 0.2);
-    if (!sound) return;
-    sound.osc.start();
-    sound.osc.stop(this.ctx!.currentTime + 0.05);
-  }
-
-  public playPhaseChange() {
-    this.initCtx();
-    if (!this.ctx || !this.enabled) return;
-
-    const now = this.ctx.currentTime;
-    const notes = [220, 330, 440, 660];
-    notes.forEach((freq, index) => {
-      const time = now + index * 0.08;
-      const osc = this.ctx!.createOscillator();
-      const gain = this.ctx!.createGain();
-
-      osc.type = "square";
-      osc.frequency.setValueAtTime(freq, time);
-      gain.gain.setValueAtTime(0.15 * this.volume, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
-
-      osc.connect(gain);
-      gain.connect(this.ctx!.destination);
-
-      osc.start(time);
-      osc.stop(time + 0.15);
-    });
-  }
-
-  public playSuccess() {
-    this.initCtx();
-    if (!this.ctx || !this.enabled) return;
-
-    const now = this.ctx.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-    notes.forEach((freq, index) => {
-      const time = now + index * 0.1;
-      const osc = this.ctx!.createOscillator();
-      const gain = this.ctx!.createGain();
-
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(freq, time);
-      gain.gain.setValueAtTime(0.25 * this.volume, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
-
-      osc.connect(gain);
-      gain.connect(this.ctx!.destination);
-
-      osc.start(time);
-      osc.stop(time + 0.25);
-    });
-  }
-
-  public playFailure() {
-    this.initCtx();
-    if (!this.ctx || !this.enabled) return;
-
-    const now = this.ctx.currentTime;
-    const notes = [293.66, 277.18, 261.63, 220.0]; // D4, C#4, C4, A3
-    notes.forEach((freq, index) => {
-      const time = now + index * 0.12;
-      const osc = this.ctx!.createOscillator();
-      const gain = this.ctx!.createGain();
-
-      osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(freq, time);
-      gain.gain.setValueAtTime(0.2 * this.volume, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
-
-      osc.connect(gain);
-      gain.connect(this.ctx!.destination);
-
-      osc.start(time);
-      osc.stop(time + 0.3);
-    });
-  }
-
-  public playVictory() {
-    this.initCtx();
-    if (!this.ctx || !this.enabled) return;
-
-    const now = this.ctx.currentTime;
-    // Ascending major arpeggio followed by sustained chord
-    const sequence = [
-      { note: 261.63, start: 0, dur: 0.15 }, // C4
-      { note: 329.63, start: 0.15, dur: 0.15 }, // E4
-      { note: 392.00, start: 0.3, dur: 0.15 }, // G4
-      { note: 523.25, start: 0.45, dur: 0.6 }, // C5
-    ];
-
-    sequence.forEach((item) => {
-      const time = now + item.start;
-      const osc = this.ctx!.createOscillator();
-      const gain = this.ctx!.createGain();
-
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(item.note, time);
-      gain.gain.setValueAtTime(0.3 * this.volume, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + item.dur);
-
-      osc.connect(gain);
-      gain.connect(this.ctx!.destination);
-
-      osc.start(time);
-      osc.stop(time + item.dur);
-    });
-  }
+  public playTimerTick() { this.tone(220, 0.08, 0.06); }
+  public playPhaseChange() { this.tone(146.83, 0.5, 0.12); this.tone(155.56, 0.65, 0.055, 0.12); }
+  public playSuccess() { [196, 293.66, 392].forEach((note, i) => this.tone(note, 0.4, 0.11, i * 0.09)); }
+  public playFailure() { [196, 185, 146.83].forEach((note, i) => this.tone(note, 0.45, 0.1, i * 0.1)); }
+  public playVictory() { [146.83, 220, 293.66, 440].forEach((note, i) => this.tone(note, 0.65, 0.1, i * 0.15)); }
 }
-
 export const gameAudio = new AudioEngine();

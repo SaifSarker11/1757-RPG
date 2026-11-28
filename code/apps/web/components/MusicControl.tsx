@@ -1,91 +1,43 @@
 "use client";
-
+import { useEffect, useRef, useState } from "react";
 import { gameAudio } from "@/lib/audio";
-import { MUSIC_LICENSE, TRACKS, musicPlayer, useMusic } from "@/lib/music";
+import { TRACKS, musicPlayer, useMusic } from "@/lib/music";
+import { CLICK_SOUNDS, type ClickSoundId } from "@/lib/preferences";
 
-/** Navbar music menu: pick a track or turn music off, set the volume. */
 export function MusicControl() {
   const music = useMusic();
-  const current = TRACKS.find((t) => t.id === music.trackId);
-
-  const label = !current
-    ? "MUSIC: OFF 🔇"
-    : music.suppressed
-      ? "MUSIC: PAUSED ⏸"
-      : music.awaitingGesture
-        ? "MUSIC: CLICK ▶"
-        : "MUSIC: ON 🎵";
-
-  const choose = (trackId: string | null) => {
-    gameAudio.playClick();
-    musicPlayer.setTrack(trackId);
-  };
-
-  return (
-    <div className="dropdown dropdown-end">
-      <div
-        tabIndex={0}
-        role="button"
-        title={current ? `Now playing: ${current.name}` : "Background music is off"}
-        className={`btn btn-sm btn-outline rounded-none border-2 font-pixel ${
-          current && !music.suppressed ? "btn-accent text-accent-content" : ""
-        }`}
-      >
-        {label}
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [enabled, setEnabled] = useState(true);
+  const [sound, setSound] = useState<ClickSoundId>("whisper");
+  const [volume, setVolume] = useState(0.35);
+  useEffect(() => { setEnabled(gameAudio.isEnabled()); setSound(gameAudio.getSound()); setVolume(gameAudio.getVolume()); }, []);
+  const open = () => { setEnabled(gameAudio.isEnabled()); setSound(gameAudio.getSound()); setVolume(gameAudio.getVolume()); dialog.current?.showModal(); };
+  const current = TRACKS.find((track) => track.id === music.trackId);
+  return <>
+    <button type="button" onClick={open} className="btn btn-sm btn-outline font-mono" aria-label="Sound settings" title="Music and click sounds">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M9 18V5l12-2v13M9 8l12-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="18" cy="16" rx="3" ry="2"/></svg>
+      <span>{music.awaitingGesture ? "Enable music" : "Sound"}</span>
+    </button>
+    <dialog ref={dialog} className="modal sound-dialog" aria-labelledby="sound-title" onClick={(event) => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
+      <div className="modal-box preference-panel">
+        <div className="flex items-center justify-between gap-4 mb-5"><h2 id="sound-title" className="font-display text-2xl">Sound & atmosphere</h2><button type="button" className="btn btn-ghost btn-square btn-sm" onClick={() => dialog.current?.close()} aria-label="Close sound settings">×</button></div>
+        <label className="block font-mono text-xs mb-2" htmlFor="music-track">Background music</label>
+        <select id="music-track" className="select select-bordered w-full" value={music.trackId ?? "off"} onChange={(event) => musicPlayer.setTrack(event.target.value === "off" ? null : event.target.value)}>
+          <option value="off">Off</option>{TRACKS.map((track) => <option key={track.id} value={track.id}>{track.name}</option>)}
+        </select>
+        {current && <div className="flex items-center justify-between gap-3 mt-3"><span className="text-xs text-base-content/70">{current.title}</span><button type="button" className="btn btn-sm btn-ghost" onClick={() => music.playing ? musicPlayer.setTrack(null) : musicPlayer.resume()} aria-label={music.playing ? "Stop music" : "Play music"}>{music.playing ? "Ⅱ" : "▶"}</button></div>}
+        {music.error && <p role="alert" className="text-sm mt-2">{music.error}</p>}
+        {music.suppressed && <p className="text-xs mt-2">Music paused for voice chat.</p>}
+        <label className="flex items-center gap-3 my-4 text-xs">Music volume<input type="range" className="range range-xs range-primary flex-1" min="0" max="1" step="0.05" value={music.volume} onChange={(event) => musicPlayer.setVolume(Number(event.target.value))} aria-label="Music volume"/><output>{Math.round(music.volume * 100)}%</output></label>
+        <div className="border-t border-base-content/20 pt-4 mt-4">
+          <label className="flex items-center justify-between gap-3 text-sm mb-4">Click sounds<input type="checkbox" className="toggle toggle-primary" checked={enabled} onChange={(event) => { gameAudio.setEnabled(event.target.checked); setEnabled(event.target.checked); }} /></label>
+          <div role="radiogroup" aria-label="Click sound" className="space-y-2">{CLICK_SOUNDS.map((option) => <div key={option.id} className="flex items-center gap-2">
+            <button type="button" data-sfx="off" role="radio" aria-checked={sound === option.id} className={`btn btn-sm flex-1 justify-start ${sound === option.id ? "btn-primary" : "btn-outline"}`} onClick={() => { gameAudio.setSound(option.id); setSound(option.id); if (enabled) gameAudio.preview(option.id); }}><span aria-hidden="true">{sound === option.id ? "●" : "○"}</span>{option.name}</button>
+            <button type="button" data-sfx="off" className="btn btn-sm btn-ghost btn-square" disabled={!enabled} onClick={() => gameAudio.preview(option.id)} aria-label={`Preview ${option.name}`} title={`Preview ${option.name}`}>▶</button>
+          </div>)}</div>
+          <label className="flex items-center gap-3 mt-4 text-xs">Click volume<input type="range" className="range range-xs range-primary flex-1" min="0" max="1" step="0.05" value={volume} onChange={(event) => { const value = Number(event.target.value); gameAudio.setVolume(value); setVolume(value); }} aria-label="Click volume"/><output>{Math.round(volume * 100)}%</output></label>
+        </div>
       </div>
-      <div
-        tabIndex={0}
-        className="dropdown-content bg-base-100 rounded-none z-20 w-64 p-3 shadow-lg border-2 border-base-300 font-pixel space-y-2"
-      >
-        <span className="text-[9px] uppercase text-base-content/60 block">Background music</span>
-        <ul className="menu p-0 gap-0.5">
-          <li>
-            <button
-              onClick={() => choose(null)}
-              className={`rounded-none text-[10px] ${!current ? "active" : ""}`}
-            >
-              🔇 Off
-            </button>
-          </li>
-          {TRACKS.map((t) => (
-            <li key={t.id}>
-              <button
-                onClick={() => choose(t.id)}
-                className={`rounded-none text-[10px] flex justify-between ${t.id === music.trackId ? "active" : ""}`}
-              >
-                <span>🎵 {t.name}</span>
-                {t.id === music.trackId && music.playing && <span className="animate-pulse">▶</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        <label className="flex items-center gap-2 text-[9px] uppercase">
-          Vol
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.05}
-            value={music.volume}
-            onChange={(e) => musicPlayer.setVolume(Number(e.target.value))}
-            className="range range-xs range-accent flex-1"
-            aria-label="Music volume"
-          />
-        </label>
-
-        {music.suppressed && current && (
-          <p className="text-[9px] text-warning leading-snug">
-            Paused while voice chat is active. It resumes when the voice channel empties.
-          </p>
-        )}
-
-        {current && (
-          <p className="font-sans text-[9px] text-base-content/60 leading-snug border-t border-dashed border-base-content/20 pt-1.5">
-            “{current.title}”, {MUSIC_LICENSE.name}
-          </p>
-        )}
-      </div>
-    </div>
-  );
+    </dialog>
+  </>;
 }

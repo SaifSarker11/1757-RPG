@@ -48,6 +48,7 @@ export interface MusicState {
   suppressed: boolean;
   /** The browser is waiting for a click before it allows audio. */
   awaitingGesture: boolean;
+  error: string | null;
 }
 
 const TRACK_KEY = "game-music-track";
@@ -61,6 +62,7 @@ const SERVER_STATE: MusicState = {
   playing: false,
   suppressed: false,
   awaitingGesture: false,
+  error: null,
 };
 
 function read(key: string): string | null {
@@ -92,12 +94,13 @@ class MusicPlayer {
   private readonly listeners = new Set<() => void>();
   private fade: ReturnType<typeof setInterval> | null = null;
   private initialized = false;
+  private request = 0;
 
   private init(): void {
     if (this.initialized || typeof window === "undefined") return;
     this.initialized = true;
     const saved = read(TRACK_KEY);
-    const trackId = saved === "off" ? null : (TRACKS.find((t) => t.id === saved)?.id ?? TRACKS[0]!.id);
+    const trackId = saved === "off" ? null : (TRACKS.find((t) => t.id === saved)?.id ?? "court");
     const volume = Number.parseFloat(read(VOLUME_KEY) ?? "");
     this.state = {
       ...this.state,
@@ -126,15 +129,18 @@ class MusicPlayer {
   /** null turns music off. */
   setTrack(trackId: string | null): void {
     this.init();
-    write(TRACK_KEY, trackId ?? "off");
-    this.update({ trackId });
+    write(TRACK_KEY, TRACKS.some((track) => track.id === trackId) ? String(trackId) : "off");
+    const valid = TRACKS.some((track) => track.id === trackId) ? trackId : null;
+    this.update({ trackId: valid, error: null });
     this.sync();
   }
+
+  resume(): void { this.init(); this.sync(); }
 
   /** Cycles Off → track 1 → … → last track → Off. */
   next(): void {
     const index = TRACKS.findIndex((t) => t.id === this.state.trackId);
-    this.setTrack(index === TRACKS.length - 1 ? null : TRACKS[index + 1]!.id);
+    this.setTrack(index === TRACKS.length - 1 ? null : TRACKS[index + 1]?.id ?? null);
   }
 
   setVolume(volume: number): void {
@@ -160,6 +166,9 @@ class MusicPlayer {
 
   /** Makes the audio element match the state. */
   private sync(): void {
+    const request = ++this.request;
+    if (this.fade) clearInterval(this.fade);
+    this.fade = null;
     const track = TRACKS.find((t) => t.id === this.state.trackId);
     const shouldPlay = track !== undefined && this.suppressors.size === 0;
 
@@ -175,23 +184,31 @@ class MusicPlayer {
       this.audio.preload = "auto";
     }
     const audio = this.audio;
-    if (!audio.src.endsWith(track.src)) {
+    const changed = !audio.src.endsWith(track.src);
+    if (changed) {
+      audio.pause();
+      this.update({ playing: false });
       audio.src = track.src;
       audio.currentTime = 0;
     }
-    if (!audio.paused && this.state.playing) return;
+    if (!changed && !audio.paused && this.state.playing) {
+      this.fadeTo(this.state.volume);
+      return;
+    }
 
     audio.volume = 0;
     audio
       .play()
       .then(() => {
-        this.update({ playing: true, awaitingGesture: false });
+        if (request !== this.request) return;
+        this.update({ playing: true, awaitingGesture: false, error: null });
         this.fadeTo(this.state.volume);
       })
       .catch((error: unknown) => {
+        if (request !== this.request) return;
         // NotAllowedError: autoplay blocked until a click/keypress.
         const blocked = error instanceof DOMException && error.name === "NotAllowedError";
-        this.update({ playing: false, awaitingGesture: blocked });
+        this.update({ playing: false, awaitingGesture: blocked, error: blocked ? null : "This track could not play. Try another track." });
       });
   }
 

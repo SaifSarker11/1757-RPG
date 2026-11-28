@@ -82,7 +82,7 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
 
 ## Look and feel
 
-- **Palette (strict, five colours only):**
+- **Default royal palette (preserved):**
   | Colour | Hex | Used for |
   |---|---|---|
   | Warm Champagne Gold | `#f9d4af` | headings, body text, highlights, active borders |
@@ -92,7 +92,25 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
   | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
 - **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
 - **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
-- **Transitions on every page:** public pages open with the battle painting lifting away; in-game screens (lobby → end of match) use a Prägen Hätlen-style veil with a bracketed `[000]→[100]` counter, gradient hairline and blur-in, plus bracketed section labels.
+- **Transitions on every page:** the Nawab-versus-Clive battle scene appears immediately and lifts to reveal the destination, with no blank intermediary screen; reduced-motion preferences are respected.
+
+### Personal themes and sound
+
+Public pages keep **Royal Plassey**. After guest or account sign-in, the **Theme** picker in both the dashboard and room offers:
+
+| Theme | Background | Secondary | Text | Accent |
+|---|---|---|---|---|
+| Royal Plassey | `#111111` | `#55362a` / `#4f0505` | `#f9d4af` | `#e01e1e` |
+| Ivory & Sage | `#E4E4DE` | `#C4C5BA` | `#1B1B1B` | `#595F39` |
+| Navy & Cream | `#0F1A2B` | `#D8CFC0` | `#F5F0E6` | `#C5A059` |
+| Espresso & Champagne | `#241B15` | `#8C7A6B` | `#F4EFEA` | `#DFC498` |
+| Burgundy & Rose | `#3B1219` | `#D6B4B8` | `#F7F3F0` | `#B88B4A` |
+
+Loyalists remain emerald green in every theme. Secondary colours are blended into dark surfaces to preserve text contrast. Preferences are saved on the current browser and origin; the Vercel and Render copies have independent preferences.
+
+**Sound** is available before sign-in and throughout the game. Court of Murshidabad starts on entry, with Council in Session and Eve of Plassey also available. If the browser blocks autoplay, the first click or key press starts music; the Sound control also shows **Enable music**. Returning players' Off choice is respected. Music loops across page changes, pauses for voice chat, and has its own volume.
+
+Four original suspense click cues — Court whisper, Bronze seal, Distant war drum, Shadow chime — cover navigation, login, guest play, room creation, role assignment, approvals, ballots, and other controls. Each can be previewed; click sounds have an independent toggle and volume. Soft phase/result cues replace the old 8-bit effects.
 
 ## Features
 
