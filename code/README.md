@@ -35,6 +35,20 @@ Loyalists remain emerald green in every theme. Secondary colours are blended int
 
 Four original suspense click cues — Court whisper, Bronze seal, Distant war drum, Shadow chime — cover navigation, login, guest play, room creation, role assignment, approvals, ballots, and other controls. Each can be previewed; click sounds have an independent toggle and volume. Soft phase/result cues replace the old 8-bit effects.
 
+### Updated settings screenshots
+
+| Sound and theme choices | Preview |
+|---|---|
+| Music before sign-in and four click sounds | ![Music before sign-in and four click sounds](../doc/screenshots/preferences/sound-public.jpg) |
+| Five-theme picker | ![Five-theme picker](../doc/screenshots/preferences/theme-picker-plassey.jpg) |
+| Royal Plassey — unchanged default | ![Royal Plassey — unchanged default](../doc/screenshots/preferences/dashboard-plassey.jpg) |
+| Ivory & Sage | ![Ivory & Sage](../doc/screenshots/preferences/dashboard-ivory-sage.jpg) |
+| Navy & Cream | ![Navy & Cream](../doc/screenshots/preferences/dashboard-navy-cream.jpg) |
+| Espresso & Champagne | ![Espresso & Champagne](../doc/screenshots/preferences/dashboard-espresso.jpg) |
+| Burgundy & Rose | ![Burgundy & Rose](../doc/screenshots/preferences/dashboard-burgundy.jpg) |
+| Mobile sound settings | ![Mobile sound settings](../doc/screenshots/preferences/mobile-sound.jpg) |
+| Mobile theme picker | ![Mobile theme picker](../doc/screenshots/preferences/mobile-theme.jpg) |
+
 ## Architecture
 
 | App / Package | Stack | Purpose |
