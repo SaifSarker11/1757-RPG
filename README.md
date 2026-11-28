@@ -5,47 +5,47 @@
 [![CI/CD](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml/badge.svg)](https://github.com/SaifSarker11/1757-RPG/actions/workflows/ci.yml)
 
 
-![1757 home page](doc/screenshots/redesign/home.jpg)
+![1757 home page](doc/screenshots/current/home.jpg)
 
 <table>
   <tr>
-    <td width="50%"><img src="doc/screenshots/redesign/login.jpg" alt="Sign in"><br><sub><b>Sign in</b>: play as a guest in one tap, or use email.</sub></td>
-    <td><img src="doc/screenshots/redesign/signup.jpg" alt="Sign up"><br><sub><b>Sign up</b>: keep your level, XP and win rate.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/login.jpg" alt="Sign in"><br><sub><b>Sign in</b>: choose a game display name, or sign in with email.</sub></td>
+    <td><img src="doc/screenshots/current/signup.jpg" alt="Sign up"><br><sub><b>Sign up</b>: keep your level, XP and win rate.</sub></td>
   </tr>
   <tr>
-    <td><img src="doc/screenshots/redesign/characters-grid.jpg" alt="Characters"><br><sub><b>Characters</b>: all 20 roles, including Robert Clive.</sub></td>
-    <td><img src="doc/screenshots/redesign/rules.jpg" alt="Rules"><br><sub><b>Rulebook</b>.</sub></td>
+    <td><img src="doc/screenshots/current/characters-grid.jpg" alt="Characters"><br><sub><b>Characters</b>: all 20 roles, including Robert Clive.</sub></td>
+    <td><img src="doc/screenshots/current/rules.jpg" alt="Rules"><br><sub><b>Rulebook</b>.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/dashboard.jpg" alt="<b>Dashboard</b> after sign-in: create a room or join by code."><br><sub><b>Dashboard</b> after sign-in: create a room or join by code.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/create-room.jpg" alt="<b>Room creation</b>: Standard Council or Royal Decree."><br><sub><b>Room creation</b>: Standard Council or Royal Decree.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/dashboard.jpg" alt="<b>Dashboard</b> after sign-in: create a room or join by code."><br><sub><b>Dashboard</b> after sign-in: create a room or join by code.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/create-room.jpg" alt="<b>Room creation</b>: Standard Council or Royal Decree."><br><sub><b>Room creation</b>: Standard Council or Royal Decree.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/decree-settings.jpg" alt="<b>Royal Decree</b>: the host picks seats and roles."><br><sub><b>Royal Decree</b>: the host picks seats and roles.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/lobby-host.jpg" alt="<b>Room creator</b> view: room code, players, Start Match."><br><sub><b>Room creator</b> view: room code, players, Start Match.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/decree-settings.jpg" alt="<b>Royal Decree</b>: the host picks seats and roles."><br><sub><b>Royal Decree</b>: the host picks seats and roles.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/lobby-host.jpg" alt="<b>Room creator</b> view: room code, players, Start Match."><br><sub><b>Room creator</b> view: room code, players, Start Match.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/lobby-joiner.jpg" alt="<b>Joining player</b> view of the same room."><br><sub><b>Joining player</b> view of the same room.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/role-reveal.jpg" alt="<b>Character reveal</b>: portrait, name and side (Nawab's Loyalists)."><br><sub><b>Character reveal</b>: portrait, name and side (Nawab's Loyalists).</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/lobby-joiner.jpg" alt="<b>Joining player</b> view of the same room."><br><sub><b>Joining player</b> view of the same room.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/role-reveal.jpg" alt="<b>Character reveal</b>: portrait, name and side (Nawab's Loyalists)."><br><sub><b>Character reveal</b>: portrait, name and side (Nawab's Loyalists).</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/role-reveal-eic.jpg" alt="<b>Character reveal</b> for the East India Company."><br><sub><b>Character reveal</b> for the East India Company.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/host-controls.jpg" alt="<b>Discussion</b> with host controls."><br><sub><b>Discussion</b> with host controls.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/role-reveal-eic.jpg" alt="<b>Character reveal</b> for the East India Company."><br><sub><b>Character reveal</b> for the East India Company.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/host-controls.jpg" alt="<b>Discussion</b> with host controls."><br><sub><b>Discussion</b> with host controls.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/nominate.jpg" alt="<b>Leader</b> nominates ministers."><br><sub><b>Leader</b> nominates ministers.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/ballot.jpg" alt="<b>Voting</b>: approve or reject the ministers."><br><sub><b>Voting</b>: approve or reject the ministers.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/nominate.jpg" alt="<b>Leader</b> nominates ministers."><br><sub><b>Leader</b> nominates ministers.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/ballot.jpg" alt="<b>Voting</b>: approve or reject the ministers."><br><sub><b>Voting</b>: approve or reject the ministers.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/mission.jpg" alt="<b>Mission</b>: play a loyal or traitor card."><br><sub><b>Mission</b>: play a loyal or traitor card.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/mir-madan-guess.jpg" alt="<b>Identifying Mir Madan</b>: Mir Jafar's endgame guess."><br><sub><b>Identifying Mir Madan</b>: Mir Jafar's endgame guess.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/mission.jpg" alt="<b>Mission</b>: play a loyal or traitor card."><br><sub><b>Mission</b>: play a loyal or traitor card.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/mir-madan-guess.jpg" alt="<b>Identifying Mir Madan</b>: Mir Jafar's endgame guess."><br><sub><b>Identifying Mir Madan</b>: Mir Jafar's endgame guess.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="doc/screenshots/game/red-win.jpg" alt="<b>East India Company wins</b>: Mir Jafar found Mir Madan."><br><sub><b>East India Company wins</b>: Mir Jafar found Mir Madan.</sub></td>
-    <td width="50%"><img src="doc/screenshots/game/green-win.jpg" alt="<b>Nawab's Loyalists win</b> (the Company loses)."><br><sub><b>Nawab's Loyalists win</b> (the Company loses).</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/red-loss.jpg" alt="<b>East India Company loses</b>: the Loyalists held the field."><br><sub><b>East India Company loses</b>: the Loyalists held the field.</sub></td>
+    <td width="50%"><img src="doc/screenshots/current/green-win.jpg" alt="<b>Nawab's Loyalists win</b> (the Company loses)."><br><sub><b>Nawab's Loyalists win</b> (the Company loses).</sub></td>
   </tr>
   <tr>
-    <td colspan="2"><img src="doc/screenshots/game/battle-recap.jpg" alt="Full battle recap with round scores, ministers, ballots, mission cards, the Mir Madan reveal, and every player's result."><br><sub><b>Battle recap</b>: the complete match story — rounds, ministers, every ballot, mission cards, the Mir Madan reveal, final identities, and each player's win or loss.</sub></td>
+    <td colspan="2"><img src="doc/screenshots/current/battle-recap.jpg" alt="Full battle recap with round scores, ministers, ballots, mission cards, the Mir Madan reveal, and every player's result."><br><sub><b>Battle recap</b>: the complete match story — rounds, ministers, every ballot, mission cards, the Mir Madan reveal, final identities, and each player's win or loss.</sub></td>
   </tr>
 </table>
 
@@ -91,12 +91,12 @@ Role reveal → Discussion → Leader picks ministers → Everyone votes → Min
   | Obsidian Black | `#111111` | page background, modals |
   | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
 - **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
-- **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
-- **Transitions on every page:** the Nawab-versus-Clive battle scene appears immediately and lifts to reveal the destination, with no blank intermediary screen; reduced-motion preferences are respected.
+- **Artwork:** a panoramic Plassey battlefield with troops, artillery and elephants beneath the **1757** title. The commanders’ duel appears only in the transition gallery.
+- **Transitions:** fifteen distinct historical illustrations, randomly shuffled without repeats until every scene has appeared. Consecutive repeats across cycles are prevented; the cycle survives page reloads within the tab. Images are preloaded, failed images never leave a blank overlay, and reduced-motion preferences are respected.
 
 ### Personal themes and music
 
-Public pages keep **Royal Plassey**. After guest or account sign-in, the **Theme** picker in both the dashboard and room offers:
+**Royal Plassey** is the default. The **Theme** picker is available beside Music from the first screen; the selected palette continues through login, dashboard and room.
 
 Royal Plassey remains first and unchanged. The alternatives use all twelve combinations currently published in [Brandlic's luxury palette guide](https://brandlic.studio/9-luxury-color-palettes-that-define-high-end-design-in-2025/), including its three 2026–2027 additions.
 
@@ -126,13 +126,13 @@ Buttons stay silent and there is no vibration: the music alone carries the atmos
 
 | Settings | Preview |
 |---|---|
-| Music selection after login | ![Signed-in music selection](doc/screenshots/preferences/music-signed-in.jpg) |
-| Royal first, with all luxury alternatives | ![Luxury theme picker](doc/screenshots/preferences/theme-picker-plassey.jpg) |
+| Music selection after login | ![Signed-in music selection](doc/screenshots/current/music-signed-in.jpg) |
+| Royal first, with all luxury alternatives | ![Luxury theme picker](doc/screenshots/current/theme-picker-plassey.jpg) |
 | Green Nawab, red EIC, neutral Jagat Seth | ![Faction colours](doc/screenshots/preferences/faction-colours.jpg) |
 
 ## Features
 
-- **Play as a guest or with an account:** email/password or one-click anonymous guest, via Better Auth.
+- **Play as a guest or with an account:** email/password or named anonymous guest, via Better Auth.
 - **Public and private rooms** with a 6-character join code, quick-join and kick.
 - **Royal Decree custom mode:** per-round discussion timers, a choice of which characters are allowed, host-assigned roles, and host pause/skip.
 - **Text chat and peer-to-peer voice chat** (WebRTC) inside every room.
@@ -346,4 +346,12 @@ The project uses **Vitest** (not “Vtest”). Tests are in `code/packages/game-
 
 ## Signed-in council design
 
-The dashboard and room use an Avalon-inspired tabletop layout, adapted to 1757: a circular court table, secret identity medallions, the rotating leader’s crown, minister markers, five battle-round tokens and rejection track. Portraits only reveal your own role or genuine private reveals; faction identity and rules are unchanged. Public and login pages are unchanged by this redesign.
+The dashboard and room use an Avalon-inspired tabletop layout, adapted to 1757: a circular court table, secret identity medallions, the rotating leader’s crown, minister markers, five battle-round tokens and rejection track. Portraits only reveal your own role or genuine private reveals; faction identity and rules are unchanged. The first-screen settings, battlefield artwork, visible game display-name field and signed-in council screenshots reflect the current interface.
+
+## Transition gallery and current screenshots
+
+![Historical transition scene](doc/screenshots/current/transition-render.jpg)
+
+![Current named-player dashboard](doc/screenshots/current/dashboard.jpg)
+
+The new paintings are generated historical illustrations, visually reviewed for obvious anatomy, equipment and perspective defects; they are not archival images or a guarantee of historical accuracy. The screenshots were captured from real public pages and a completed six-player match.

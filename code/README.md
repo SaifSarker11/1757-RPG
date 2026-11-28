@@ -13,13 +13,13 @@ A real-time multiplayer hidden-role deduction game set in 1757 Bengal, built as 
   | Obsidian Black | `#111111` | page background, modals |
   | Pure Royal Red | `#e01e1e` | primary buttons, active badges, urgent indicators |
 - **Gradients:** surfaces `#111111 → #4f0505`, cards `#4f0505 → #55362a`, primary buttons `#e01e1e → #4f0505` with `#f9d4af` text.
-- **Hero:** a gilded duel — Nawab Siraj-ud-Daulah and Robert Clive crossing swords — rising through an edge-to-edge **1757** title.
-- **Transitions on every page:** the Nawab-versus-Clive battle scene appears immediately and lifts to reveal the destination, with no blank intermediary screen; reduced-motion preferences are respected.
+- **Artwork:** a panoramic Plassey battlefield with troops, artillery and elephants beneath the **1757** title. The commanders’ duel appears only in the transition gallery.
+- **Transitions:** fifteen distinct historical illustrations, randomly shuffled without repeats until every scene has appeared. Consecutive repeats across cycles are prevented; the cycle survives page reloads within the tab. Images are preloaded, failed images never leave a blank overlay, and reduced-motion preferences are respected.
 - **Battle recap:** every match ends with a full-width report covering the winner and reason, round scores, ministers, all ballots and votes, mission cards, Mir Madan's reveal, Jagat Seth's gamble, and every player's final identity and result.
 
 ### Personal themes and music
 
-Public pages keep **Royal Plassey**. After guest or account sign-in, the **Theme** picker in both the dashboard and room offers:
+**Royal Plassey** is the default. The **Theme** picker is available beside Music from the first screen; the selected palette continues through login, dashboard and room.
 
 Royal Plassey remains first and unchanged. The alternatives use all twelve combinations currently published in [Brandlic's luxury palette guide](https://brandlic.studio/9-luxury-color-palettes-that-define-high-end-design-in-2025/), including its three 2026–2027 additions.
 
@@ -49,8 +49,8 @@ Buttons stay silent and there is no vibration: the music alone carries the atmos
 
 | Settings | Preview |
 |---|---|
-| Music selection after login | ![Signed-in music selection](../doc/screenshots/preferences/music-signed-in.jpg) |
-| Royal first, with all luxury alternatives | ![Luxury theme picker](../doc/screenshots/preferences/theme-picker-plassey.jpg) |
+| Music selection after login | ![Signed-in music selection](../doc/screenshots/current/music-signed-in.jpg) |
+| Royal first, with all luxury alternatives | ![Luxury theme picker](../doc/screenshots/current/theme-picker-plassey.jpg) |
 | Green Nawab, red EIC, neutral Jagat Seth | ![Faction colours](../doc/screenshots/preferences/faction-colours.jpg) |
 
 ## Architecture
@@ -207,4 +207,12 @@ The project uses **Vitest** (not “Vtest”). Tests are in `code/packages/game-
 
 ## Signed-in council design
 
-The dashboard and room use an Avalon-inspired tabletop layout, adapted to 1757: a circular court table, secret identity medallions, the rotating leader’s crown, minister markers, five battle-round tokens and rejection track. Portraits only reveal your own role or genuine private reveals; faction identity and rules are unchanged. Public and login pages are unchanged by this redesign.
+The dashboard and room use an Avalon-inspired tabletop layout, adapted to 1757: a circular court table, secret identity medallions, the rotating leader’s crown, minister markers, five battle-round tokens and rejection track. Portraits only reveal your own role or genuine private reveals; faction identity and rules are unchanged. The first-screen settings, battlefield artwork, visible game display-name field and signed-in council screenshots reflect the current interface.
+
+## Transition gallery and current screenshots
+
+![Historical transition scene](../doc/screenshots/current/transition-render.jpg)
+
+![Current named-player dashboard](../doc/screenshots/current/dashboard.jpg)
+
+The new paintings are generated historical illustrations, visually reviewed for obvious anatomy, equipment and perspective defects; they are not archival images or a guarantee of historical accuracy. The screenshots were captured from real public pages and a completed six-player match.
